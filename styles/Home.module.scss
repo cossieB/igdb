@@ -1,0 +1,36 @@
+@import 'variables';
+
+.hero {
+    @include flexCenter();
+    position: relative;
+    background: url('/hero.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 70vh;
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-color: black;
+        opacity: 0.3;
+        z-index: 1;
+    }
+    h1 {        
+        position: absolute;
+        z-index: 2;
+        color: white;
+        font-size: 4.25rem;
+        font-family: 'Press Start 2P', cursive;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        height: 50vh;
+        h1 {
+            font-size: 3rem;
+            margin-left: 1rem;
+        }
+    }
+}

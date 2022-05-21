@@ -1,0 +1,100 @@
+@import '_variables';
+
+:root {
+    font-size: 16px;
+    --primaryClr: #ddd;
+}
+
+html,
+body {
+    background-color: #070a0f;
+    padding: 0;
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    color: var(--primaryClr);
+}
+
+li {
+    list-style: none;
+}
+main {
+    margin-left: 5rem;
+}
+svg {
+    height: 2rem;
+    width: 2rem;
+}
+nav {
+    background-color: #222;
+    position: fixed;
+    z-index: 3;
+    width: 5rem;
+    height: 100vh;
+    color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    transition: all 200ms ease;
+    overflow: hidden;
+    .navIcon {
+        display: inline-block;
+    }
+    svg {
+        width: 5rem;
+    }
+
+    div {
+        width: 1000%;
+        height: 5rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        transition: all 200ms ease;
+    }
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    :root {
+        font-size: 12px;
+    }
+    nav {
+        bottom: 0;
+        height: 5rem;
+        width: 100vw;
+        flex-direction: row;
+        .navText {
+            display: none;
+        } 
+    }
+    main {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    nav {
+        &:hover {
+            width: 16rem;
+            transition: all 200ms ease;
+        }
+        div {
+            &:hover {
+                background-color: #070a0f;
+                svg {
+                    color: #f0f;
+                    transition: all 200ms ease;
+                }
+            }
+        }
+    }
+}

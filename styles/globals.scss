@@ -35,7 +35,7 @@ nav {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    transition: all 200ms ease;
+    transition: width 200ms ease;
     overflow: hidden;
     .navIcon {
         display: inline-block;
@@ -92,7 +92,7 @@ a {
                 background-color: #070a0f;
                 svg {
                     color: #f0f;
-                    transition: all 200ms ease;
+                    transition: color 200ms ease;
                 }
             }
         }

@@ -4,18 +4,19 @@ import { devSchema, IDev } from "./developers";
 import { IPlatform, platformSchema } from "./platform";
 import { IPub, pubSchema } from "./publisher";
 
-export interface IGame extends Document {
+export interface IGame {
     title: string,
     cover: string,
     summary: string
     developer: IDev,
     publisher?: IPub,
-    releaseDate: Date,
+    releaseDate: Date | string,
     genres: string[],
     cast: IActor[],
     platforms: IPlatform[],
     images: string[]
 }
+export interface GameDoc extends IGame, Document {}
 
 const gameSchema = new Schema<IGame>({
     title: {type: String, required: true},

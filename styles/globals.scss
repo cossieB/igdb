@@ -17,13 +17,16 @@ body {
 li {
     list-style: none;
 }
+
 main {
     margin-left: 5rem;
 }
+
 svg {
     height: 2rem;
     width: 2rem;
 }
+
 nav {
     background-color: #222;
     position: fixed;
@@ -37,9 +40,11 @@ nav {
     align-items: flex-start;
     transition: width 200ms ease;
     overflow: hidden;
+
     .navIcon {
         display: inline-block;
     }
+
     svg {
         width: 5rem;
     }
@@ -62,20 +67,47 @@ a {
 * {
     box-sizing: border-box;
 }
+/* width */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+
+::-webkit-scrollbar-track {
+    background: #2c3e50;
+}
+
+/* Handle */
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+
+    &:hover {
+        background: #555;
+    }
+}
+
+/* Handle on hover */
 
 @media (max-width: 768px) {
     :root {
         font-size: 12px;
     }
+
     nav {
         bottom: 0;
         height: 5rem;
         width: 100vw;
         flex-direction: row;
+
         .navText {
             display: none;
-        } 
+        }
     }
+
     main {
         margin-left: 0;
     }
@@ -87,9 +119,11 @@ a {
             width: 16rem;
             transition: all 200ms ease;
         }
+
         div {
             &:hover {
                 background-color: #070a0f;
+
                 svg {
                     color: #f0f;
                     transition: color 200ms ease;

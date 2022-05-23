@@ -1,4 +1,4 @@
-import mongoose, { ObjectId, Schema } from "mongoose";
+import mongoose, { Document, ObjectId, Schema } from "mongoose";
 
 export interface IPub {
     name: string,
@@ -8,6 +8,7 @@ export interface IPub {
     country: string,
     games: ObjectId[],
 }
+export interface PubDoc extends IPub, Document {}
 
 export const pubSchema = new Schema<IPub>({
     name: {type: String, required: true},

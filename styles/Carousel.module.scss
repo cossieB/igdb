@@ -1,0 +1,27 @@
+.carousel {
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    height: 50vh;
+    img {
+        height: 100%;
+        aspect-ratio: 16 / 9;
+        position: absolute;
+        right: 0;
+    }
+}
+.current {
+    left: 25%;
+    
+}
+.previous {
+    left: -25%;
+}
+.next {
+    left: 75%;
+}
+@media (max-width: 768px) {
+    .carousel {
+        height: 50vh;
+    }
+}

@@ -1,7 +1,7 @@
 import mongoose, { ObjectId, Schema, Document } from "mongoose";
 import { IGame } from "./game";
 
-export interface IDev extends Document {
+export interface IDev {
     name: string,
     logo: string,
     location: string,
@@ -9,6 +9,7 @@ export interface IDev extends Document {
     country: string,
     games: ObjectId[],
 }
+export interface DevDoc extends IDev, Document {}
 
 export const devSchema = new Schema<IDev>({
     name: {type: String, required: true},

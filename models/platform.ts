@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IPlatform {
     name: string,
@@ -6,6 +6,7 @@ export interface IPlatform {
     release: Date,
     summary: string,
 }
+export interface PlatformDoc extends IPlatform, Document {}
 
 export const platformSchema = new Schema<IPlatform>({
     name: {type: String, required: true},

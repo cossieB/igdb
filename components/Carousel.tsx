@@ -2,26 +2,9 @@ import { AnimatePresence, motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import styles from '../styles/Carousel.module.scss'
 
-const images = ['/images/image (1).jpg', '/images/image (2).jpg', '/images/image (3).jpg', '/images/image (4).jpg', '/images/image (5).jpg']
-
-const variant: Variants = {
-    initial: {
-        x: 500,
-    },
-    animate: {
-        x: 0,
-        transition: {
-            duration: 0.2,
-            ease: 'easeIn'
-        }
-    },
-    exit: {
-        x: '-100vw',
-        transition: {
-            duration: 0.2,
-            ease: 'easeIn'
-        }
-    }
+const images: string[] = []
+for (let i = 1; i <= 33; i++) {
+    images.push(`/images/image${i}.jpg`)
 }
 
 export default function Carousel() {
@@ -38,7 +21,7 @@ export default function Carousel() {
             setPrevious(newPrev)
             setNext(newNext)
         }, 5000)
-        console.log(current, next, previous)
+        
         return () => clearTimeout(interval)
     }, [next])
 

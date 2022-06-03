@@ -1,6 +1,12 @@
-@mixin flexCenter($direction: column) {
-    display: flex;
-    flex-direction: $direction;
-    justify-content: center;
-    align-items: center;
-}
+@use "sass:color";
+
+$tempcolor1: #b11960;
+$tempcolor2: scale-color($tempcolor1, $lightness: +25%);
+$tempcolor3: #199ab1;
+$tempcolor4: scale-color($tempcolor1, $lightness: +25%);
+$clrDanger: red;
+$clrInfo: #00e1ff;
+$neonpink: #f0f;
+$neonblue: #1F51FF;
+$neongreen: springgreen;
+$brightblue: #00c3ff

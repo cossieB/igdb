@@ -1,8 +1,11 @@
-@import '_variables';
+@import '_variables', '_nav', '_mixins';
 
 :root {
     font-size: 16px;
-    --primaryClr: #ddd;
+    --primaryClr: whitesmoke;
+    --neonpink: #f0f;
+    --neonblue: #1F51FF;
+    --neongreen: springgreen;
 }
 
 html,
@@ -14,49 +17,8 @@ body {
     color: var(--primaryClr);
 }
 
-li {
-    list-style: none;
-}
-
-main {
-    margin-left: 5rem;
-}
-
-svg {
-    height: 2rem;
-    width: 2rem;
-}
-
-nav {
-    background-color: #222;
-    position: fixed;
-    z-index: 3;
-    width: 5rem;
-    height: 100vh;
-    color: whitesmoke;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    transition: width 200ms ease;
-    overflow: hidden;
-
-    .navIcon {
-        display: inline-block;
-    }
-
-    svg {
-        width: 5rem;
-    }
-
-    div {
-        width: 1000%;
-        height: 5rem;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        transition: all 200ms ease;
-    }
+img {
+    aspect-ratio: initial;
 }
 
 a {
@@ -67,6 +29,123 @@ a {
 * {
     box-sizing: border-box;
 }
+
+li {
+    list-style: none;
+}
+
+svg {
+    height: 2rem;
+    width: 2rem;
+}
+
+.hero {
+    @include flexCenter();
+    position: relative;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size:cover;
+    width: 100%;
+    text-align: center;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-color: black;
+        opacity: 0.3;
+        z-index: 1;
+    }
+
+    h1 {
+        position: absolute;
+        z-index: 2;
+        color: white;
+        font-size: 4.25rem;
+        font-family: 'Press Start 2P', cursive;
+    }
+}
+
+button {
+    height: 2.5rem;
+    background: none;
+    border-style: solid;
+    border-width: 2px;
+    transition: all 200ms ease;
+    &.danger {
+        @include button($clrDanger)
+    }
+    &.info {
+        @include button($clrInfo)
+    }
+    &.add {
+        @include button(#00ff00, black )
+    }
+    &:disabled {
+        background-color: gray;
+        &:hover {
+            box-shadow: none;
+            background-color: gray;
+            color: red
+        }
+    }
+}
+
+.label-title-3 {
+    @include label(#800080, #cf2bcf, '<title')
+}
+
+.label-title-0 {
+    @include label(#800080, #cf2bcf, '<title');
+}
+
+.label-title-1 {
+    @include label(#e45d0f, #a06a4b, '<title');
+}
+
+.label-title-2 {
+    @include label(#1F51FF, #152f8d, '<title');
+}
+
+.label-header {
+    @include label(#e45d0f, #a06a4b, '<heading')
+}
+
+.label-desc {
+    @include label(#1F51FF, #152f8d, '<description');
+    min-height: 100px;
+    justify-content: flex-start;
+}
+
+.label-comment {
+    @include label($tempcolor1, $tempcolor2, '<comment');
+    justify-content: space-around;
+}
+.tags {
+    display: flex;
+    align-items: center;
+    >div {
+        background-color: #00ff00;
+        color: black;
+        display: flex;
+        align-items: center;
+        border-radius: 1rem;
+        margin-right: 1rem;
+        padding: 0.3rem;
+        
+        svg {
+            height: unset;
+            width: auto;
+            &:hover {
+                color: aliceblue;
+            }
+        }
+    }
+}
+.popup {
+    @include popup()
+}
+
 /* width */
 
 ::-webkit-scrollbar {
@@ -97,38 +176,19 @@ a {
         font-size: 12px;
     }
 
-    nav {
-        bottom: 0;
-        height: 5rem;
-        width: 100vw;
-        flex-direction: row;
-
-        .navText {
-            display: none;
-        }
-    }
-
     main {
-        margin-left: 0;
+        margin-bottom: 5rem;
+    }
+    .hero {
+        height: 25vh;
+        h1 {
+            font-size: initial;
+        }
     }
 }
 
 @media (min-width: 768px) {
-    nav {
-        &:hover {
-            width: 16rem;
-            transition: all 200ms ease;
-        }
-
-        div {
-            &:hover {
-                background-color: #070a0f;
-
-                svg {
-                    color: #f0f;
-                    transition: color 200ms ease;
-                }
-            }
-        }
+    main {
+        margin-left: 5rem;
     }
 }

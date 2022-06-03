@@ -1,5 +1,4 @@
 import mongoose, { ObjectId, Schema, Document } from "mongoose";
-import { IGame } from "./game";
 
 export interface IDev {
     name: string,
@@ -19,5 +18,7 @@ export const devSchema = new Schema<IDev>({
     country: {type: String, required: true},
     games: [{type: Schema.Types.ObjectId, ref: 'Game'}]
 })
+
+export type DevWithId = IDev & {id: string}
 
 export const Developers: mongoose.Model<IDev, {}, {}, {}> = mongoose.models.Developer ||  mongoose.model('Developer', devSchema) 

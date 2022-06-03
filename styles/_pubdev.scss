@@ -1,0 +1,55 @@
+@import '_variables', '_mixins';
+
+.container {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.tile {
+    height: 150px;
+    background-color: aliceblue;
+    border-radius: 1rem;
+    @include flexCenter();
+    transition: background-color 200ms ease;
+
+    &:hover {
+        background-color: lavender;
+    }
+
+    a {
+        @include flexCenter();
+        height: inherit;
+        width: inherit;
+    }
+
+    img {
+        max-height: 50%;
+        max-width: 80%;
+    }
+}
+
+.header {
+    display: flex;
+    height: 25vh;
+    width: 100%;
+    background-color: aliceblue;
+    @include flexCenter;
+
+    img {
+        height: 50%;
+    }
+}
+
+.main {
+    display: flex;
+
+    > :first-child {
+        flex: 7;
+    }
+}
+
+.textarea {
+    width: 50%;
+    height: 10rem;
+}

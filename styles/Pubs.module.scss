@@ -1,0 +1,5 @@
+@import '_pubdev', '_mixins';
+
+.description {
+    @include description(var(--neonblue));
+}

@@ -12,5 +12,6 @@ export const actorSchema = new Schema<IActor>({
     photo: String,
     summary: String,
 })
+export type ActorWithId = IActor & {id: string}
 
 export const Actors: mongoose.Model<IActor, {}, {}, {}> = mongoose.models.Actor || mongoose.model('Actor', actorSchema)

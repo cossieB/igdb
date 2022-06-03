@@ -1,0 +1,25 @@
+@import '_variables', '_mixins';
+
+.header {
+    display: flex;
+    height: 25vh;
+    width: 100%;
+    background-color: aliceblue;
+    @include flexCenter;
+    img {
+        height: 50%;
+    }
+}
+.main {
+    display: flex;
+    > :first-child {
+        flex: 7;
+    }
+}
+.textarea {
+    width: 50%;
+    height: 10rem;
+}
+.description {
+    @include description(var(--neonblue));
+}

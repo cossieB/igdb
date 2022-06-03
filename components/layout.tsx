@@ -3,6 +3,9 @@ import Link from "next/link";
 export default function Layout() {
     return (
         <nav>
+            <div className="logo" >
+                <span className="logo1" style={{ color: 'var(--neongreen)' }} >I</span> <span style={{ color: 'var(--neonblue)' }} >G</span> <span style={{ color: 'var(--neonpink)' }} >D</span><span style={{ color: 'white' }} >B</span>
+            </div>
             <Link href={'/'} >
                 <a>
                     <div>

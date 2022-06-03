@@ -1,20 +1,21 @@
-import mongoose, { Document, Schema } from "mongoose";
-import { actorSchema, IActor } from "./actor";
-import { devSchema, IDev } from "./developers";
-import { IPlatform, platformSchema } from "./platform";
-import { IPub, pubSchema } from "./publisher";
+import mongoose, {Schema, Document} from "mongoose"
+import { ActorDoc, actorSchema } from "./actor"
+import { DevDoc, devSchema } from "./developers"
+import { PlatformDoc, platformSchema } from "./platform"
+import { PubDoc, pubSchema } from "./publisher"
 
 export interface IGame {
     title: string,
     cover: string,
     summary: string
-    developer: IDev,
-    publisher?: IPub,
+    developer: DevDoc,
+    publisher: PubDoc,
     releaseDate: Date | string,
     genres: string[],
-    cast: IActor[],
-    platforms: IPlatform[],
-    images: string[]
+    cast: ActorDoc[],
+    platforms: PlatformDoc[],
+    images: string[],
+    banner?: string
 }
 export interface GameDoc extends IGame, Document {}
 
@@ -23,12 +24,14 @@ const gameSchema = new Schema<IGame>({
     cover: {type: String, required: true},
     summary: {type: String, required: true},
     developer: {type: devSchema, required: true},
-    publisher: {type: pubSchema},
+    publisher: {type: pubSchema, required: true},
     releaseDate: {type: Date, required: true},
     genres: [String],
     cast: [{type: actorSchema}],
     platforms: [{type: platformSchema}],
-    images: [String]
+    images: [String],
+    banner: String
 })
+export type GameWithId = IGame & {id: string}
 
 export const Games: mongoose.Model<IGame, {}, {}, {}> = mongoose.models.Game || mongoose.model('Game', gameSchema)

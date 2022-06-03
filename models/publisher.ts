@@ -9,6 +9,7 @@ export interface IPub {
     games: ObjectId[],
 }
 export interface PubDoc extends IPub, Document {}
+export type PubWithId = IPub & {id: string}
 
 export const pubSchema = new Schema<IPub>({
     name: {type: String, required: true},

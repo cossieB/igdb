@@ -1,21 +1,19 @@
-import mongoose from "mongoose"
-import { GetStaticPathsResult, GetStaticPropsResult } from "next"
-import { Games, IGame } from "../../models/game"
+import mongoose from 'mongoose';
+import { GetStaticPropsResult } from 'next';
+import Link from 'next/link';
+import { GameWithId, Games, GameDoc } from '../../models/game';
 import styles from '../../styles/Games.module.scss'
-import Image from 'next/image'
-import Link from "next/link"
-
-type TGame = IGame & { id: string }
+import { extractGameFields, extract } from '../../utils/extractDocFields';
 
 interface Props {
-    games: TGame[]
+    games: GameWithId[]
 }
 
 export default function GamesIndex({ games }: Props) {
     return (
         <div className={styles.container} >
             {games.map(game => (
-                <div className={styles.tile} key={`${game.developer.name}${game.title}`} >
+                <div className={styles.tile} key={`${game.title}${game.releaseDate.toString()}`} >
                     <Link href={`games/${game.id}`} >
                         <a><img src={game.cover} alt={`${game.title} Cover Image`} /></a>
                     </Link>
@@ -27,43 +25,15 @@ export default function GamesIndex({ games }: Props) {
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
-    const queryRes = await Games.find().exec();
+    const queryRes = await Games.find().exec() as GameDoc[] ;
 
-    const games: TGame[] = []
+    const games: GameWithId[] = []
     for (let item of queryRes) {
-        const game: TGame = {
-            id: item.id,
-            title: item.title,
-            cover: item.cover,
-            developer: {
-                name: item.developer.name,
-                country: item.developer.country,
-                location: item.developer.location,
-                logo: item.developer.logo,
-                summary: item.developer.summary,
-                games: item.developer.games,
-            },
-            releaseDate: item.releaseDate instanceof Date ? item.releaseDate.toISOString() : item.releaseDate,
-            genres: item.genres,
-            cast: item.cast,
-            summary: item.summary,
-            platforms: item.platforms,
-            images: item.images
-        }
-        if (item.publisher) {
-            game.publisher = {
-                name: item.publisher.name,
-                country: item.publisher.country,
-                headquarters: item.publisher.headquarters,
-                logo: item.publisher.logo,
-                summary: item.publisher.summary,
-                games: item.publisher.games,
-            }
-        }
-        games.push(game); 
+        const game = extract(item, ['title', 'cover', 'id', 'releaseDate'])
+        game.releaseDate = game.releaseDate.toString()
+        games.push(game as GameWithId); 
     }
-
-    // console.log(games[0])
+    
     return {
         props: {
             games

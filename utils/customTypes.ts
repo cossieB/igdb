@@ -1,0 +1,1 @@
+export type UpsertResult = { msg: string } | { error: any}

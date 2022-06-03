@@ -1,0 +1,93 @@
+@import '_mixins';
+
+nav {
+    background-color: #222;
+    position: fixed;
+    z-index: 3;
+    width: 5rem;
+    height: 100vh;
+    color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    transition: width 200ms ease;
+    overflow: hidden;
+    .navIcon {
+        display: inline-block;
+    }
+
+    svg {
+        width: 5rem;
+    }
+
+    div {
+        width: 1000%;
+        height: 5rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        transition: all 200ms ease;
+    }
+
+    .logo {
+        font-size: 50px;
+        font-family: 'Press Start 2P', cursive;
+    }
+
+    .logo1 {
+        @include flexCenter();
+        width: 5rem;
+        transition: all 200ms ease;
+
+        ~span {
+            transform: rotateX(90deg);
+            transition: transform 200ms ease;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    
+    nav {
+        bottom: 0;
+        height: 5rem;
+        width: 100vw;
+        flex-direction: row;
+
+        .navText,
+        .logo {
+            display: none;
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    nav {
+        left: 0;
+        top: 0;
+        &:hover {
+            width: 16rem;
+            transition: all 200ms ease;
+
+            .logo1 {
+                align-items: flex-end;
+                transform: rotateZ(360deg);
+                ~span {
+                    transform: rotateX(0deg);
+                }
+            }
+        }
+
+        div:not(.logo) {
+            &:hover {
+                background-color: #070a0f;
+
+                svg {
+                    color: #f0f;
+                    transition: color 200ms ease;
+                }
+            }
+        }
+    }
+}

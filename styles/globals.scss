@@ -1,10 +1,11 @@
+@use "sass:color";
 @import '_variables', '_nav', '_mixins';
 
 :root {
     font-size: 16px;
     --primaryClr: whitesmoke;
     --neonpink: #f0f;
-    --neonblue: #1F51FF;
+    --neonblue: #00c3ff;
     --neongreen: springgreen;
 }
 
@@ -91,47 +92,21 @@ button {
     }
 }
 
-.label-title-3 {
-    @include label(#800080, #cf2bcf, '<title')
-}
-
-.label-title-0 {
-    @include label(#800080, #cf2bcf, '<title');
-}
-
-.label-title-1 {
-    @include label(#e45d0f, #a06a4b, '<title');
-}
-
-.label-title-2 {
-    @include label(#1F51FF, #152f8d, '<title');
-}
-
 .label-header {
-    @include label(#e45d0f, #a06a4b, '<heading')
+    @include label($neonyellow, '<header')
 }
 
-.label-desc {
-    @include label(#1F51FF, #152f8d, '<description');
-    min-height: 100px;
-    justify-content: flex-start;
-}
-
-.label-comment {
-    @include label($tempcolor1, $tempcolor2, '<comment');
-    justify-content: space-around;
-}
 .tags {
     display: flex;
     align-items: center;
     >div {
-        background-color: #00ff00;
+        background-color: #00f7ff;
         color: black;
         display: flex;
         align-items: center;
-        border-radius: 1rem;
+        border-radius: 0.5rem;
         margin-right: 1rem;
-        padding: 0.3rem;
+        padding: 0.5rem;
         
         svg {
             height: unset;
@@ -146,19 +121,13 @@ button {
     @include popup()
 }
 
-/* width */
-
 ::-webkit-scrollbar {
     width: 10px;
 }
 
-/* Track */
-
 ::-webkit-scrollbar-track {
     background: #2c3e50;
 }
-
-/* Handle */
 
 ::-webkit-scrollbar-thumb {
     background: #888;
@@ -168,8 +137,6 @@ button {
         background: #555;
     }
 }
-
-/* Handle on hover */
 
 @media (max-width: 768px) {
     :root {

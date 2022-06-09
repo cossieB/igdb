@@ -1,35 +1,35 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { DevDoc } from "../models/developers";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
+import { PlatformDoc } from "../models/platform";
+import { formatDateForInputElement } from "../utils/formatDate";
 
 interface Props {
-    dev: DevDoc | null,
-    isDelete?: boolean,
+    platform: PlatformDoc | null,
+    isDelete: boolean
     dispatch: React.Dispatch<Actions>
 }
-export default function EditDev(props: Props) {
-    const { dev, isDelete, dispatch } = props;
-    const [name, setName] = useState(dev?.name || "")
-    const [summary, setSummary] = useState(dev?.summary || "")
-    const [logo, setLogo] = useState(dev?.logo || "")
-    const [location, setLocation] = useState(dev?.location || "")
-    const [country, setCountry] = useState(dev?.country || "")
+export default function EditPlatform(props: Props) {
+    const { platform, isDelete, dispatch } = props;
+    const [name, setName] = useState(platform?.name || "")
+    const [summary, setSummary] = useState(platform?.summary || "")
+    const [logo, setLogo] = useState(platform?.logo || "")
+    const [releaseDate, setReleaseDate] = useState(platform?.release)
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
 
-        const response = await fetch('/api/admin/dev', {
+        const response = await fetch('/api/admin/platform', {
             method: "POST",
             headers: {
                 "Content-Type": 'application/json'
             },
-            body: JSON.stringify({ name: name.trim(),summary: marked(summary), logo, location, country, id: dev?._id?.toString() })
+            body: JSON.stringify({ name: name.trim(),summary: marked(summary), logo,  id: platform?._id?.toString(), release: releaseDate })
         })
         const data = await response.json();
         if (data.msg) {
@@ -43,12 +43,12 @@ export default function EditDev(props: Props) {
         }
     }
     async function handleDelete() {
-        const response = await fetch('/api/admin/dev', {
+        const response = await fetch('/api/admin/platform', {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ id: dev?._id.toString() })
+            body: JSON.stringify({ id: platform?._id.toString() })
         })
         const data = await response.json();
         if (data.msg) {
@@ -66,10 +66,10 @@ export default function EditDev(props: Props) {
         let map = [
             [name, "Name"],
             [logo, "Logo"],
-            [location, "Location"],
             [summary, "Summary"],
-            [country, "Country"]
+            [releaseDate, "Release Date"]
         ] as const
+
         let arr: string[] = []
         for (let tuple of map) {
             if (!tuple[0]) arr.push(tuple[1] + " field is missing")
@@ -93,38 +93,24 @@ export default function EditDev(props: Props) {
                             </p>)}
                     </Popup>}
             </AnimatePresence>
-            <h2 style={{ textAlign: 'center' }} >{ isDelete? "Delete Developer" : dev ? "Edit Developer" : "Add Developer"}</h2>
+            <h2 style={{ textAlign: 'center' }} >{isDelete? "Delete Platform" : platform ? "Edit Platform" : "Add Platform"}</h2>
             <div className={styles.change} >
                 <form >
                     <div>
                         <label> Name* </label>
-                        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Developer Name" disabled={isDelete} />
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Platform Name" disabled={isDelete} />
                     </div>
                     <div>
                         <label> Logo* </label>
-                        <input type="text" value={logo} onChange={e => setLogo(e.target.value)} placeholder="Cover" disabled={isDelete} />
-                    </div>
-                    <div>
-                        <label> Location* </label>
-                        <input type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="Location" disabled={isDelete} />
-                    </div>
-                    <div>
-                        <label> Country* </label>
-                        <select
-                            value={country}
-                            defaultValue=""
-                            onChange={(e) => setCountry(e.target.value)}
-                            disabled={isDelete}
-                        >
-                            <option value="" disabled >Select Country</option>
-                            {countryList.map(item =>
-                                <option key={item} value={item}> {item} </option>
-                            )}
-                        </select>
+                        <input type="text" value={logo} onChange={e => setLogo(e.target.value)} placeholder="Logo" disabled={isDelete} />
                     </div>
                     <div>
                         <label> Summary* </label>
                         <textarea defaultValue={summary} onChange={e => setSummary(e.target.value)} disabled={isDelete} />
+                    </div>
+                    <div>
+                        <label> Release Date* </label>
+                        <input type="date" value={releaseDate ? formatDateForInputElement(new Date(releaseDate)) : ""} onChange={e => setReleaseDate(e.target.value)} placeholder="Release Date" disabled={isDelete}/>
                     </div>
                     {isDelete &&
                         <>

@@ -11,7 +11,7 @@ export default function Tags({ tags, changeTags }: P) {
 
         <div className="tags">
             {tags.map((tag, idx) =>
-                <div >
+                <div key={tag + idx} >
                     <span>{tag} </span>
                     {changeTags &&
                         <span onClick={() => changeTags(tags.filter(item => tags.indexOf(item) != idx))} >

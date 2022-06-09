@@ -6,7 +6,7 @@ export interface IDev {
     location: string,
     summary: string,
     country: string,
-    games: ObjectId[],
+    games: mongoose.Types.ObjectId[],
 }
 export interface DevDoc extends IDev, Document {}
 

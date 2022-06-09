@@ -6,7 +6,7 @@ export interface IPub {
     summary: string
     headquarters: string,
     country: string,
-    games: ObjectId[],
+    games: mongoose.Types.ObjectId[],
 }
 export interface PubDoc extends IPub, Document {}
 export type PubWithId = IPub & {id: string}

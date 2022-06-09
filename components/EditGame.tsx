@@ -49,14 +49,17 @@ export default function EditGame(props: Props) {
             headers: {
                 "Content-Type": 'application/json'
             },
-            body: JSON.stringify({ title: title.trim(), summary: marked(summary), cover, banner, date, developer, publisher, genres, ports, id: game?._id?.toString(), type: "game" })
+            body: JSON.stringify({ title: title.trim(), summary: marked(summary), cover, banner, date, developer, publisher, genres, ports, id: game?._id?.toString() })
         })
         const data = await response.json();
         if (data.msg) {
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
         if (data.error) {
-            setErrors(data.error)
+            setErrors([data.error])
+            setTimeout(() => {
+                setErrors([])
+            }, 3500)
         }
     }
     async function handleDelete() {
@@ -189,7 +192,7 @@ export default function EditGame(props: Props) {
                     { isDelete && 
                         <>
                         <label htmlFor=""> Deleting is irreversible. Type <strong>{title}</strong> to confirm </label>
-                        <input value={challengeAnswer} onChange={e => setChallengeAnswer(e.target.value) } /> 
+                        <input className={styles.challenge} value={challengeAnswer} onChange={e => setChallengeAnswer(e.target.value) } /> 
                         </>
                     }
                     {isDelete ?

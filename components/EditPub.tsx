@@ -129,7 +129,7 @@ export default function EditPub(props: Props) {
                     {isDelete &&
                         <>
                             <label htmlFor=""> Deleting is irreversible. Type <strong>{name}</strong> to confirm </label>
-                            <input value={challengeAnswer} onChange={e => setChallengeAnswer(e.target.value)} />
+                            <input className={styles.challenge} value={challengeAnswer} onChange={e => setChallengeAnswer(e.target.value)} />
                         </>
                     }
                     {isDelete ?

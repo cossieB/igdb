@@ -1,25 +1,28 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
-import { useState } from 'react'
 import Description from '../../components/Description'
-import { Publishers, PubWithId } from '../../models/publisher'
+import GameTile from '../../components/GameTile'
+import { GameWithId, GameDoc } from '../../models/game'
+import { PubDoc, Publishers, PubWithId } from '../../models/publisher'
 import styles from '../../styles/Pubs.module.scss'
-import {  extractPubFields } from '../../utils/extractDocFields'
+import {  extract } from '../../utils/extractDocFields'
 
 interface Props {
-    pub: PubWithId
+    pub: PubWithId,
+    games: GameWithId[]
 }
 
-export default function PublisherId({pub}: Props) {
-    const [summary, setSummary] = useState(pub.summary)
+export default function PublisherId({ pub, games }: Props) {
     return (
         <div>
             <div className={styles.header} >
                 <img className={styles.logo} src={pub.logo} alt="" />
             </div>
-
             <div className={styles.main} >
                 <Description html={pub.summary} className={styles.description} />
+            </div>
+            <div className={styles.gamegrid}>
+                {games.map(game => <GameTile key={game.id} game={game} className="" />)}
             </div>
         </div>
     )
@@ -28,18 +31,26 @@ export default function PublisherId({pub}: Props) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const doc = await Publishers.findById(id)
+    const pubDoc = await Publishers.findById(id).populate<{ games: GameDoc[] }>('games').lean().exec() as any as PubDoc
 
-    if (!doc) {
+    if (!pubDoc) {
         return {
             notFound: true
         }
     }
-    const pub = extractPubFields(doc)
+    const pub = extract(pubDoc, ['name', 'headquarters', 'logo', 'country', 'summary']) as PubWithId;
+
+    const games = pubDoc.games.map((item: any) => {
+        let obj = extract(item, ['title', 'summary', 'cover', 'banner', 'genres']) as GameWithId
+        obj.id = item._id.toString()
+        obj.releaseDate = item.releaseDate.toString()
+        return obj
+    })
 
     return {
         props: {
-            pub
+            pub,
+            games
         },
         revalidate: 3600
     }
@@ -48,8 +59,8 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
     await mongoose.connect(process.env.MONGO_URI!)
     let pubs = await Publishers.find().exec()
 
-    let paths = pubs.map(pub => ({
-        params: {id: pub.id}
+    let paths = pubs.map(dev => ({
+        params: { id: dev.id }
     }))
     return {
         paths,

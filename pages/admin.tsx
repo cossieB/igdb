@@ -14,6 +14,7 @@ import Popup from "../components/Popup";
 import EditDev from "../components/EditDev";
 import { AnimatePresence } from "framer-motion";
 import EditPub from "../components/EditPub";
+import EditPlatform from "../components/EditPlatform";
 
 const init: States = {
     mode: "HOME",
@@ -38,6 +39,7 @@ export default function Dashboard() {
                     <Panel displayField="title" items={games} h2="Games" dispatch={dispatch} />
                     <Panel displayField="name" items={devs} h2="Developers" dispatch={dispatch} />
                     <Panel displayField="name" items={pubs} h2="Publishers" dispatch={dispatch} />
+                    <Panel displayField="name" items={platforms} h2="Platforms" dispatch={dispatch} />
                 </div>
             }
             <AnimatePresence>
@@ -56,6 +58,9 @@ export default function Dashboard() {
 
             {(state.mode == "ADD_PUB" || state.mode == "EDIT_PUB" || state.mode == "REMOVE_PUB" ) && 
                 <EditPub pub={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PUB"} />
+            }
+            {(state.mode == "ADD_PLATFORM" || state.mode == "EDIT_PLATFORM" || state.mode == "REMOVE_PLATFORM" ) && 
+                <EditPlatform platform={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PLATFORM"} />
             }
 
         </div>

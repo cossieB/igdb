@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { GetStaticPropsResult } from 'next';
 import Link from 'next/link';
+import DevTile from '../../components/DevTile';
 import { DevWithId, Developers } from '../../models/developers';
 import styles from '../../styles/Devs.module.scss'
 import { extractDevFields } from '../../utils/extractDocFields';
@@ -13,15 +14,7 @@ interface Props {
 export default function DeveloperIndex({ devs }: Props) {
     return (
         <div className={styles.container} >
-            {devs.map(dev => (
-                <Link href={`developers/${dev.id}`} >
-                    <a>
-                        <div className={styles.tile} key={`${dev.name}`} >
-                            <img src={dev.logo} alt={`${dev.name} Logo`} />
-                        </div>
-                    </a>
-                </Link>
-            ))}
+            {devs.map(dev => <DevTile key={dev.id} className={styles.tile} href={'developers'} item={dev} /> )}
         </div>
     )
 }

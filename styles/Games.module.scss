@@ -1,31 +1,169 @@
-@import '_mixins';
+@import '_mixins', '_variables';
 
 .container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+
     img {
         height: 100%;
         width: 100%;
     }
 }
+
 .header {
     display: flex;
     width: 100%;
     height: 50vh;
+
     img {
         height: 100%;
     }
 }
+
 .main {
+    margin-top: 1rem;
     display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+
     > :first-child {
-        flex: 7;
+        flex: 1;
+    }
+
+    > :nth-child(2) {
+        flex: 3
+    }
+}
+
+.infobar {
+    @include flexCenter(column);
+    gap: 2rem ;
+
+    >div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+
+        >div {
+            min-width: 50%;
+            margin-top: 0.25rem;
+            box-shadow: 0 0 50px #00d9ff;
+        }
+    }
+}
+
+.date {
+    width: 45%;
+    height: fit-content;
+    background-color: #2a2836;
+    @include flexCenter(column);
+    color: $neonyellow;
+    overflow: hidden;
+    text-align: center;
+    border: 1px solid $neonyellow;
+    box-shadow: 0 0 50px $neonyellow;
+
+    >div {
+        width: 100%;
+    }
+
+    > :first-child {
+        font-size: 2rem;
+        border-bottom: 1px solid $neonyellow;
+    }
+
+    > :nth-child(2) {
+        font-size: 2rem;
+    }
+
+    > :nth-child(3) {
+        font-size: 3rem;
+        border-bottom: 1px solid $neonyellow;
+    }
+
+    > :nth-child(4) {
+        font-size: 2rem;
     }
 }
 
 .description {
     @include description(var(--neonpink));
+    margin-top: unset;
 }
+
+.logos {
+    height: 150px;
+    background-color: aliceblue;
+    border-radius: 1rem;
+    @include flexCenter();
+    transition: background-color 200ms ease;
+
+    &:hover {
+        background-color: lavender;
+    }
+
+    a {
+        @include flexCenter();
+        height: inherit;
+        width: inherit;
+    }
+
+    img {
+        max-height: 50%;
+        max-width: 80%;
+    }
+}
+
+.companies {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    >* {
+        flex: 1;
+    }
+
+    >a:first-child {
+        position: relative;
+        z-index: 1;
+
+        &::before {
+            content: "<Developer";
+            top: 0%;
+            @include befaft();
+        }
+        &::after {
+            content: "/>";
+            bottom: 0%;
+            right: 0;
+            @include befaft();
+        }
+    }
+    >a:nth-child(2) {
+        position: relative;
+        z-index: 1;
+
+        &::before {
+            content: "<Publisher";
+            top: 0%;
+            @include befaft();
+        }
+        &::after {
+            content: "/>";
+            bottom: 0%;
+            right: 0;
+            @include befaft();
+        }
+    }
+}
+
+.platforms {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
 @media (max-width: 768px) {
     .header {
         height: 25vh;

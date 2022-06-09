@@ -1,7 +1,13 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
+import Link from 'next/link'
 import Description from '../../components/Description'
+import DevTile from '../../components/DevTile'
+import Tags from '../../components/Tags'
+import { DevDoc, DevWithId } from '../../models/developers'
 import { GameWithId, Games, GameDoc } from '../../models/game'
+import { PlatformWithId } from '../../models/platform'
+import { PubWithId } from '../../models/publisher'
 import styles from '../../styles/Games.module.scss'
 import { extract } from '../../utils/extractDocFields'
 import { formatDate } from '../../utils/formatDate'
@@ -21,10 +27,24 @@ export default function GameId({game}: Props) {
             </div>
 
             <div className={styles.main} >
+                <div className={styles.infobar}>
+                    <div className={styles.date} >
+                        <div> {new Date(game.releaseDate).toLocaleString('en-za', {dateStyle: 'full'}).split(',')[0]  } </div>
+                        <div> {new Date(game.releaseDate).getDate()} </div>
+                        <div> {new Date(game.releaseDate).toLocaleString('en-za', {month: 'short'})} </div>
+                        <div> {new Date(game.releaseDate).getFullYear()} </div>
+                    </div>
+                    <Tags tags={game.genres} />
+                </div>
                 <Description className={styles.description} html={game.summary} />
-                
             </div>
-            
+            <div className={styles.companies} >
+                <DevTile className={styles.logos} href="developers" item={game.developer as DevWithId} />
+                <DevTile className={styles.logos} href="publishers" item={game.publisher as PubWithId} />
+            </div>
+            <div className={styles.platforms} >
+                {game.platforms.map(item => <DevTile item={item as PlatformWithId} href="platforms" className={styles.logos} />)}
+            </div> 
         </div>
     )
 }
@@ -32,18 +52,25 @@ export default function GameId({game}: Props) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const gameDoc = await Games.findById(id) as GameDoc
+    const gameDoc = await Games.findById(id).lean().exec() as GameDoc
 
     if (!gameDoc) {
         return {
             notFound: true
         }
     }
-    const game = extract(gameDoc, ['title', 'summary', 'cover', 'banner', 'releaseDate']) as GameWithId
-    game.releaseDate = formatDate(game.releaseDate)
+    const game = extract(gameDoc, ['title', 'summary', 'cover', 'banner', 'releaseDate', 'genres']) as GameWithId
+    game.releaseDate = game.releaseDate.toLocaleString()
     game.developer = extract(gameDoc.developer, ['name', 'logo'])
+    game.developer.id = gameDoc.developer._id.toString();
     game.publisher = extract(gameDoc.publisher, ['name', 'logo'])
-    game.platforms = gameDoc.platforms.map(item => extract(item, ['name', 'logo']))
+    game.publisher.id = gameDoc.publisher._id.toString();
+    game.platforms = gameDoc.platforms.map(item => {
+        let obj = extract(item, ['name', 'logo'])
+        obj.id = item._id.toString();
+        return obj
+    })
+    
 
     return {
         props: {

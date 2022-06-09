@@ -3,6 +3,7 @@
 .container {
     background: #141b26;
     min-height: 100vh;
+    padding-bottom: 1rem;
 }
 
 .tile {
@@ -76,15 +77,17 @@
 .h1 {
     font-weight: bold;
     font-size: 2em;
-    @include label(#2e5a68, #00c3ff, '<');
+    @include label(#00c3ff, '<');
     margin-top: 0;
 }
 
 .change {
+    width: 100%;
     text-align: center;
     display: flex;
+    justify-content: center;
     .img {
-        flex: 1;
+        width: 25%;
         img {
             width: 90%;
         }
@@ -93,8 +96,11 @@
         margin: 0% auto;
         display: flex;
         flex-direction: column;
-        flex: 2;
-
+        width: 50%;
+        button {
+            width: 87%;
+            align-self: flex-end;
+        }
         >div {
             width: 100%;
             display: flex;
@@ -128,6 +134,10 @@
                     flex: 0;
                 }
             }
+        }
+        .challenge {
+            width: calc(7/8 * 100%);
+            align-self: flex-end
         }
     }
 }

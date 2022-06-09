@@ -21,6 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     if (req.method == "POST") {
 
         try {
+            if (!process.env.IS_ADMIN ) throw new Error('Unauthorized')
             const { name, summary, logo, release } = req.body; 
             const msg = req.body.id ? "Update successful" : "Creation successful";
             const id = req.body.id || new mongoose.mongo.ObjectId().toString(); ;
@@ -42,6 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     if (req.method == "DELETE") {
         try {
+            if (!process.env.IS_ADMIN ) throw new Error('Unauthorized')
             const {id} = req.body;
             const result = await Platforms.findByIdAndDelete(id);
             if (result == null) throw new Error("Item not found")

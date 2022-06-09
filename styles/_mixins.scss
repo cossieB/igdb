@@ -1,8 +1,11 @@
+@use 'sass:color';
+
 @mixin befaft {
     position: absolute;
-    font-size: 50px;
+    font-size: 3rem;
     opacity: 10%;
     color: black;
+    pointer-events: none;
 }
 
 @mixin flexCenter($direction: column) {
@@ -14,10 +17,10 @@
 
 
 
-@mixin label($fromClr, $toClr, $name) {
+@mixin label($fromClr, $name) {
     height: 108px;
     position: relative;
-    background: linear-gradient($fromClr, $toClr);
+    background: linear-gradient($fromClr, color.scale($fromClr, $lightness: -50%));
     border-radius: 10px;
     margin: 1rem 0;
     box-shadow: black 0px 0px 10px;
@@ -30,14 +33,12 @@
     text-align: center;
 
     &::after {
-        pointer-events: none;
         content: "/>";
         right: 5%;
         @include befaft()
     }
 
     &::before {
-        pointer-events: none;
         content: $name;
         left: 5%;
         @include befaft()
@@ -65,5 +66,4 @@
     position: fixed;
     top: 10vh;
     left: 50vw;
-    backdrop-filter: brightness(50%)
 }

@@ -7,21 +7,24 @@
         width: 50%;
         height: 100%;
         position: absolute;
-        right: 0;
+        
     }
 }
-.current {
-    left: 25%;
-    
-}
-.previous {
-    left: -25%;
-}
-.next {
-    left: 75%;
-}
+
 @media (max-width: 768px) {
     .carousel {
-        height: 15vh;
+        height: 25vh;
+        img {
+            width: 100%;
+            left: 50vw
+        }
+
+    }
+}
+@media (min-width: 768px) {
+    .carousel {
+        img {
+            right: 0;
+        }
     }
 }

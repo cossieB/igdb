@@ -4,12 +4,13 @@ import { Actions, Models, TypesWithPayload } from "../utils/adminReducerTypes";
 import styles from '../styles/dashboard.module.scss'
 import { PubDoc } from "../models/publisher";
 import { DevDoc } from "../models/developers";
+import { PlatformDoc } from "../models/platform";
 
 interface P {
     displayField: string,
     dispatch: Dispatch<Actions>,
     h2: "Games" | "Developers" | "Publishers" | "Platforms",
-    items: GameDoc[] | PubDoc[] | DevDoc[]
+    items: GameDoc[] | PubDoc[] | DevDoc[] | PlatformDoc[]
 }
 
 export default function Panel(props: P) {
@@ -18,6 +19,7 @@ export default function Panel(props: P) {
         if (h2 == "Games") dispatch({type: "ADD_GAME"})
         if (h2 == "Developers") dispatch({type: "ADD_DEV"})
         if (h2 == "Publishers") dispatch({type: "ADD_PUB"}) 
+        if (h2 == "Platforms") dispatch({type: "ADD_PLATFORM"}) 
     }
     return (
         <div className={styles.panel} >
@@ -37,7 +39,8 @@ function List(props: P) {
         let map: { [key: string]: TypesWithPayload } = {
             "Games": "EDIT_GAME",
             "Developers": "EDIT_DEV",
-            "Publishers": "EDIT_PUB"
+            "Publishers": "EDIT_PUB",
+            "Platforms": "EDIT_PLATFORM"
         }
         const action: Actions = {
             type: map[h2],
@@ -50,7 +53,8 @@ function List(props: P) {
         let map: { [key: string]: TypesWithPayload } = {
             "Games": "REMOVE_GAME",
             "Developers": "REMOVE_DEV",
-            "Publishers": "REMOVE_PUB"
+            "Publishers": "REMOVE_PUB",
+            "Platforms": "REMOVE_PLATFORM"
         }
         const action: Actions = {
             type: map[h2],

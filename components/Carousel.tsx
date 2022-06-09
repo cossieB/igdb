@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import styles from '../styles/Carousel.module.scss'
 
 const images: string[] = []
-for (let i = 1; i <= 33; i++) {
+for (let i = 1; i <= 38; i++) {
     images.push(`/images/image${i}.jpg`)
 }
 
@@ -39,7 +39,7 @@ export default function Carousel() {
                     transition={{duration: 0.5, ease: 'easeOut'}}
                     animate={{ x: '-150%' }}
                     exit={{ x: '-250%' }}
-                    // className={styles.previous}
+                    className={styles.previous}
                     src={images[previous]}
                     alt="" />
                 <motion.img key={images[current]}
@@ -47,7 +47,7 @@ export default function Carousel() {
                     transition={{duration: 0.5, ease: 'easeOut'}}
                     animate={{ x: '-50%' }}
                     exit={{ x: '-100vw' }}
-                    // className={styles.current}
+                    className={styles.current}
                     src={images[current]}
                     alt="" />
                 <motion.img key={images[next]}
@@ -55,7 +55,7 @@ export default function Carousel() {
                     transition={{duration: 0.5, ease: 'easeOut'}}
                     animate={{x: '50%'}}
                     exit={{x: '-100vw'}}
-                    // className={styles.next}
+                    className={styles.next}
                     src={images[next]}
                     alt="" />
             </AnimatePresence>

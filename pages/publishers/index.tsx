@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PubWithId, Publishers } from "../../models/publisher";
 import { extractPubFields } from "../../utils/extractDocFields";
 import styles from '../../styles/Pubs.module.scss'
+import DevTile from "../../components/DevTile";
 
 interface Props {
     pubs: PubWithId[]
@@ -12,15 +13,7 @@ interface Props {
 export default function PublisherIndex({ pubs }: Props) {
     return (
         <div className={styles.container} >
-            {pubs.map(pub => (
-                <Link href={`publishers/${pub.id}`} key={`${pub.name}`} >
-                    <a>
-                        <div className={styles.tile}  >
-                            <img src={pub.logo} alt={`${pub.name} Logo`} />
-                        </div>
-                    </a>
-                </Link>
-            ))}
+            {pubs.map(pub => <DevTile key={pub.id} className={styles.tile} href="publishers" item={pub}  /> )}
         </div>
     )
 }

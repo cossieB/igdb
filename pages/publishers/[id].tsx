@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
+import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
 import { GameWithId, GameDoc } from '../../models/game'
@@ -14,6 +15,10 @@ interface Props {
 
 export default function PublisherId({ pub, games }: Props) {
     return (
+        <>
+        <Head>
+            <title> IGDB | {pub.name} </title>
+        </Head>
         <div>
             <div className={styles.header} >
                 <img className={styles.logo} src={pub.logo} alt="" />
@@ -25,6 +30,7 @@ export default function PublisherId({ pub, games }: Props) {
                 {games.map(game => <GameTile key={game.id} game={game} className="" />)}
             </div>
         </div>
+        </>
     )
 }
 

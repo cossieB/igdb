@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { GetStaticPropsResult } from 'next';
+import Head from 'next/head';
 import GameTile from '../../components/GameTile';
 import { GameWithId, Games, GameDoc } from '../../models/game';
 import styles from '../../styles/Games.module.scss'
@@ -11,9 +12,14 @@ interface Props {
 
 export default function GamesIndex({ games }: Props) {
     return (
+        <>
+        <Head>
+            <title> IGDB | Games </title>
+        </Head>
         <div className={styles.container} >
             {games.map(game => <GameTile key={game.title + game.releaseDate.toString()} className={styles.tile} game={game} /> )}
         </div>
+        </>
     )
 }
 

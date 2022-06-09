@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
+import Head from 'next/head'
 import Link from 'next/link'
 import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
@@ -18,6 +19,10 @@ interface Props {
 
 export default function GameId({game}: Props) {
     return (
+        <>
+        <Head>
+            <title> IGDB | {game.title} </title>
+        </Head>
         <div>
             <div className={styles.header} >
                 <img className={styles.boxart} src={game.cover} alt="" />
@@ -43,9 +48,10 @@ export default function GameId({game}: Props) {
                 <DevTile className={styles.logos} href="publishers" item={game.publisher as PubWithId} />
             </div>
             <div className={styles.platforms} >
-                {game.platforms.map(item => <DevTile item={item as PlatformWithId} href="platforms" className={styles.logos} />)}
+                {game.platforms.map(item => <DevTile key={item.id} item={item as PlatformWithId} href="platforms" className={styles.logos} />)}
             </div> 
         </div>
+        </>
     )
 }
 

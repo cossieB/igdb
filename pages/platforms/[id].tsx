@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
+import Head from 'next/head'
 import Description from '../../components/Description'
 import { PlatformDoc, Platforms, PlatformWithId } from '../../models/platform'
 import styles from '../../styles/Platforms.module.scss'
@@ -11,6 +12,10 @@ interface Props {
 
 export default function DeveloperId({ pform }: Props) {
     return (
+        <>
+        <Head>
+            <title> IGDB {pform.name} </title>
+        </Head>
         <div>
             <div className={styles.header} >
                 <img className={styles.logo} src={pform.logo} alt="" />
@@ -19,6 +24,7 @@ export default function DeveloperId({ pform }: Props) {
                 <Description html={pform.summary} className={styles.description} />
             </div>
         </div>
+        </>
     )
 }
 

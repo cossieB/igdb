@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
+import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
 import { DevDoc, Developers, DevWithId } from '../../models/developers'
@@ -14,17 +15,22 @@ interface Props {
 
 export default function DeveloperId({ dev, games }: Props) {
     return (
-        <div>
-            <div className={styles.header} >
-                <img className={styles.logo} src={dev.logo} alt="" />
+        <>
+            <Head>
+                <title> IGDB | {dev.name} </title>
+            </Head>
+            <div>
+                <div className={styles.header} >
+                    <img className={styles.logo} src={dev.logo} alt="" />
+                </div>
+                <div className={styles.main} >
+                    <Description html={dev.summary} className={styles.description} />
+                </div>
+                <div className={styles.gamegrid}>
+                    {games.map(game => <GameTile key={game.id} game={game} className="" />)}
+                </div>
             </div>
-            <div className={styles.main} >
-                <Description html={dev.summary} className={styles.description} />
-            </div>
-            <div className={styles.gamegrid}>
-                {games.map(game => <GameTile key={game.id} game={game} className="" />)}
-            </div>
-        </div>
+        </>
     )
 }
 

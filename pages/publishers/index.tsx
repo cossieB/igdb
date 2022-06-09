@@ -5,6 +5,7 @@ import { PubWithId, Publishers } from "../../models/publisher";
 import { extractPubFields } from "../../utils/extractDocFields";
 import styles from '../../styles/Pubs.module.scss'
 import DevTile from "../../components/DevTile";
+import Head from "next/head";
 
 interface Props {
     pubs: PubWithId[]
@@ -12,9 +13,14 @@ interface Props {
 
 export default function PublisherIndex({ pubs }: Props) {
     return (
+        <>
+        <Head>
+            <title> IGDB | Publishers </title>
+        </Head>
         <div className={styles.container} >
             {pubs.map(pub => <DevTile key={pub.id} className={styles.tile} href="publishers" item={pub}  /> )}
         </div>
+        </>
     )
 }
 

@@ -1,14 +1,5 @@
-@import '_mixins', '_variables';
+@import '_mixins', '_variables', '_grids';
 
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-
-    img {
-        height: 100%;
-        width: 100%;
-    }
-}
 
 .header {
     display: flex;
@@ -39,16 +30,6 @@
     @include flexCenter(column);
     gap: 2rem ;
 
-    >div:nth-child(2) {
-        display: flex;
-        flex-direction: column;
-
-        >div {
-            min-width: 50%;
-            margin-top: 0.25rem;
-            box-shadow: 0 0 50px #00d9ff;
-        }
-    }
 }
 
 .date {
@@ -90,7 +71,7 @@
     margin-top: unset;
 }
 
-.logos {
+.tile {
     height: 150px;
     background-color: aliceblue;
     border-radius: 1rem;
@@ -161,7 +142,7 @@
     margin-top: 1rem;
     display: grid;
     gap: 0.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 }
 
 @media (max-width: 768px) {

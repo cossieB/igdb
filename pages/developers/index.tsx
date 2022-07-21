@@ -18,7 +18,7 @@ export default function DeveloperIndex({ devs }: Props) {
         <Head>
             <title> IGDB | Developers </title>
         </Head>
-        <div className={styles.container} >
+        <div className={styles.logos} >
             {devs.map(dev => <DevTile key={dev.id} className={styles.tile} href={'developers'} item={dev} /> )}
         </div>
         </>

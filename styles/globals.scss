@@ -45,7 +45,7 @@ svg {
     position: relative;
     background-position: center;
     background-repeat: no-repeat;
-    background-size:cover;
+    background-size: cover;
     width: 100%;
     text-align: center;
 
@@ -73,17 +73,22 @@ button {
     border-style: solid;
     border-width: 2px;
     transition: all 200ms ease;
+
     &.danger {
         @include button($clrDanger)
     }
+
     &.info {
         @include button($clrInfo)
     }
+
     &.add {
-        @include button(#00ff00, black )
+        @include button(#00ff00, black)
     }
+
     &:disabled {
         background-color: gray;
+
         &:hover {
             box-shadow: none;
             background-color: gray;
@@ -99,6 +104,7 @@ button {
 .tags {
     display: flex;
     align-items: center;
+
     >div {
         background-color: #00f7ff;
         color: black;
@@ -107,16 +113,19 @@ button {
         border-radius: 0.5rem;
         margin-right: 1rem;
         padding: 0.5rem;
-        
+        white-space: nowrap;
+
         svg {
             height: unset;
             width: auto;
+
             &:hover {
                 color: aliceblue;
             }
         }
     }
 }
+
 .popup {
     @include popup()
 }
@@ -146,10 +155,21 @@ button {
     main {
         margin-bottom: 5rem;
     }
+
     .hero {
         height: 25vh;
+
         h1 {
             font-size: initial;
+        }
+    }
+
+    .tags {
+        flex-direction: row;
+        // flex-wrap: wrap;
+
+        >div {
+            width: fit-content;
         }
     }
 }
@@ -157,5 +177,10 @@ button {
 @media (min-width: 768px) {
     main {
         margin-left: 5rem;
+    }
+
+    .tags {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }

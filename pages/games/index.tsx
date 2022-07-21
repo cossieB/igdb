@@ -16,7 +16,7 @@ export default function GamesIndex({ games }: Props) {
             <Head>
                 <title> IGDB | Games </title>
             </Head>
-            <div className={styles.container} >
+            <div className={styles.games} >
                 {games.map(game => <GameTile key={game.title + game.releaseDate.toString()} className={styles.tile} game={game} />)}
             </div>
         </>

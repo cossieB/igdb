@@ -1,17 +1,15 @@
 import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
-import { DevDoc, DevWithId } from '../../models/developers'
+import { DevWithId } from '../../models/developers'
 import { GameWithId, Games, GameDoc } from '../../models/game'
 import { PlatformWithId } from '../../models/platform'
 import { PubWithId } from '../../models/publisher'
 import styles from '../../styles/Games.module.scss'
 import { extract } from '../../utils/extractDocFields'
-import { formatDate } from '../../utils/formatDate'
 
 interface Props {
     game: GameWithId
@@ -44,11 +42,11 @@ export default function GameId({game}: Props) {
                 <Description className={styles.description} html={game.summary} />
             </div>
             <div className={styles.companies} >
-                <DevTile className={styles.logos} href="developers" item={game.developer as DevWithId} />
-                <DevTile className={styles.logos} href="publishers" item={game.publisher as PubWithId} />
+                <DevTile className={styles.tile} href="developers" item={game.developer as DevWithId} />
+                <DevTile className={styles.tile} href="publishers" item={game.publisher as PubWithId} />
             </div>
             <div className={styles.platforms} >
-                {game.platforms.map(item => <DevTile key={item.id} item={item as PlatformWithId} href="platforms" className={styles.logos} />)}
+                {game.platforms.map(item => <DevTile key={item.id} item={item as PlatformWithId} href="platforms" className={styles.tile} />)}
             </div> 
         </div>
         </>

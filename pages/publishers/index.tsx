@@ -17,7 +17,7 @@ export default function PublisherIndex({ pubs }: Props) {
         <Head>
             <title> IGDB | Publishers </title>
         </Head>
-        <div className={styles.container} >
+        <div className={styles.logos} >
             {pubs.map(pub => <DevTile key={pub.id} className={styles.tile} href="publishers" item={pub}  /> )}
         </div>
         </>

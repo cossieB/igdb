@@ -1,11 +1,5 @@
-@import '_variables', '_mixins';
+@import '_variables', '_mixins', '_grids';
 
-.container {
-    display: grid;
-    gap: 0.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    padding-bottom: 1rem;
-}
 
 .tile {
     height: 150px;

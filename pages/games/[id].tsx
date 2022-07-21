@@ -42,11 +42,11 @@ export default function GameId({game}: Props) {
                 <Description className={styles.description} html={game.summary} />
             </div>
             <div className={styles.companies} >
-                <DevTile className={styles.tile} href="developers" item={game.developer as DevWithId} />
-                <DevTile className={styles.tile} href="publishers" item={game.publisher as PubWithId} />
+                <DevTile className={styles.logoTile} href="developers" item={game.developer as DevWithId} />
+                <DevTile className={styles.logoTile} href="publishers" item={game.publisher as PubWithId} />
             </div>
             <div className={styles.platforms} >
-                {game.platforms.map(item => <DevTile key={item.id} item={item as PlatformWithId} href="platforms" className={styles.tile} />)}
+                {game.platforms.map(item => <DevTile key={item.id} item={item as PlatformWithId} href="platforms" className={styles.logoTile} />)}
             </div> 
         </div>
         </>

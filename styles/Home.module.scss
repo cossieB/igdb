@@ -98,4 +98,10 @@ $color in $list {
     .h1 {
         font-size: initial;
     }
+    .games {
+        grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+    }
+    .logos {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
 }

@@ -38,7 +38,8 @@
     @include flexCenter;
 
     img {
-        height: 50%;
+        max-height: 50%;
+        max-width: 90%;
     }
 }
 
@@ -62,5 +63,11 @@
     img {
         height: 100%;
         width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .gamegrid {
+        grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
     }
 }

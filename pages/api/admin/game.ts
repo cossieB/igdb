@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 summary,
                 cover,
                 banner,
-                releaseDate: date,
+                releaseDate: new Date(date).setHours(new Date(date).getHours() + 12),
                 developer,
                 publisher,
                 genres,

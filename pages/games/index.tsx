@@ -13,12 +13,12 @@ interface Props {
 export default function GamesIndex({ games }: Props) {
     return (
         <>
-        <Head>
-            <title> IGDB | Games </title>
-        </Head>
-        <div className={styles.container} >
-            {games.map(game => <GameTile key={game.title + game.releaseDate.toString()} className={styles.tile} game={game} /> )}
-        </div>
+            <Head>
+                <title> IGDB | Games </title>
+            </Head>
+            <div className={styles.container} >
+                {games.map(game => <GameTile key={game.title + game.releaseDate.toString()} className={styles.tile} game={game} />)}
+            </div>
         </>
     )
 }

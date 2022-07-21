@@ -168,4 +168,7 @@
     .header {
         height: 25vh;
     }
+    .main {
+        flex-direction: column-reverse;
+    }
 }

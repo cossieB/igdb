@@ -1,23 +1,24 @@
-import mongoose, {Schema, Document} from "mongoose"
-import { ActorDoc, actorSchema } from "./actor"
-import { DevDoc, devSchema } from "./developers"
-import { PlatformDoc, platformSchema } from "./platform"
-import { PubDoc, pubSchema } from "./publisher"
+import mongoose, {ObjectId, Schema} from "mongoose"
+import { actorSchema, IActor } from "./actor"
+import { devSchema, IDev } from "./developers"
+import { IPlatform, platformSchema } from "./platform"
+import { IPub, pubSchema } from "./publisher"
 
 export interface IGame {
+    id?: string,
+    _id: mongoose.Types.ObjectId,
     title: string,
     cover: string,
     summary: string
-    developer: DevDoc,
-    publisher: PubDoc,
+    developer: IDev,
+    publisher: IPub,
     releaseDate: Date | string,
     genres: string[],
-    cast: ActorDoc[],
-    platforms: PlatformDoc[],
+    cast: IActor[],
+    platforms: IPlatform[],
     images: string[],
     banner?: string
 }
-export interface GameDoc extends IGame, Document {}
 
 const gameSchema = new Schema<IGame>({
     title: {type: String, required: true},

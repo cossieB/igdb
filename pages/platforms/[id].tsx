@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
 import Head from 'next/head'
 import Description from '../../components/Description'
-import { PlatformDoc, Platforms, PlatformWithId } from '../../models/platform'
+import { Platforms, PlatformWithId } from '../../models/platform'
 import styles from '../../styles/Platforms.module.scss'
 import {  extract } from '../../utils/extractDocFields'
 
@@ -31,7 +31,7 @@ export default function DeveloperId({ pform }: Props) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const pformDoc = await Platforms.findById(id).lean().exec() as any as PlatformDoc
+    const pformDoc = await Platforms.findById(id).lean().exec().catch(() => null)
 
     if (!pformDoc) {
         return {

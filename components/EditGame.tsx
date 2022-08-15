@@ -1,9 +1,9 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { DevDoc } from "../models/developers";
-import { GameDoc } from "../models/game";
-import { PlatformDoc } from "../models/platform";
-import { PubDoc } from "../models/publisher";
+import { IDev } from "../models/developers";
+import { IGame } from "../models/game";
+import { IPlatform } from "../models/platform";
+import { IPub } from "../models/publisher";
 import Tags from "./Tags";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
@@ -11,12 +11,13 @@ import { formatDateForInputElement } from "../utils/formatDate";
 import { Actions } from "../utils/adminReducerTypes";
 import { marked } from "marked";
 import { UpsertResult } from "../utils/customTypes";
+import { ObjectId } from "mongoose";
 
 interface Props {
-    game: GameDoc | null,
-    pubs: PubDoc[],
-    devs: DevDoc[],
-    platforms: PlatformDoc[],
+    game: IGame | null,
+    pubs: IPub[],
+    devs: IDev[],
+    platforms: IPlatform[],
     isDelete: boolean,
     dispatch: React.Dispatch<Actions>
 }

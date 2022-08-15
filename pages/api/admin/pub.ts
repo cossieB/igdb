@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
-import { IPub, PubDoc, Publishers } from "../../../models/publisher";
+import { IPub, Publishers } from "../../../models/publisher";
 
 type DATA = {
     items: IPub[]

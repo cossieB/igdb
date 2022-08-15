@@ -1,6 +1,8 @@
-import mongoose, { Document, ObjectId, Schema } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export interface IPub {
+    id?: string,
+    _id: mongoose.Types.ObjectId,
     name: string,
     logo: string,
     summary: string
@@ -8,7 +10,8 @@ export interface IPub {
     country: string,
     games: mongoose.Types.ObjectId[],
 }
-export interface PubDoc extends IPub, Document {}
+// export interface PubDoc extends IPub, Document {}
+
 export type PubWithId = IPub & {id: string}
 
 export const pubSchema = new Schema<IPub>({

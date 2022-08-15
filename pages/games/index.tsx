@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { GetStaticPropsResult } from 'next';
 import Head from 'next/head';
 import GameTile from '../../components/GameTile';
-import { GameWithId, Games, GameDoc } from '../../models/game';
+import { GameWithId, Games, IGame } from '../../models/game';
 import styles from '../../styles/Games.module.scss'
 import { extract } from '../../utils/extractDocFields';
 
@@ -25,7 +25,7 @@ export default function GamesIndex({ games }: Props) {
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
-    const queryRes = await Games.find().exec() as GameDoc[];
+    const queryRes = await Games.find().exec() as IGame[];
 
     const games: GameWithId[] = []
     for (let item of queryRes) {

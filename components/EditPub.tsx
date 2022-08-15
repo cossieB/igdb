@@ -5,10 +5,10 @@ import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
-import { PubDoc } from "../models/publisher";
+import { IPub } from "../models/publisher";
 
 interface Props {
-    pub: PubDoc | null,
+    pub: IPub | null,
     isDelete: boolean
     dispatch: React.Dispatch<Actions>
 }

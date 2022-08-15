@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Developers } from "../../../models/developers";
 import { Games, IGame } from "../../../models/game";
-import { IPlatform, PlatformDoc, Platforms } from "../../../models/platform";
+import { IPlatform, Platforms } from "../../../models/platform";
 import { Publishers } from "../../../models/publisher";
 
 type DATA = {
@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             if (!developer || !publisher) throw new Error("Developer or publisher not found")
 
-            let platforms: PlatformDoc[] = []
+            let platforms: IPlatform[] = []
             for (let port of ports) {
                 let doc = await Platforms.findById(port)
                 doc && platforms.push(doc)

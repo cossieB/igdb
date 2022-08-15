@@ -1,0 +1,20 @@
+@import 'mixins';
+
+.div {
+    font-family: 'Press Start 2P', cursive;
+    @include flexCenter;
+    text-align: center;
+    height: 100vh;
+
+    >div {
+        height: 50%;
+    }
+    >div:first-child {
+        display: flex;
+        font-size: 10rem;
+        align-items: flex-end;
+    }
+    >div:nth-child(2) {
+        @include flexCenter
+    }
+}

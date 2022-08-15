@@ -1,6 +1,8 @@
-import mongoose, { ObjectId, Schema, Document } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export interface IDev {
+    id?: string,
+    _id: mongoose.Types.ObjectId,
     name: string,
     logo: string,
     location: string,
@@ -8,7 +10,7 @@ export interface IDev {
     country: string,
     games: mongoose.Types.ObjectId[],
 }
-export interface DevDoc extends IDev, Document {}
+// export interface DevDoc extends IDev, Document {}
 
 export const devSchema = new Schema<IDev>({
     name: {type: String, required: true},

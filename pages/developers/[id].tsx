@@ -3,13 +3,14 @@ import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } fro
 import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
-import { DevDoc, Developers, DevWithId } from '../../models/developers'
-import { GameDoc, GameWithId } from '../../models/game'
+import { Developers, DevWithId, IDev } from '../../models/developers'
+import { GameWithId, IGame } from '../../models/game'
+import { PubWithId } from '../../models/publisher'
 import styles from '../../styles/Devs.module.scss'
 import { extract } from '../../utils/extractDocFields'
 
 interface Props {
-    dev: DevWithId,
+    dev: Omit<DevWithId, 'games'>,
     games: GameWithId[]
 }
 
@@ -37,14 +38,14 @@ export default function DeveloperId({ dev, games }: Props) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const devDoc = await Developers.findById(id).populate<{ games: GameDoc[] }>('games').lean().exec() as any as DevDoc
-
+    let devDoc = await Developers.findById(id).populate<{ games: IGame[] }>('games').select(['name', 'location', 'logo', 'country', 'summary']).lean().exec().catch(() => null)
+    
     if (!devDoc) {
         return {
             notFound: true
         }
     }
-    const dev = extract(devDoc, ['name', 'location', 'logo', 'country', 'summary']) as DevWithId;
+    const dev = extract(devDoc, ['name', 'location', 'logo', 'country', 'summary']) as any as DevWithId
 
     const games = devDoc.games.map((item: any) => {
         let obj = extract(item, ['title', 'summary', 'cover', 'banner', 'genres']) as GameWithId

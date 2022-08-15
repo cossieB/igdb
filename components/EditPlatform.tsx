@@ -3,13 +3,12 @@ import { useState } from "react";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
-import { countryList } from "../utils/countryList";
 import { marked } from "marked";
-import { PlatformDoc } from "../models/platform";
+import { IPlatform } from "../models/platform";
 import { formatDateForInputElement } from "../utils/formatDate";
 
 interface Props {
-    platform: PlatformDoc | null,
+    platform: IPlatform | null,
     isDelete: boolean
     dispatch: React.Dispatch<Actions>
 }

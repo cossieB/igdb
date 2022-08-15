@@ -3,8 +3,8 @@ import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } fro
 import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
-import { GameWithId, GameDoc } from '../../models/game'
-import { PubDoc, Publishers, PubWithId } from '../../models/publisher'
+import { GameWithId, IGame } from '../../models/game'
+import { Publishers, PubWithId } from '../../models/publisher'
 import styles from '../../styles/Pubs.module.scss'
 import {  extract } from '../../utils/extractDocFields'
 
@@ -37,14 +37,14 @@ export default function PublisherId({ pub, games }: Props) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const pubDoc = await Publishers.findById(id).populate<{ games: GameDoc[] }>('games').lean().exec() as any as PubDoc
+    const pubDoc = await Publishers.findById(id).populate<{ games: IGame[] }>('games').lean().exec() 
 
     if (!pubDoc) {
         return {
             notFound: true
         }
     }
-    const pub = extract(pubDoc, ['name', 'headquarters', 'logo', 'country', 'summary']) as PubWithId;
+    const pub = extract(pubDoc, ['name', 'headquarters', 'logo', 'country', 'summary']) as any as PubWithId;
 
     const games = pubDoc.games.map((item: any) => {
         let obj = extract(item, ['title', 'summary', 'cover', 'banner', 'genres']) as GameWithId

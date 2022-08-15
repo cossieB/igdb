@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
-import { DevDoc, Developers, IDev } from "../../../models/developers";
-import { IPlatform, PlatformDoc, Platforms } from "../../../models/platform";
-import { PubDoc, Publishers } from "../../../models/publisher";
+import { Developers, IDev } from "../../../models/developers";
 
 type DATA = {
     items: IDev[]

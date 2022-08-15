@@ -5,7 +5,7 @@ import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
 import { DevWithId } from '../../models/developers'
-import { GameWithId, Games, GameDoc } from '../../models/game'
+import { GameWithId, Games } from '../../models/game'
 import { PlatformWithId } from '../../models/platform'
 import { PubWithId } from '../../models/publisher'
 import styles from '../../styles/Games.module.scss'
@@ -56,7 +56,7 @@ export default function GameId({game}: Props) {
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const gameDoc = await Games.findById(id).lean().exec() as GameDoc
+    const gameDoc = await Games.findById(id).lean().exec().catch(() => null)
 
     if (!gameDoc) {
         return {

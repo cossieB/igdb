@@ -1,7 +1,7 @@
-import { DevDoc, DevWithId } from "../models/developers"
-import { GameDoc, GameWithId } from "../models/game"
-import { PlatformDoc, PlatformWithId } from "../models/platform"
-import { PubDoc, PubWithId } from "../models/publisher"
+import { IDev } from "../models/developers"
+import { IGame } from "../models/game"
+import { IPlatform } from "../models/platform"
+import { IPub } from "../models/publisher"
 
 export function extract<T>(doc: T, keys: (keyof T)[]) {
     let obj: any = {};
@@ -11,18 +11,19 @@ export function extract<T>(doc: T, keys: (keyof T)[]) {
     return obj as Pick<T, typeof keys[number]>
 }
 
-export function extractGameFields(gameDoc: GameDoc) {
-    const game: GameWithId = {
+export function extractGameFields(gameDoc: IGame) {
+    const game: IGame = {
+        _id: gameDoc._id,
         id: gameDoc.id,
         title: gameDoc.title,
         cover: gameDoc.cover,
-        developer: extractDevFields(gameDoc.developer as DevDoc) as DevDoc,
-        publisher: extractPubFields(gameDoc.publisher as PubDoc) as PubDoc,
+        developer: extractDevFields(gameDoc.developer),
+        publisher: extractPubFields(gameDoc.publisher),
         releaseDate: gameDoc.releaseDate instanceof Date ? gameDoc.releaseDate.toISOString() : gameDoc.releaseDate,
         genres: gameDoc.genres,
         cast: gameDoc.cast,
         summary: gameDoc.summary,
-        platforms: extractPlatformFields(gameDoc.platforms as PlatformDoc[]) as PlatformDoc[],
+        platforms: extractPlatformFields(gameDoc.platforms),
         images: gameDoc.images,
         banner: gameDoc.banner || ""
     }
@@ -32,8 +33,9 @@ interface ExtractOptions {
     populateGames?: boolean
 }
 
-export function extractPubFields(pubDoc: PubDoc, options?: ExtractOptions): PubWithId {
+export function extractPubFields(pubDoc: IPub, options?: ExtractOptions): IPub {
     return {
+        _id: pubDoc._id,
         id: pubDoc.id,
         name: pubDoc.name,
         country: pubDoc.country,
@@ -45,8 +47,9 @@ export function extractPubFields(pubDoc: PubDoc, options?: ExtractOptions): PubW
 }
 
 
-export function extractDevFields(devDoc: DevDoc, options?: ExtractOptions): DevWithId {
+export function extractDevFields(devDoc: IDev, options?: ExtractOptions): IDev {
     return {
+        _id: devDoc._id,
         id: devDoc.id,
         name: devDoc.name,
         country: devDoc.country,
@@ -56,8 +59,9 @@ export function extractDevFields(devDoc: DevDoc, options?: ExtractOptions): DevW
         games: options?.populateGames ? devDoc.games : [],
     }
 }
-export function extractPlatformFields(platforms: PlatformDoc[]): PlatformWithId[] {
+export function extractPlatformFields(platforms: IPlatform[]): IPlatform[] {
     return platforms.map(platDoc =>  ({
+        _id: platDoc._id,
         id: platDoc.id,
         name: platDoc.name,
         release: platDoc.release instanceof Date ? platDoc.release.toISOString() : platDoc.release,

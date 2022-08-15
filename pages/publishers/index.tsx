@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { GetStaticPropsResult } from "next";
 import Link from "next/link";
 import { PubWithId, Publishers } from "../../models/publisher";
-import { extractPubFields } from "../../utils/extractDocFields";
+import { extract, extractPubFields } from "../../utils/extractDocFields";
 import styles from '../../styles/Pubs.module.scss'
 import DevTile from "../../components/DevTile";
 import Head from "next/head";
@@ -30,8 +30,9 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
 
     const pubs: PubWithId[] = []
     for (let item of queryRes) {
-        const pub = extractPubFields(item)
-        pubs.push(pub);
+        const pub = extract(item, ['name', 'logo', 'id'])
+        
+        pubs.push((pub as PubWithId));
     }
     return {
         props: {

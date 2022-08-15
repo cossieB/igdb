@@ -1,16 +1,16 @@
 import { Dispatch } from "react"
-import { GameDoc } from "../models/game"
+import { IGame } from "../models/game"
 import { Actions, Models, TypesWithPayload } from "../utils/adminReducerTypes";
 import styles from '../styles/dashboard.module.scss'
-import { PubDoc } from "../models/publisher";
-import { DevDoc } from "../models/developers";
-import { PlatformDoc } from "../models/platform";
+import { IPub } from "../models/publisher";
+import { IDev } from "../models/developers";
+import { IPlatform } from "../models/platform";
 
 interface P {
     displayField: string,
     dispatch: Dispatch<Actions>,
     h2: "Games" | "Developers" | "Publishers" | "Platforms",
-    items: GameDoc[] | PubDoc[] | DevDoc[] | PlatformDoc[]
+    items: IGame[] | IPub[] | IDev[] | IPlatform[]
 }
 
 export default function Panel(props: P) {

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import DevTile from '../../components/DevTile';
 import { DevWithId, Developers } from '../../models/developers';
 import styles from '../../styles/Devs.module.scss'
-import { extractDevFields } from '../../utils/extractDocFields';
+import { extract, extractDevFields } from '../../utils/extractDocFields';
 
 
 interface Props {
@@ -27,12 +27,13 @@ export default function DeveloperIndex({ devs }: Props) {
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
     await mongoose.connect(process.env.MONGO_URI!)
-    const queryRes = await Developers.find().exec();
+    const queryRes = await Developers.find().lean().exec();
 
     const devs: DevWithId[] = []
     for (let item of queryRes) {
-        const dev = extractDevFields(item)
-        devs.push(dev);
+        const dev = extract(item, ['name', 'logo', 'id'])
+        dev.id = item._id.toString()!
+        devs.push((dev as DevWithId));
     }
     return {
         props: {

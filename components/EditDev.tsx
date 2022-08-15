@@ -1,14 +1,15 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { DevDoc } from "../models/developers";
+import { IDev } from "../models/developers";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
+import { ObjectId } from "mongoose";
 
 interface Props {
-    dev: DevDoc | null,
+    dev: IDev | null,
     isDelete?: boolean,
     dispatch: React.Dispatch<Actions>
 }

@@ -1,12 +1,14 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export interface IPlatform {
+    id?: string,
+    _id: mongoose.Types.ObjectId,
     name: string,
     logo: string,
     release: Date | string,
     summary: string,
 }
-export interface PlatformDoc extends IPlatform, Document {}
+// export interface PlatformDoc extends IPlatform, Document {}
 
 export const platformSchema = new Schema<IPlatform>({
     name: {type: String, required: true},

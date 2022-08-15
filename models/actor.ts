@@ -1,11 +1,13 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export interface IActor {
+    id?: string,
+    _id: mongoose.Types.ObjectId,
     name: string,
     photo?: string,
     summary?: string
 }
-export interface ActorDoc extends IActor, Document {}
+// export interface ActorDoc extends IActor, Document {}
 
 export const actorSchema = new Schema<IActor>({
     name: {type: String, required: true},

@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer } from "react"
-import { GameDoc } from "../models/game"
+import { IGame } from "../models/game"
 import adminReducer from "../utils/adminReducer"
 import { Actions, States } from "../utils/adminReducerTypes";
 import styles from '../styles/dashboard.module.scss'
-import { PubDoc } from "../models/publisher";
-import { DevDoc } from "../models/developers";
+import { IPub } from "../models/publisher";
+import { IDev } from "../models/developers";
 import Panel from "../components/DashboardPanel";
-import { PlatformDoc } from "../models/platform";
+import { IPlatform } from "../models/platform";
 import useFetch from "../utils/useFetch";
 import { backSvg } from "../utils/svgs";
 import EditGame from "../components/EditGame";
@@ -25,10 +25,10 @@ const init: States = {
 
 export default function Dashboard() {
     const [state, dispatch] = useReducer(adminReducer, init);
-    const games = useFetch<GameDoc>(`/api/admin/game`, state.rand);
-    const devs = useFetch<DevDoc>(`/api/admin/dev`, state.rand);
-    const pubs = useFetch<PubDoc>(`/api/admin/pub`, state.rand);
-    const platforms = useFetch<PlatformDoc>(`/api/admin/platform`, state.rand);
+    const games = useFetch<IGame>(`/api/admin/game`, state.rand);
+    const devs = useFetch<IDev>(`/api/admin/dev`, state.rand);
+    const pubs = useFetch<IPub>(`/api/admin/pub`, state.rand);
+    const platforms = useFetch<IPlatform>(`/api/admin/platform`, state.rand);
 
     return (
         <div className={styles.container} >

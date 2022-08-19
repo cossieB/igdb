@@ -17,7 +17,8 @@ export interface IGame {
     cast: IActor[],
     platforms: IPlatform[],
     images: string[],
-    banner?: string
+    banner?: string,
+    trailer?: string
 }
 
 const gameSchema = new Schema<IGame>({
@@ -31,7 +32,8 @@ const gameSchema = new Schema<IGame>({
     cast: [{type: actorSchema}],
     platforms: [{type: platformSchema}],
     images: [String],
-    banner: String
+    banner: String,
+    trailer: String
 })
 export type GameWithId = IGame & {id: string}
 

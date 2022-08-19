@@ -18,6 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     await mongoose.connect(process.env.MONGO_URI!)
     if (req.method == "GET") {
         const items = await Games.find().lean().exec();
+        console.log(items)
         return res.json({ items })
 
     }
@@ -25,28 +26,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         try {
             if (!process.env.IS_ADMIN) throw new Error('Unauthorized')
-            const { title, summary, cover, banner, date, developer: dev, publisher: pub, genres, ports } = req.body;
+            const { title, summary, cover, banner, developerId, publisherId, genres, platformIds, releaseDate, trailer } = req.body;
             const msg = req.body.id ? "Update successful" : "Creation successful";
 
-            const [developer, publisher] = await Promise.all([Developers.findById(dev), Publishers.findById(pub)])
+            const [developer, publisher] = await Promise.all([Developers.findById(developerId), Publishers.findById(publisherId)])
 
-            if (!developer || !publisher) throw new Error("Developer or publisher not found")
+            if (!developer && !publisher) throw new Error("Unknown developer and publisher")
+            if (!developer) throw new Error("Unknown developer")
+            if (!publisher) throw new Error("Unknown publisher")
 
             let platforms: IPlatform[] = []
-            for (let port of ports) {
-                let doc = await Platforms.findById(port)
+            for (let id of platformIds) {
+                let doc = await Platforms.findById(id)
                 doc && platforms.push(doc)
             }
             const document = {
-                title,
-                summary,
-                cover,
-                banner,
-                releaseDate: new Date(date).setHours(new Date(date).getHours() + 12),
-                developer,
-                publisher,
-                genres,
-                platforms
+                ...req.body,
+                releaseDate: new Date(req.body.releaseDate).setHours(new Date(req.body.releaseDate).getHours() + 12),
             }
             let game: (mongoose.Document<unknown, any, IGame> & IGame & { _id: mongoose.Types.ObjectId; }) | null
 
@@ -76,11 +72,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 game.summary = summary;
                 game.cover = cover;
                 game.banner = banner;
-                game.releaseDate = date;
+                game.releaseDate = releaseDate;
                 game.developer = developer;
                 game.publisher = publisher;
                 game.genres = genres;
                 game.platforms = platforms;
+                game.trailer = trailer
             }
 
             await Promise.all([publisher.save(), developer.save(), game.save()])

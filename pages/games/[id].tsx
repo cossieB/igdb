@@ -41,6 +41,7 @@ export default function GameId({game}: Props) {
                 </div>
                 <Description className={styles.description} html={game.summary} />
             </div>
+            { game.trailer && <div dangerouslySetInnerHTML={{__html: game.trailer}} /> }
             <div className={styles.companies} >
                 <DevTile className={styles.logoTile} href="developers" item={game.developer as DevWithId} />
                 <DevTile className={styles.logoTile} href="publishers" item={game.publisher as PubWithId} />
@@ -69,6 +70,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     game.developer.id = gameDoc.developer._id.toString();
     game.publisher = extract(gameDoc.publisher, ['name', 'logo'])
     game.publisher.id = gameDoc.publisher._id.toString();
+    gameDoc.trailer && ( game.trailer = gameDoc.trailer )
     game.platforms = gameDoc.platforms.map(item => {
         let obj = extract(item, ['name', 'logo'])
         obj.id = item._id.toString();

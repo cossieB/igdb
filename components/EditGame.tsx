@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { Dispatch, useReducer, useState } from "react";
 import { IDev } from "../models/developers";
 import { IGame } from "../models/game";
 import { IPlatform } from "../models/platform";
@@ -10,8 +10,9 @@ import Popup from "./Popup";
 import { formatDateForInputElement } from "../utils/formatDate";
 import { Actions } from "../utils/adminReducerTypes";
 import { marked } from "marked";
-import { UpsertResult } from "../utils/customTypes";
-import { ObjectId } from "mongoose";
+import gameReducer, { GameReducerAction } from "../utils/gameReducer";
+import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameState";
+import titleCase from "../utils/titleCase";
 
 interface Props {
     game: IGame | null,
@@ -21,40 +22,49 @@ interface Props {
     isDelete: boolean,
     dispatch: React.Dispatch<Actions>
 }
+function changeType(game: IGame | null): GameUpdateState | null {
+    if (!game) return null;
+    return {
+        ...game,
+        id: game._id!.toString(),
+        releaseDate: game.releaseDate,
+        platformIds: game.platforms.map(item => item._id.toString()),
+        developerId: game.developer._id.toString(),
+        publisherId: game.publisher._id.toString(),
+    }
+}
+
 export default function EditGame(props: Props) {
-    const { game, pubs, devs, platforms, isDelete, dispatch } = props; 
-    const [title, setTitle] = useState(game?.title || "")
-    const [summary, setSummary] = useState(game?.summary || "")
-    const [cover, setCover] = useState(game?.cover || "")
-    const [banner, setBanner] = useState(game?.banner || "")
-    const [date, setDate] = useState(game?.releaseDate)
-    const [developer, setDeveloper] = useState(game?.developer?._id?.toString() || "")
-    const [publisher, setPublisher] = useState(game?.publisher?._id?.toString() || "" )
-    const [genres, setGenres] = useState(game?.genres || []);
+    const { game, pubs, devs, platforms, isDelete, dispatch } = props;
     const [genreInput, setGenreInput] = useState("")
-    const [ports, setPorts] = useState<string[]>(game?.platforms?.map(item => item._id.toString()) || [] )
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
+    const [gameState, gameDispatch] = useReducer(gameReducer, changeType(game) || initialGameUpdateState); console.log(gameState)
+
     function handleKeydown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key == "Enter") {
-            if (genreInput.length == 0) return
-            setGenres([...genres, genreInput.toLowerCase()]);
+            if (genreInput.length == 0 || gameState.genres.includes(genreInput)) return;
+            gameDispatch({ type: 'ADD_TO_ARRAY', payload: { name: 'genres', value: genreInput.toLowerCase() } })
             setGenreInput("")
         }
     }
     async function send() {
-
         const response = await fetch('/api/admin/game', {
             method: "POST",
             headers: {
                 "Content-Type": 'application/json'
             },
-            body: JSON.stringify({ title: title.trim(), summary: marked(summary), cover, banner, date, developer, publisher, genres, ports, id: game?._id?.toString() })
+            body: JSON.stringify({
+                ...gameState,
+                title: gameState.title.trim(),
+                summary: marked(gameState.summary),
+                id: game?._id?.toString(),
+            })
         })
         const data = await response.json();
         if (data.msg) {
-            return dispatch({type: "SUCCESS", payload: data.msg})
+            return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
             setErrors([data.error])
@@ -69,11 +79,11 @@ export default function EditGame(props: Props) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({id: game?._id.toString()})
+            body: JSON.stringify({ id: game?._id.toString() })
         })
-        const data = await response.json() ;
+        const data = await response.json();
         if (data.msg) {
-            return dispatch({type: "SUCCESS", payload: data.msg})
+            return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
             setErrors([data.error])
@@ -85,20 +95,22 @@ export default function EditGame(props: Props) {
 
     function handleSubmit() {
         let map = [
-            [title, "Title"],
-            [cover, "Cover"],
-            [date, "Release Date"],
-            [developer, "Developer"],
-            [publisher, "Publisher"],
-            [summary, "Summary"]
+            [gameState.title, "Title"],
+            [gameState.cover, "Cover"],
+            [gameState.releaseDate, "Release Date"],
+            [gameState.developerId, "Developer"],
+            [gameState.publisherId, "Publisher"],
+            [gameState.summary, "Summary"]
         ] as const
-        let arr: string[] = []
-        for (let tuple of map) {
-            if (!tuple[0]) arr.push(tuple[1] + " field is missing")
-        }
-        if (arr.length == 0) return send()
 
-        setErrors(arr);
+        let errors: string[] = []
+        for (let tuple of map) {
+            if (!tuple[0]) errors.push(`${tuple[1]} field is missing`)
+        }
+
+        if (errors.length == 0) return send()
+
+        setErrors(errors);
         setTimeout(() => {
             setErrors([])
         }, 3500)
@@ -115,94 +127,118 @@ export default function EditGame(props: Props) {
                             </p>)}
                     </Popup>}
             </AnimatePresence>
-            <h2 style={{textAlign: 'center'}} >{ isDelete ? "Delete Game" : game ? "Edit Game" : "Add Game"}</h2>
+            <h2 style={{ textAlign: 'center' }} >{isDelete ? "Delete Game" : game ? "Edit Game" : "Add Game"}</h2>
             <div className={styles.change} >
-                <div className={styles.img}><img src={cover} alt="" /></div>
+                <div className={styles.img}><img src={gameState.cover} alt="" /></div>
                 <form >
-                    <div>
-                        <label> Title* </label>
-                        <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Game Title" disabled={isDelete}/>
-                    </div>
-                    <div>
-                        <label> Cover* </label>
-                        <input type="text" value={cover} onChange={e => setCover(e.target.value)} placeholder="Cover" disabled={isDelete}/>
-                    </div>
-                    <div>
-                        <label> Banner </label>
-                        <input type="text" value={banner} onChange={e => setBanner(e.target.value)} placeholder="Banner" disabled={isDelete}/>
-                    </div>
+                    <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='title' value={gameState.title} />
+                    <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='cover' value={gameState.cover} />
+                    <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='banner' value={gameState.banner || ""} />
                     <div>
                         <label> Release Date* </label>
-                        <input type="date" value={date ? formatDateForInputElement(new Date(date)) : ""} onChange={e => setDate(e.target.value)} placeholder="Release Date" disabled={isDelete}/>
+                        <input
+                            name="releaseDate"
+                            type="date"
+                            value={gameState.releaseDate ? formatDateForInputElement(new Date(gameState.releaseDate)) : ""}
+                            onChange={e => gameDispatch({ type: 'UPDATE_STRING', payload: { name: 'releaseDate', value: e.target.value } })}
+                            placeholder="Release Date" disabled={isDelete} />
                     </div>
-                    <div>
-                        <label> Developer* </label>
-                        <select
-                            value={developer}
-                            defaultValue=""
-                            onChange={(e) => setDeveloper(e.target.value)} 
-                            disabled={isDelete}
-                            >
-                            <option value="" disabled >Select Developer</option>
-                            {devs.map(dev =>
-                                <option key={dev._id.toString()} value={dev._id.toString()}> {dev.name} </option>
-                            )}
-                        </select>
-                    </div>
-                    <div>
-                        <label> Publisher* </label>
-                        <select
-                            value={publisher}
-                            defaultValue=""
-                            onChange={(e) => setPublisher(e.target.value)} 
-                            disabled={isDelete}
-                            >
-                            <option value="" disabled  >Select Publisher</option>
-                            {pubs.map(pub =>
-                                <option key={pub._id.toString()} value={pub._id.toString()}> {pub.name} </option>
-                            )}
-                        </select>
-                    </div>
+                    <SelectElement dispatch={gameDispatch} isDelete={isDelete} list={devs} name='developerId' value={gameState.developerId} title='Developer' />
+                    <SelectElement dispatch={gameDispatch} isDelete={isDelete} list={pubs} name='publisherId' value={gameState.publisherId} title='Publisher' />
                     <div>
                         <label> Summary* </label>
-                        <textarea defaultValue={summary} onChange={e => setSummary(e.target.value)} disabled={isDelete}/>
+                        <textarea
+                            defaultValue={gameState.summary}
+                            onChange={e => gameDispatch({ type: 'UPDATE_STRING', payload: { name: 'summary', value: e.target.value } })}
+                            disabled={isDelete} />
                     </div>
+                    <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='trailer' value={gameState.trailer || ""} />
                     <div>
                         <label > Genres </label>
-                        <input value={genreInput} onChange={e => setGenreInput(e.target.value)} onKeyDownCapture={handleKeydown} disabled={isDelete}/>
+                        <input
+                            value={genreInput}
+                            onChange={e => setGenreInput(e.target.value)}
+                            onKeyDownCapture={handleKeydown}
+                            disabled={isDelete} />
                     </div>
-                    <Tags tags={genres} changeTags={setGenres} />
+                    <Tags tags={gameState.genres} changeTags={gameDispatch} />
                     <div className={styles.checkboxes}>
                         {platforms.map(item => (
                             <div key={item._id.toString()} >
                                 <label > {item.name} </label>
                                 <input
                                     type="checkbox"
-                                    checked={ports.includes(item._id.toString())}
+                                    checked={gameState.platformIds.includes(item._id.toString())}
                                     disabled={isDelete}
                                     onChange={() => {
-                                        if (ports.includes(item._id.toString())) {
-                                            setPorts(ports.filter(p => p != item._id.toString()))
+                                        if (gameState.platformIds.includes(item._id.toString())) {
+                                            gameDispatch({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'platformIds', value: item._id.toString() } })
                                         } else {
-                                            setPorts([...ports, item._id.toString()])
+                                            gameDispatch({ type: 'ADD_TO_ARRAY', payload: { name: 'platformIds', value: item._id.toString() } })
                                         }
                                     }} />
                             </div>
                         ))}
                     </div>
-                    { isDelete && 
+                    {isDelete &&
                         <>
-                        <label htmlFor=""> Deleting is irreversible. Type <strong>{title}</strong> to confirm </label>
-                        <input className={styles.challenge} value={challengeAnswer} onChange={e => setChallengeAnswer(e.target.value) } /> 
+                            <label htmlFor=""> Deleting is irreversible. Type <strong>{gameState.title}</strong> to confirm </label>
+                            <input className={styles.challenge} value={challengeAnswer} onChange={e => setChallengeAnswer(e.target.value)} />
                         </>
                     }
                     {isDelete ?
-                    <button className="danger" type="button" onClick={handleDelete} disabled={challengeAnswer != title} > Delete </button> :
-                    <button type="button" className="add" onClick={handleSubmit} >Submit</button>  
+                        <button className="danger" type="button" onClick={handleDelete} disabled={challengeAnswer != gameState.title} > Delete </button> :
+                        <button type="button" className="add" onClick={handleSubmit} >Submit</button>
                     }
                 </form>
-                <div className={styles.img}><img src={banner} alt="" /></div>
+                <div className={styles.img}><img src={gameState.banner} alt="" /></div>
             </div>
         </>
+    )
+}
+
+interface P {
+    name: keyof GameUpdateState,
+    value: string,
+    title?: string,
+    isDelete: boolean,
+    dispatch: Dispatch<GameReducerAction>
+}
+
+function FormInputString(props: P) {
+    const { name, isDelete, dispatch, value } = props;
+    const title = props.title || titleCase(name)
+
+    return (
+        <div>
+            <label> {title} </label>
+            <input type="text"
+                value={value}
+                name={name}
+                onChange={e => dispatch({ type: 'UPDATE_STRING', payload: { name, value: e.target.value } })}
+                placeholder={title}
+                disabled={isDelete} />
+        </div>
+    )
+}
+
+function SelectElement(props: P & { list: IPub[] | IDev[] }) {
+    const { name, isDelete, dispatch, value, list } = props;
+    const title = props.title || titleCase(name)
+    return (
+        <div>
+            <label> {title}* </label>
+            <select
+                value={value}
+                name={name}
+                onChange={(e) => dispatch({ type: 'UPDATE_STRING', payload: { name, value: e.target.value } })}
+                disabled={isDelete}
+            >
+                <option value="" disabled >Select {title}</option>
+                {list.map(item =>
+                    <option key={item._id.toString()} value={item._id.toString()}> {item.name} </option>
+                )}
+            </select>
+        </div>
     )
 }

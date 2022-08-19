@@ -1,8 +1,8 @@
 import { ActorWithId } from "../models/actor";
-import { DevDoc, DevWithId } from "../models/developers";
-import { GameDoc, GameWithId } from "../models/game";
-import { PlatformDoc, PlatformWithId } from "../models/platform";
-import { PubDoc, PubWithId } from "../models/publisher";
+import { IDev, DevWithId } from "../models/developers";
+import { IGame, GameWithId } from "../models/game";
+import { IPlatform, PlatformWithId } from "../models/platform";
+import { IPub, PubWithId } from "../models/publisher";
 
  
 const types = {
@@ -59,28 +59,28 @@ export type Actions = {
     type: typeof types["ADD_PLATFORM"]
 } | {
     type: typeof types["EDIT_GAME"],
-    payload: GameDoc
+    payload: IGame
 } | {
     type: typeof types["EDIT_DEV"],
-    payload: DevDoc    
+    payload: IDev    
 } | {
     type: typeof types["EDIT_PUB"],
-    payload: PubDoc    
+    payload: IPub    
 } | {
     type: typeof types["EDIT_PLATFORM"],
-    payload: PlatformDoc
+    payload: IPlatform
 } | {
     type: typeof types["REMOVE_GAME"],
-    payload: GameDoc
+    payload: IGame
 } | {
     type: typeof types["REMOVE_DEV"],
-    payload: DevDoc    
+    payload: IDev    
 } | {
     type: typeof types["REMOVE_PUB"],
-    payload: PubDoc        
+    payload: IPub        
 } | {
     type: typeof types["REMOVE_PLATFORM"],
-    payload: PlatformDoc
+    payload: IPlatform
 } | {
     type: typeof types["HOME"],
 } | {
@@ -97,43 +97,43 @@ export type States = {
     msg: string
 } | {
     mode: typeof types["EDIT_GAME"],
-    item: GameDoc,
+    item: IGame,
     rand: number,
     msg: string
 } | {
     mode: typeof types["REMOVE_GAME"],
-    item: GameDoc,
+    item: IGame,
     rand: number,
     msg: string,
 
 } | {
     mode: typeof types["EDIT_DEV"],
-    item: DevDoc,
+    item: IDev,
     rand: number,
     msg: string   
 } | {
     mode: typeof types["REMOVE_DEV"],
-    item: DevDoc ,
+    item: IDev ,
     rand: number,
     msg: string   
 } | {
     mode: typeof types["EDIT_PUB"],
-    item: PubDoc,
+    item: IPub,
     rand: number,
     msg: string    
 } | {
     mode: typeof types["REMOVE_PUB"],
-    item: PubDoc,
+    item: IPub,
     rand: number,
     msg: string      
 } | {
     mode: typeof types["EDIT_PLATFORM"],
-    item: PlatformDoc ,
+    item: IPlatform ,
     rand: number,
     msg: string   
 } | {
     mode: typeof types["REMOVE_PLATFORM"],
-    item: PlatformDoc ,
+    item: IPlatform ,
     rand: number,
     msg: string   
 }

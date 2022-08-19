@@ -1,9 +1,10 @@
-import { SetStateAction } from "react"
+import { Dispatch } from "react"
+import { GameReducerAction } from "../utils/gameReducer"
 import { closeSvg } from "../utils/svgs"
 
 interface P {
     tags: string[],
-    changeTags?: React.Dispatch<SetStateAction<string[]>>
+    changeTags?: Dispatch<GameReducerAction>
 }
 
 export default function Tags({ tags, changeTags }: P) {
@@ -13,10 +14,10 @@ export default function Tags({ tags, changeTags }: P) {
             {tags.map((tag, idx) =>
                 <div key={tag + idx} >
                     <span>{tag} </span>
-                    {changeTags &&
-                        <span onClick={() => changeTags(tags.filter(item => tags.indexOf(item) != idx))} >
+                    {changeTags && 
+                        <span onClick={() => changeTags({type: 'REMOVE_FROM_ARRAY', payload: {name: 'genres', value: tag}}) } >
                             {closeSvg}
-                        </span>}
+                        </span>} 
                 </div>
             )}
         </div>

@@ -41,7 +41,7 @@ export default function GameId({game}: Props) {
                 </div>
                 <Description className={styles.description} html={game.summary} />
             </div>
-            { game.trailer && <div dangerouslySetInnerHTML={{__html: game.trailer}} /> }
+            { game.trailer && <div className={styles.video} dangerouslySetInnerHTML={{__html: game.trailer}} /> }
             <div className={styles.companies} >
                 <DevTile className={styles.logoTile} href="developers" item={game.developer as DevWithId} />
                 <DevTile className={styles.logoTile} href="publishers" item={game.publisher as PubWithId} />

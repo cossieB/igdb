@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Game {
+    gameId           String             @id @default(dbgenerated("gen_random_uuid () ")) @db.Uuid
+    title            String             @db.VarChar(255)
+    cover            String
+    summary          String
+    developerId      String             @db.Uuid
+    developer        Developer          @relation(fields: [developerId], references: [developerId])
+    publisherId      String             @db.Uuid
+    publisher        Publisher          @relation(fields: [publisherId], references: [publisherId])
+    releaseDate      DateTime
+    genres           String[]
+    GamesOnPlatforms GamesOnPlatforms[]
+    images           String[]
+    banner           String
+    trailer          String
+    ActorsInGames    ActorsInGames[]
+}
+
+model Developer {
+    developerId String @id @default(dbgenerated("gen_random_uuid () ")) @db.Uuid
+    name        String @db.VarChar(255)
+    logo        String
+    location    String
+    summary     String
+    country     String
+    Game        Game[]
+}
+
+model Publisher {
+    publisherId  String @id @default(dbgenerated("gen_random_uuid () ")) @db.Uuid
+    name         String @db.VarChar(255)
+    logo         String
+    headquarters String
+    summary      String
+    country      String
+    Game         Game[]
+}
+
+model Platform {
+    platformId       String             @id @default(dbgenerated("gen_random_uuid () ")) @db.Uuid
+    name             String             @db.VarChar(255)
+    logo             String
+    release          DateTime
+    summary          String
+    GamesOnPlatforms GamesOnPlatforms[]
+}
+
+model Actor {
+    actorId       String          @id @default(dbgenerated("gen_random_uuid () ")) @db.Uuid
+    name          String
+    photo         String?
+    summary       String?
+    ActorsInGames ActorsInGames[]
+}
+
+model GamesOnPlatforms {
+    gameId     String   @db.Uuid
+    game       Game     @relation(fields: [gameId], references: [gameId])
+    platformId String   @db.Uuid
+    platform   Platform @relation(fields: [platformId], references: [platformId])
+
+    @@id([gameId, platformId])
+}
+
+model ActorsInGames {
+    actorId String @db.Uuid
+    gameId  String @db.Uuid
+    actor   Actor  @relation(fields: [actorId], references: [actorId])
+    game    Game   @relation(fields: [gameId], references: [gameId])
+
+    @@id([actorId, gameId])
+}

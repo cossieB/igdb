@@ -1,6 +1,6 @@
 import { Dispatch } from "react"
 import { IGame } from "../models/game"
-import { Actions, Models, TypesWithPayload } from "../utils/adminReducerTypes";
+import { Actions, ActionWithPayload, Models, Tables, TypesWithPayload } from "../utils/adminReducerTypes";
 import styles from '../styles/dashboard.module.scss'
 import { IPub } from "../models/publisher";
 import { IDev } from "../models/developers";
@@ -9,7 +9,7 @@ import { IPlatform } from "../models/platform";
 interface P {
     displayField: string,
     dispatch: Dispatch<Actions>,
-    h2: "Games" | "Developers" | "Publishers" | "Platforms",
+    h2: `${Tables}s`,
     items: IGame[] | IPub[] | IDev[] | IPlatform[]
 }
 
@@ -17,8 +17,8 @@ export default function Panel(props: P) {
     const {dispatch, h2} = props;
     function handleAdd() {
         if (h2 == "Games") dispatch({type: "ADD_GAME"})
-        if (h2 == "Developers") dispatch({type: "ADD_DEV"})
-        if (h2 == "Publishers") dispatch({type: "ADD_PUB"}) 
+        if (h2 == "Developers") dispatch({type: "ADD_DEVELOPER"})
+        if (h2 == "Publishers") dispatch({type: "ADD_PUBLISHER"}) 
         if (h2 == "Platforms") dispatch({type: "ADD_PLATFORM"}) 
     }
     return (
@@ -35,34 +35,38 @@ export default function Panel(props: P) {
 function List(props: P) {
     const { displayField, dispatch, h2, items } = props;
 
-    function handleEdit(item: Models) {
-        let map: { [key: string]: TypesWithPayload } = {
-            "Games": "EDIT_GAME",
-            "Developers": "EDIT_DEV",
-            "Publishers": "EDIT_PUB",
-            "Platforms": "EDIT_PLATFORM"
+    function handleDispatch(item: Models, isEdit: boolean) {
+
+        type Test = {
+            [k in `${Tables}s`]: TypesWithPayload
         }
-        const action: Actions = {
+        let map: Test
+        
+        if (isEdit) {
+            map = {
+                "Games": "EDIT_GAME",
+                "Developers": "EDIT_DEVELOPER",
+                "Publishers": "EDIT_PUBLISHER",
+                "Platforms": "EDIT_PLATFORM",
+                "Actors": "EDIT_ACTOR"
+            };
+        }
+        else {
+            map = {
+                "Games": "REMOVE_GAME",
+                "Developers": "REMOVE_DEVELOPER",
+                "Publishers": "REMOVE_PUBLISHER",
+                "Platforms": "REMOVE_PLATFORM",
+                "Actors": "REMOVE_ACTOR"
+            }
+        }
+        const action: ActionWithPayload = {
             type: map[h2],
-            // @ts-expect-error
             payload: item
         };
-        dispatch(action)
+        dispatch((action as Actions));
     }
-    function handleDelete(item: Models) {
-        let map: { [key: string]: TypesWithPayload } = {
-            "Games": "REMOVE_GAME",
-            "Developers": "REMOVE_DEV",
-            "Publishers": "REMOVE_PUB",
-            "Platforms": "REMOVE_PLATFORM"
-        }
-        const action: Actions = {
-            type: map[h2],
-            // @ts-expect-error
-            payload: item
-        };
-        dispatch(action)
-    }
+
     return (
         <>
             {items.map(item =>
@@ -72,10 +76,10 @@ function List(props: P) {
                     {/* @ts-expect-error */}
                     <div>{item[displayField]}</div>
                     <div>
-                        <button className="info" onClick={() => handleEdit(item as Models)} >
+                        <button className="info" onClick={() => handleDispatch(item as Models, true)} >
                             Edit
                         </button>
-                        <button className="danger" onClick={() => handleDelete(item as Models)}  >
+                        <button className="danger" onClick={() => handleDispatch(item as Models, false)}  >
                             Delete
                         </button>
                     </div>

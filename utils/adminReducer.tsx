@@ -11,18 +11,18 @@ export default function adminReducer(state: States, action: Actions): States {
             return {...state, mode: "EDIT_GAME", item: action.payload}
         case "REMOVE_GAME":
             return {...state, mode: "REMOVE_GAME", item: action.payload}
-        case 'ADD_DEV':
-            return {...state, mode: "ADD_DEV", item: null}
-        case "EDIT_DEV":
-            return {...state, mode: "EDIT_DEV", item: action.payload}
-        case "REMOVE_DEV":
-            return {...state, mode: "REMOVE_DEV", item: action.payload}
-        case 'ADD_PUB':
-            return {...state, mode: "ADD_PUB", item: null}
-        case "EDIT_PUB":
-            return {...state, mode: "EDIT_PUB", item: action.payload}
-        case "REMOVE_PUB":
-            return {...state, mode: "REMOVE_PUB", item: action.payload}
+        case 'ADD_DEVELOPER':
+            return {...state, mode: "ADD_DEVELOPER", item: null}
+        case "EDIT_DEVELOPER":
+            return {...state, mode: "EDIT_DEVELOPER", item: action.payload}
+        case "REMOVE_DEVELOPER":
+            return {...state, mode: "REMOVE_DEVELOPER", item: action.payload}
+        case 'ADD_PUBLISHER':
+            return {...state, mode: "ADD_PUBLISHER", item: null}
+        case "EDIT_PUBLISHER":
+            return {...state, mode: "EDIT_PUBLISHER", item: action.payload}
+        case "REMOVE_PUBLISHER":
+            return {...state, mode: "REMOVE_PUBLISHER", item: action.payload}
         case 'ADD_PLATFORM':
             return {...state, mode: "ADD_PLATFORM", item: null}
         case "EDIT_PLATFORM":

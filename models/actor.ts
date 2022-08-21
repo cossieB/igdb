@@ -1,19 +1,6 @@
-import mongoose, { ObjectId, Schema } from "mongoose";
-
 export interface IActor {
     id?: string,
-    _id: mongoose.Types.ObjectId,
     name: string,
     photo?: string,
     summary?: string
 }
-// export interface ActorDoc extends IActor, Document {}
-
-export const actorSchema = new Schema<IActor>({
-    name: {type: String, required: true},
-    photo: String,
-    summary: String,
-})
-export type ActorWithId = IActor & {id: string}
-
-export const Actors: mongoose.Model<IActor, {}, {}, {}> = mongoose.models.Actor || mongoose.model('Actor', actorSchema)

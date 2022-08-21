@@ -6,7 +6,6 @@ import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
-import { ObjectId } from "mongoose";
 
 interface Props {
     dev: IDev | null,
@@ -30,11 +29,11 @@ export default function EditDev(props: Props) {
             headers: {
                 "Content-Type": 'application/json'
             },
-            body: JSON.stringify({ name: name.trim(),summary: marked(summary), logo, location, country, id: dev?._id?.toString() })
+            body: JSON.stringify({ name: name.trim(), summary: marked(summary), logo, location, country, id: dev?._id?.toString() })
         })
         const data = await response.json();
         if (data.msg) {
-            return dispatch({type: "SUCCESS", payload: data.msg})
+            return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
             setErrors([data.error]);
@@ -53,7 +52,7 @@ export default function EditDev(props: Props) {
         })
         const data = await response.json();
         if (data.msg) {
-            return dispatch({type: "SUCCESS", payload: data.msg})
+            return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
             setErrors([data.error]);
@@ -94,7 +93,7 @@ export default function EditDev(props: Props) {
                             </p>)}
                     </Popup>}
             </AnimatePresence>
-            <h2 style={{ textAlign: 'center' }} >{ isDelete? "Delete Developer" : dev ? "Edit Developer" : "Add Developer"}</h2>
+            <h2 style={{ textAlign: 'center' }} >{isDelete ? "Delete Developer" : dev ? "Edit Developer" : "Add Developer"}</h2>
             <div className={styles.change} >
                 <form >
                     <div>

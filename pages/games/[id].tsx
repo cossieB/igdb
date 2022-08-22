@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
-import { prisma } from '../../prisma/db'
+import { db } from '../../prisma/db'
 import styles from '../../styles/Games.module.scss'
 
 interface Props {
@@ -58,7 +58,7 @@ export default function GameId({game}: Props) {
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     const id = context.params!.id as string
-    const game = await prisma.game.findUnique({
+    const game = await db.game.findUnique({
         where: {
             gameId: id
         },
@@ -86,7 +86,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }
 }
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    const games = await prisma.game.findMany()
+    const games = await db.game.findMany()
 
     let paths = games.map(game => ({
         params: {id: game.gameId}

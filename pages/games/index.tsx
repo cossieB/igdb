@@ -2,7 +2,7 @@ import { Game } from '@prisma/client';
 import { GetStaticPropsResult } from 'next';
 import Head from 'next/head';
 import GameTile from '../../components/GameTile';
-import { prisma } from '../../prisma/db';
+import { db } from '../../prisma/db';
 import styles from '../../styles/Games.module.scss'
 
 interface Props {
@@ -23,7 +23,7 @@ export default function GamesIndex({ games }: Props) {
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const games = await prisma.game.findMany()
+    const games = await db.game.findMany()
 
     return {
         props: {

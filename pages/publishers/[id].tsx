@@ -3,7 +3,7 @@ import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } fro
 import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
-import { prisma } from '../../prisma/db'
+import { db } from '../../prisma/db'
 import styles from '../../styles/Pubs.module.scss'
 import {  extract } from '../../utils/extractDocFields'
 
@@ -36,7 +36,7 @@ export default function PublisherId({ pub }: Props) {
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     const id = context.params!.id as string
-    const pub = await prisma.publisher.findUnique({
+    const pub = await db.publisher.findUnique({
         where: {
             publisherId: id
         },
@@ -59,7 +59,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }
 }
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    let pubs = await prisma.publisher.findMany()
+    let pubs = await db.publisher.findMany()
 
     let paths = pubs.map(pub => ({
         params: { id: pub.publisherId }

@@ -2,7 +2,7 @@ import { Developer } from '@prisma/client';
 import { GetStaticPropsResult } from 'next';
 import Head from 'next/head';
 import DevTile from '../../components/DevTile';
-import { prisma } from '../../prisma/db';
+import { db } from '../../prisma/db';
 import styles from '../../styles/Devs.module.scss'
 
 interface Props {
@@ -23,7 +23,7 @@ export default function DeveloperIndex({ devs }: Props) {
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const devs = await prisma.developer.findMany();
+    const devs = await db.developer.findMany();
 
     return {
         props: {

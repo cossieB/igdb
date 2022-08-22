@@ -3,7 +3,7 @@ import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } fro
 import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
-import { prisma } from '../../prisma/db'
+import { db } from '../../prisma/db'
 import styles from '../../styles/Devs.module.scss'
 import { extract } from '../../utils/extractDocFields'
 
@@ -36,7 +36,7 @@ export default function DeveloperId({ dev }: Props) {
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     const id = context.params!.id as string
-    const dev = await prisma.developer.findUnique({
+    const dev = await db.developer.findUnique({
         where: {
             developerId: id
         },
@@ -55,7 +55,7 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     }
 }
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    let devs = await prisma.developer.findMany()
+    let devs = await db.developer.findMany()
 
     let paths = devs.map(dev => ({
         params: { id: dev.developerId }

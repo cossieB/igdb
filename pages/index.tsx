@@ -1,9 +1,9 @@
-import { Developer, Game, Platform, PrismaClient, Publisher } from '@prisma/client'
+import { Developer, Game, Platform, Publisher } from '@prisma/client'
 import { GetStaticPropsResult } from 'next'
 import Carousel from '../components/Carousel'
 import DevTile from '../components/DevTile'
 import GameTile from '../components/GameTile'
-import { prisma } from '../prisma/db'
+import { db } from '../prisma/db'
 import styles from '../styles/Home.module.scss'
 
 interface Props {
@@ -49,10 +49,10 @@ export default function Home({ games, devs, pubs, platforms }: Props) {
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const gamesQuery = prisma.game.findMany({take: 14});
-    const devsQuery = prisma.developer.findMany({take: 20});
-    const pubsQuery = prisma.publisher.findMany({take: 20});
-    const platformQuery = prisma.platform.findMany();
+    const gamesQuery = db.game.findMany({take: 14});
+    const devsQuery = db.developer.findMany({take: 20});
+    const pubsQuery = db.publisher.findMany({take: 20});
+    const platformQuery = db.platform.findMany();
 
     const [games, devs, pubs, platforms] = await Promise.all([gamesQuery, devsQuery, pubsQuery, platformQuery]) as [Game[], Developer[], Publisher[], Platform[]]
 

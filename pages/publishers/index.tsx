@@ -2,7 +2,7 @@ import { GetStaticPropsResult } from "next";
 import styles from '../../styles/Pubs.module.scss'
 import DevTile from "../../components/DevTile";
 import Head from "next/head";
-import { prisma } from "../../prisma/db";
+import { db } from "../../prisma/db";
 import { Publisher } from "@prisma/client";
 
 interface Props {
@@ -23,7 +23,7 @@ export default function PublisherIndex({ pubs }: Props) {
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const pubs = await prisma.publisher.findMany()
+    const pubs = await db.publisher.findMany()
     return {
         props: {
             pubs

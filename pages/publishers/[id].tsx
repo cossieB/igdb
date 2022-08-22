@@ -1,19 +1,19 @@
-import mongoose from 'mongoose'
+import { Game, Publisher } from '@prisma/client'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
 import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
-import { GameWithId, IGame } from '../../models/game'
-import { Publishers, PubWithId } from '../../models/publisher'
+import { prisma } from '../../prisma/db'
 import styles from '../../styles/Pubs.module.scss'
 import {  extract } from '../../utils/extractDocFields'
 
 interface Props {
-    pub: PubWithId,
-    games: GameWithId[]
+    pub: (Publisher & {
+        Game: Game[];
+    }),
 }
 
-export default function PublisherId({ pub, games }: Props) {
+export default function PublisherId({ pub }: Props) {
     return (
         <>
         <Head>
@@ -27,7 +27,7 @@ export default function PublisherId({ pub, games }: Props) {
                 <Description html={pub.summary} className={styles.description} />
             </div>
             <div className={styles.gamegrid}>
-                {games.map(game => <GameTile key={game.id} game={game} className="" />)}
+                {pub.Game.map(game => <GameTile key={game.gameId} game={game} className="" />)}
             </div>
         </div>
         </>
@@ -35,38 +35,34 @@ export default function PublisherId({ pub, games }: Props) {
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
-    await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const pubDoc = await Publishers.findById(id).populate<{ games: IGame[] }>('games').lean().exec() 
+    const pub = await prisma.publisher.findUnique({
+        where: {
+            publisherId: id
+        },
+        include: {
+            Game: true
+        }
+    })
 
-    if (!pubDoc) {
+    if (!pub) {
         return {
             notFound: true
         }
     }
-    const pub = extract(pubDoc, ['name', 'headquarters', 'logo', 'country', 'summary']) as any as PubWithId;
-
-    const games = pubDoc.games.map((item: any) => {
-        let obj = extract(item, ['title', 'summary', 'cover', 'banner', 'genres']) as GameWithId
-        obj.id = item._id.toString()
-        obj.releaseDate = item.releaseDate.toString()
-        return obj
-    })
 
     return {
         props: {
-            pub,
-            games
+            pub: JSON.parse(JSON.stringify(pub))
         },
         revalidate: 3600
     }
 }
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    await mongoose.connect(process.env.MONGO_URI!)
-    let pubs = await Publishers.find().exec()
+    let pubs = await prisma.publisher.findMany()
 
-    let paths = pubs.map(dev => ({
-        params: { id: dev.id }
+    let paths = pubs.map(pub => ({
+        params: { id: pub.publisherId }
     }))
     return {
         paths,

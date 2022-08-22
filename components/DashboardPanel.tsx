@@ -1,16 +1,13 @@
 import { Dispatch } from "react"
-import { IGame } from "../models/game"
 import { Actions, ActionWithPayload, Models, Tables, TypesWithPayload } from "../utils/adminReducerTypes";
 import styles from '../styles/dashboard.module.scss'
-import { IPub } from "../models/publisher";
-import { IDev } from "../models/developers";
-import { IPlatform } from "../models/platform";
+import { Game, Publisher, Developer, Platform } from "@prisma/client";
 
 interface P {
     displayField: string,
     dispatch: Dispatch<Actions>,
     h2: `${Tables}s`,
-    items: IGame[] | IPub[] | IDev[] | IPlatform[]
+    items: Game[] | Publisher[] | Developer[] | Platform[]
 }
 
 export default function Panel(props: P) {

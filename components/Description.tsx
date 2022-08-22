@@ -1,5 +1,3 @@
-import { GameWithId } from "../models/game"
-
 interface Props {
     html: string,
     className: string

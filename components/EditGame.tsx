@@ -1,9 +1,5 @@
 import { AnimatePresence } from "framer-motion";
 import { Dispatch, useReducer, useState } from "react";
-import { IDev } from "../models/developers";
-import { IGame } from "../models/game";
-import { IPlatform } from "../models/platform";
-import { IPub } from "../models/publisher";
 import Tags from "./Tags";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
@@ -13,24 +9,24 @@ import { marked } from "marked";
 import gameReducer, { GameReducerAction } from "../utils/gameReducer";
 import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameState";
 import titleCase from "../utils/titleCase";
+import { Game, Publisher, Developer, Platform } from "@prisma/client";
 
 interface Props {
-    game: IGame | null,
-    pubs: IPub[],
-    devs: IDev[],
-    platforms: IPlatform[],
+    game: Game | null,
+    pubs: Publisher[],
+    devs: Developer[],
+    platforms: Platform[],
     isDelete: boolean,
     dispatch: React.Dispatch<Actions>
 }
-function changeType(game: IGame | null): GameUpdateState | null {
+function changeType(game: Game | null): GameUpdateState | null {
     if (!game) return null;
     return {
         ...game,
-        id: game._id!.toString(),
+        id: game.gameId,
         releaseDate: game.releaseDate,
-        platformIds: game.platforms.map(item => item._id.toString()),
-        developerId: game.developer._id.toString(),
-        publisherId: game.publisher._id.toString(),
+        developerId: game.developerId,
+        publisherId: game.developerId,
     }
 }
 
@@ -222,7 +218,7 @@ function FormInputString(props: P) {
     )
 }
 
-function SelectElement(props: P & { list: IPub[] | IDev[] }) {
+function SelectElement(props: P & { list: Publisher[] | Developer[] }) {
     const { name, isDelete, dispatch, value, list } = props;
     const title = props.title || titleCase(name)
     return (

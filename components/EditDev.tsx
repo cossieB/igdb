@@ -1,14 +1,14 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { IDev } from "../models/developers";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
+import { Developer } from "@prisma/client";
 
 interface Props {
-    dev: IDev | null,
+    dev: Developer | null,
     isDelete?: boolean,
     dispatch: React.Dispatch<Actions>
 }
@@ -29,7 +29,7 @@ export default function EditDev(props: Props) {
             headers: {
                 "Content-Type": 'application/json'
             },
-            body: JSON.stringify({ name: name.trim(), summary: marked(summary), logo, location, country, id: dev?._id?.toString() })
+            body: JSON.stringify({ name: name.trim(), summary: marked(summary), logo, location, country, id: dev?.developerId })
         })
         const data = await response.json();
         if (data.msg) {
@@ -48,7 +48,7 @@ export default function EditDev(props: Props) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ id: dev?._id.toString() })
+            body: JSON.stringify({ id: dev?.developerId })
         })
         const data = await response.json();
         if (data.msg) {

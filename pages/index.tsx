@@ -1,20 +1,20 @@
-import mongoose from 'mongoose'
+import { Developer, Game, Platform, Prisma, PrismaClient, Publisher } from '@prisma/client'
 import { GetStaticPropsResult } from 'next'
 import Carousel from '../components/Carousel'
 import DevTile from '../components/DevTile'
 import GameTile from '../components/GameTile'
-import { Developers, DevWithId } from '../models/developers'
-import { Games, GameWithId } from '../models/game'
-import { Platforms, PlatformWithId } from '../models/platform'
-import { Publishers, PubWithId } from '../models/publisher'
 import styles from '../styles/Home.module.scss'
 import { extract } from '../utils/extractDocFields'
+import { Optional } from '../utils/utilityTypes'
+
+type GameWithoutDateObject = Optional<Game, 'releaseDate'> & {dateString: string}
+type PlatformWithoutDateObject = Optional<Platform, 'release'> & {dateString: string}
 
 interface Props {
-    games: GameWithId[],
-    devs: DevWithId[],
-    pubs: PubWithId[],
-    platforms: PlatformWithId[]
+    games: Game[],
+    devs: Developer[],
+    pubs: Publisher[],
+    platforms: Platform[]
 }
 
 export default function Home({ games, devs, pubs, platforms }: Props) {
@@ -23,14 +23,14 @@ export default function Home({ games, devs, pubs, platforms }: Props) {
             <Carousel />
             <h1 className={styles.h1} > <span>The</span> <span>Internet</span> <span >Games</span> <span >Database</span></h1>
             <div className={styles.games} >
-                {games.map(item => <GameTile key={item.id} game={item} className="" />)}
+                {games.map(item => <GameTile key={item.gameId} game={item} className="" />)}
             </div>
             <div className={styles.header} >
                 <h2>Developers</h2>
                 <div className={styles.line} ></div>
             </div>
             <div className={styles.logos}>
-                {devs.map(dev => <DevTile key={dev.id} className={styles.tile} href={'developers'} item={dev} />)}
+                {devs.map(dev => <DevTile key={dev.developerId} className={styles.tile} href={'developers'} item={{...dev, id: dev.developerId}} />)}
             </div>
             
             <div className={styles.header} >
@@ -38,7 +38,7 @@ export default function Home({ games, devs, pubs, platforms }: Props) {
                 <div className={styles.line} ></div>
             </div>
             <div className={styles.logos}>
-                {pubs.map(pub => <DevTile key={pub.id} className={styles.tile} href="publishers" item={pub} />)}
+                {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publishers" item={{...pub, id: pub.publisherId}} />)}
             </div>
 
             <div className={styles.header} >
@@ -46,35 +46,27 @@ export default function Home({ games, devs, pubs, platforms }: Props) {
                 <div className={styles.line} ></div>
             </div>
             <div className={styles.logos}>
-                {platforms.map(pform => <DevTile key={pform.id} className={styles.tile} href="platforms" item={pform} />)}
+                {platforms.map(pform => <DevTile key={pform.platformId} className={styles.tile} href="platforms" item={{...pform, id: pform.platformId}} />)}
             </div>
         </div>
     )
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    await mongoose.connect(process.env.MONGO_URI!)
-    const gamesQuery = Games.find().limit(14).exec();
-    const devsQuery = Developers.find().limit(20).exec();
-    const pubsQuery = Publishers.find().limit(10).exec();
-    const platformQuery = Platforms.find().exec();
+    const prisma = new PrismaClient()
+    const gamesQuery = prisma.game.findMany({take: 14});
+    const devsQuery = prisma.developer.findMany({take: 20});
+    const pubsQuery = prisma.publisher.findMany({take: 20});
+    const platformQuery = prisma.platform.findMany();
 
-    const [gamesDoc, devsDoc, pubsDoc, platformsDoc] = await Promise.all([gamesQuery, devsQuery, pubsQuery, platformQuery]) as [GameWithId[], DevWithId[], PubWithId[], PlatformWithId[]]
-    const games = gamesDoc.map(item => {
-        let obj = extract(item, ['cover', 'id', 'title'])
-        obj.releaseDate = item.releaseDate.toString();
-        return obj
-    })
-    const devs = devsDoc.map(item => extract(item, ['logo', 'id', 'name']))
-    const pubs = pubsDoc.map(item => extract(item, ['logo', 'id', 'name']))
-    const platforms = platformsDoc.map(item => extract(item, ['id', 'logo', 'name']))
+    const [games, devs, pubs, platforms] = await Promise.all([gamesQuery, devsQuery, pubsQuery, platformQuery]) as [Game[], Developer[], Publisher[], Platform[]]
 
     return {
         props: {
-            games,
+            games: JSON.parse(JSON.stringify(games)),
             devs,
             pubs,
-            platforms
+            platforms: JSON.parse(JSON.stringify(platforms))
         }
     }
 }

@@ -4,7 +4,6 @@ import Head from 'next/head'
 import Description from '../../components/Description'
 import { db } from '../../prisma/db'
 import styles from '../../styles/Platforms.module.scss'
-import { extract } from '../../utils/extractDocFields'
 
 interface Props {
     platform: Platform,
@@ -14,7 +13,7 @@ export default function DeveloperId({ platform }: Props) {
     return (
         <>
             <Head>
-                <title> IGDB {platform.name} </title>
+                <title> IGDB | {platform.name} </title>
             </Head>
             <div>
                 <div className={styles.header} >

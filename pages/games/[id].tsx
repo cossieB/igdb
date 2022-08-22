@@ -1,18 +1,20 @@
-import mongoose from 'mongoose'
+import { Developer, Game, GamesOnPlatforms, Platform, Publisher } from '@prisma/client'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
 import Head from 'next/head'
 import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
-import { DevWithId } from '../../models/developers'
-import { GameWithId, Games } from '../../models/game'
-import { PlatformWithId } from '../../models/platform'
-import { PubWithId } from '../../models/publisher'
+import { prisma } from '../../db'
 import styles from '../../styles/Games.module.scss'
-import { extract } from '../../utils/extractDocFields'
 
 interface Props {
-    game: GameWithId
+    game: (Game & {
+        developer: Developer;
+        publisher: Publisher;
+        GamesOnPlatforms: (GamesOnPlatforms & {
+            platform: Platform;
+        })[];
+    })
 }
 
 export default function GameId({game}: Props) {
@@ -43,11 +45,11 @@ export default function GameId({game}: Props) {
             </div>
             { game.trailer && <div className={styles.video} dangerouslySetInnerHTML={{__html: game.trailer}} /> }
             <div className={styles.companies} >
-                <DevTile className={styles.logoTile} href="developers" item={game.developer as DevWithId} />
-                <DevTile className={styles.logoTile} href="publishers" item={game.publisher as PubWithId} />
+                <DevTile className={styles.logoTile} href="developers" item={{...game.developer, id: game.developer.developerId}}  />
+                <DevTile className={styles.logoTile} href="publishers" item={{...game.publisher, id: game.publisher.publisherId}} />
             </div>
             <div className={styles.platforms} >
-                {game.platforms.map(item => <DevTile key={item.id} item={item as PlatformWithId} href="platforms" className={styles.logoTile} />)}
+                {game.GamesOnPlatforms.map(item => <DevTile key={item.platform.platformId} item={{...item.platform, id: item.platformId}} href="platforms" className={styles.logoTile} />)}
             </div> 
         </div>
         </>
@@ -55,42 +57,39 @@ export default function GameId({game}: Props) {
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
-    await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    const gameDoc = await Games.findById(id).lean().exec().catch(() => null)
-
-    if (!gameDoc) {
+    const game = await prisma.game.findUnique({
+        where: {
+            gameId: id
+        },
+        include: {
+            developer: true,
+            publisher: true,
+            GamesOnPlatforms: {
+                include: {
+                    platform: true
+                }
+            }
+        }
+    })
+    if (!game) {
         return {
             notFound: true
         }
-    }
-    const game = extract(gameDoc, ['title', 'summary', 'cover', 'banner', 'releaseDate', 'genres']) as GameWithId
-    game.releaseDate = game.releaseDate.toLocaleString()
-    game.developer = extract(gameDoc.developer, ['name', 'logo'])
-    game.developer.id = gameDoc.developer._id.toString();
-    game.publisher = extract(gameDoc.publisher, ['name', 'logo'])
-    game.publisher.id = gameDoc.publisher._id.toString();
-    gameDoc.trailer && ( game.trailer = gameDoc.trailer )
-    game.platforms = gameDoc.platforms.map(item => {
-        let obj = extract(item, ['name', 'logo'])
-        obj.id = item._id.toString();
-        return obj
-    })
-    
+    }    
 
     return {
         props: {
-            game
+            game: JSON.parse(JSON.stringify(game))
         },
         revalidate: 3600
     }
 }
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    await mongoose.connect(process.env.MONGO_URI!)
-    let games = await Games.find().exec()
+    const games = await prisma.game.findMany()
 
     let paths = games.map(game => ({
-        params: {id: game.id}
+        params: {id: game.gameId}
     }))
     return {
         paths,

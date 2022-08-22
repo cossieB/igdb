@@ -1,14 +1,10 @@
-import { Developer, Game, Platform, Prisma, PrismaClient, Publisher } from '@prisma/client'
+import { Developer, Game, Platform, PrismaClient, Publisher } from '@prisma/client'
 import { GetStaticPropsResult } from 'next'
 import Carousel from '../components/Carousel'
 import DevTile from '../components/DevTile'
 import GameTile from '../components/GameTile'
+import { prisma } from '../db'
 import styles from '../styles/Home.module.scss'
-import { extract } from '../utils/extractDocFields'
-import { Optional } from '../utils/utilityTypes'
-
-type GameWithoutDateObject = Optional<Game, 'releaseDate'> & {dateString: string}
-type PlatformWithoutDateObject = Optional<Platform, 'release'> & {dateString: string}
 
 interface Props {
     games: Game[],
@@ -53,7 +49,6 @@ export default function Home({ games, devs, pubs, platforms }: Props) {
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const prisma = new PrismaClient()
     const gamesQuery = prisma.game.findMany({take: 14});
     const devsQuery = prisma.developer.findMany({take: 20});
     const pubsQuery = prisma.publisher.findMany({take: 20});

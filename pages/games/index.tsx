@@ -1,13 +1,12 @@
-import mongoose from 'mongoose';
+import { Game } from '@prisma/client';
 import { GetStaticPropsResult } from 'next';
 import Head from 'next/head';
 import GameTile from '../../components/GameTile';
-import { GameWithId, Games, IGame } from '../../models/game';
+import { prisma } from '../../db';
 import styles from '../../styles/Games.module.scss'
-import { extract } from '../../utils/extractDocFields';
 
 interface Props {
-    games: GameWithId[]
+    games: Game[]
 }
 
 export default function GamesIndex({ games }: Props) {
@@ -24,19 +23,11 @@ export default function GamesIndex({ games }: Props) {
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    await mongoose.connect(process.env.MONGO_URI!)
-    const queryRes = await Games.find().exec() as IGame[];
-
-    const games: GameWithId[] = []
-    for (let item of queryRes) {
-        const game = extract(item, ['title', 'cover', 'id', 'releaseDate'])
-        game.releaseDate = game.releaseDate.toString()
-        games.push(game as GameWithId);
-    }
+    const games = await prisma.game.findMany()
 
     return {
         props: {
-            games
+            games: JSON.parse(JSON.stringify(games))
         }
     }
 }

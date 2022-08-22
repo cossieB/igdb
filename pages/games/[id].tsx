@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
-import { prisma } from '../../db'
+import { prisma } from '../../prisma/db'
 import styles from '../../styles/Games.module.scss'
 
 interface Props {

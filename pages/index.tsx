@@ -3,7 +3,7 @@ import { GetStaticPropsResult } from 'next'
 import Carousel from '../components/Carousel'
 import DevTile from '../components/DevTile'
 import GameTile from '../components/GameTile'
-import { prisma } from '../db'
+import { prisma } from '../prisma/db'
 import styles from '../styles/Home.module.scss'
 
 interface Props {

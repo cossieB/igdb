@@ -1,15 +1,12 @@
-import mongoose from 'mongoose';
+import { Developer } from '@prisma/client';
 import { GetStaticPropsResult } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
 import DevTile from '../../components/DevTile';
-import { DevWithId, Developers } from '../../models/developers';
+import { prisma } from '../../prisma/db';
 import styles from '../../styles/Devs.module.scss'
-import { extract, extractDevFields } from '../../utils/extractDocFields';
-
 
 interface Props {
-    devs: DevWithId[]
+    devs: Developer[]
 }
 
 export default function DeveloperIndex({ devs }: Props) {
@@ -19,22 +16,15 @@ export default function DeveloperIndex({ devs }: Props) {
             <title> IGDB | Developers </title>
         </Head>
         <div className={styles.logos} >
-            {devs.map(dev => <DevTile key={dev.id} className={styles.tile} href={'developers'} item={dev} /> )}
+            {devs.map(dev => <DevTile key={dev.developerId} className={styles.tile} href={'developers'} item={{...dev, id: dev.developerId}} /> )}
         </div>
         </>
     )
 }
 
 export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    await mongoose.connect(process.env.MONGO_URI!)
-    const queryRes = await Developers.find().lean().exec();
+    const devs = await prisma.developer.findMany();
 
-    const devs: DevWithId[] = []
-    for (let item of queryRes) {
-        const dev = extract(item, ['name', 'logo', 'id'])
-        dev.id = item._id.toString()!
-        devs.push((dev as DevWithId));
-    }
     return {
         props: {
             devs

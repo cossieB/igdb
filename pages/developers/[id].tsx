@@ -1,20 +1,19 @@
-import mongoose from 'mongoose'
+import { Developer, Game } from '@prisma/client'
 import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
 import Head from 'next/head'
 import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
-import { Developers, DevWithId, IDev } from '../../models/developers'
-import { GameWithId, IGame } from '../../models/game'
-import { PubWithId } from '../../models/publisher'
+import { prisma } from '../../prisma/db'
 import styles from '../../styles/Devs.module.scss'
 import { extract } from '../../utils/extractDocFields'
 
 interface Props {
-    dev: Omit<DevWithId, 'games'>,
-    games: GameWithId[]
+    dev: (Developer & {
+        Game: Game[];
+    })
 }
 
-export default function DeveloperId({ dev, games }: Props) {
+export default function DeveloperId({ dev }: Props) {
     return (
         <>
             <Head>
@@ -28,7 +27,7 @@ export default function DeveloperId({ dev, games }: Props) {
                     <Description html={dev.summary} className={styles.description} />
                 </div>
                 <div className={styles.gamegrid}>
-                    {games.map(game => <GameTile key={game.id} game={game} className="" />)}
+                    {dev.Game.map(game => <GameTile key={game.gameId} game={game} className="" />)}
                 </div>
             </div>
         </>
@@ -36,38 +35,30 @@ export default function DeveloperId({ dev, games }: Props) {
 }
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
-    await mongoose.connect(process.env.MONGO_URI!)
     const id = context.params!.id as string
-    let devDoc = await Developers.findById(id).populate<{ games: IGame[] }>('games').select(['name', 'location', 'logo', 'country', 'summary']).lean().exec().catch(() => null)
-    
-    if (!devDoc) {
-        return {
-            notFound: true
+    const dev = await prisma.developer.findUnique({
+        where: {
+            developerId: id
+        },
+        include: {
+            Game: true
         }
-    }
-    const dev = extract(devDoc, ['name', 'location', 'logo', 'country', 'summary']) as any as DevWithId
-
-    const games = devDoc.games.map((item: any) => {
-        let obj = extract(item, ['title', 'summary', 'cover', 'banner', 'genres']) as GameWithId
-        obj.id = item._id.toString()
-        obj.releaseDate = item.releaseDate.toString()
-        return obj
     })
+
+    if (!dev) return { notFound: true }
 
     return {
         props: {
-            dev,
-            games
+            dev: JSON.parse(JSON.stringify(dev))
         },
         revalidate: 3600
     }
 }
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {
-    await mongoose.connect(process.env.MONGO_URI!)
-    let devs = await Developers.find().exec()
+    let devs = await prisma.developer.findMany()
 
     let paths = devs.map(dev => ({
-        params: { id: dev.id }
+        params: { id: dev.developerId }
     }))
     return {
         paths,

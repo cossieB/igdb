@@ -2,7 +2,7 @@ import { Game } from '@prisma/client';
 import { GetStaticPropsResult } from 'next';
 import Head from 'next/head';
 import GameTile from '../../components/GameTile';
-import { prisma } from '../../db';
+import { prisma } from '../../prisma/db';
 import styles from '../../styles/Games.module.scss'
 
 interface Props {

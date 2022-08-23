@@ -6,25 +6,8 @@ import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
 import { db } from '../../prisma/db'
 import styles from '../../styles/Games.module.scss'
+import { GameTableJoinResult, joinQuery } from '../../utils/JoinResult'
 import { Optional } from '../../utils/utilityTypes'
-
-type QueryRes = {
-    gameId: string
-    developerId: string
-    publisherId: string
-    title: string
-    cover: string
-    summary: string
-    releaseDate: Date
-    genres: string[]
-    images: string[]
-    banner: string
-    trailer: string
-    pub_name: string
-    dev_name: string
-    pub_logo: string
-    dev_logo: string
-}
 
 type GameResult = (Game & {
     developer: Optional<Developer, 'country' | 'location' | 'summary'>;
@@ -77,15 +60,9 @@ export default function GameId({ game }: Props) {
 
 export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
     const id = context.params!.id as string
-
-    const queryRes: QueryRes[] = await db.$queryRaw`
-        SELECT "gameId", "publisherId", "developerId", "title", "cover", "Game".summary, "releaseDate", "genres", "images", "banner", "trailer", 
-            "Publisher".name AS pub_name, "Developer".name AS dev_name, "Publisher".logo AS pub_logo, "Developer".logo AS dev_logo
-            FROM "Game" 
-        INNER JOIN "Developer" USING ("developerId") 
-        INNER JOIN "Publisher" USING ("publisherId")
-        WHERE "gameId" = ${id}::UUID;`
-
+    if (id.length != 36) return {notFound: true}
+    
+    const queryRes = await joinQuery(id)
 
     if (queryRes.length == 0) {
         return {

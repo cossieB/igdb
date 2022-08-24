@@ -66,7 +66,7 @@ function List(props: P) {
 
     return (
         <>
-            {items.map(item =>
+            {items?.map(item =>
                 <div className={styles.row}
                     /* @ts-expect-error */
                     key={item[displayField]} >

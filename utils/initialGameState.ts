@@ -1,20 +1,15 @@
-import { IGame } from "../models/game";
+import { Game } from "@prisma/client";
 import { Optional } from "./utilityTypes";
 
-export type GameUpdateState = Omit<Optional<IGame, '_id'> , 'developer' | 'publisher' | 'platforms'> & {
-    developerId: string,
-    publisherId: string,
-    platformIds: string[]
-}
+export type GameUpdateState = Game & {platformIds: string[]}
 
 export const initialGameUpdateState: GameUpdateState = {
-    id: "",
+    gameId: "",
     title: "",
     cover: "",
     summary: "",
-    releaseDate:  "",
+    releaseDate: new Date(),
     genres: [],
-    cast: [],
     platformIds: [],
     images: [],
     banner: "",

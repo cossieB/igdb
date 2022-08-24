@@ -9,34 +9,36 @@ import { marked } from "marked";
 import gameReducer, { GameReducerAction } from "../utils/gameReducer";
 import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameState";
 import titleCase from "../utils/titleCase";
-import { Game, Publisher, Developer, Platform } from "@prisma/client";
+import { Game, Publisher, Developer, Platform, GamesOnPlatforms } from "@prisma/client";
 
 interface Props {
     game: Game | null,
     pubs: Publisher[],
     devs: Developer[],
     platforms: Platform[],
+    gamesOnPlatforms: GamesOnPlatforms[],
     isDelete: boolean,
     dispatch: React.Dispatch<Actions>
 }
-function changeType(game: Game | null): GameUpdateState | null {
+function changeType(game: Game | null, gamesOnPlatform: GamesOnPlatforms[]): GameUpdateState | null {
     if (!game) return null;
-    return {
+    const platformIds = gamesOnPlatform
+        .filter(item => item.gameId == game.gameId)
+        .map(item => item.platformId)
+    
+        return {
         ...game,
-        id: game.gameId,
-        releaseDate: game.releaseDate,
-        developerId: game.developerId,
-        publisherId: game.developerId,
+        platformIds
     }
 }
 
 export default function EditGame(props: Props) {
-    const { game, pubs, devs, platforms, isDelete, dispatch } = props;
+    const { game, pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms} = props;
     const [genreInput, setGenreInput] = useState("")
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
-    const [gameState, gameDispatch] = useReducer(gameReducer, changeType(game) || initialGameUpdateState); console.log(gameState)
+    const [gameState, gameDispatch] = useReducer(gameReducer, changeType(game, gamesOnPlatforms) || initialGameUpdateState);
 
     function handleKeydown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key == "Enter") {
@@ -55,14 +57,13 @@ export default function EditGame(props: Props) {
                 ...gameState,
                 title: gameState.title.trim(),
                 summary: marked(gameState.summary),
-                id: game?._id?.toString(),
             })
         })
         const data = await response.json();
-        if (data.msg) {
+        if ('msg' in data) {
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
-        if (data.error) {
+        if ('error' in data) {
             setErrors([data.error])
             setTimeout(() => {
                 setErrors([])
@@ -75,7 +76,7 @@ export default function EditGame(props: Props) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ id: game?._id.toString() })
+            body: JSON.stringify({ gameId: gameState.gameId })
         })
         const data = await response.json();
         if (data.msg) {
@@ -160,17 +161,17 @@ export default function EditGame(props: Props) {
                     <Tags tags={gameState.genres} changeTags={gameDispatch} />
                     <div className={styles.checkboxes}>
                         {platforms.map(item => (
-                            <div key={item._id.toString()} >
+                            <div key={item.platformId} >
                                 <label > {item.name} </label>
                                 <input
                                     type="checkbox"
-                                    checked={gameState.platformIds.includes(item._id.toString())}
+                                    checked={gameState.platformIds.includes(item.platformId)}
                                     disabled={isDelete}
                                     onChange={() => {
-                                        if (gameState.platformIds.includes(item._id.toString())) {
-                                            gameDispatch({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'platformIds', value: item._id.toString() } })
+                                        if (gameState.platformIds.includes(item.platformId)) {
+                                            gameDispatch({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'platformIds', value: item.platformId } })
                                         } else {
-                                            gameDispatch({ type: 'ADD_TO_ARRAY', payload: { name: 'platformIds', value: item._id.toString() } })
+                                            gameDispatch({ type: 'ADD_TO_ARRAY', payload: { name: 'platformIds', value: item.platformId } })
                                         }
                                     }} />
                             </div>
@@ -221,6 +222,7 @@ function FormInputString(props: P) {
 function SelectElement(props: P & { list: Publisher[] | Developer[] }) {
     const { name, isDelete, dispatch, value, list } = props;
     const title = props.title || titleCase(name)
+    
     return (
         <div>
             <label> {title}* </label>
@@ -232,7 +234,7 @@ function SelectElement(props: P & { list: Publisher[] | Developer[] }) {
             >
                 <option value="" disabled >Select {title}</option>
                 {list.map(item =>
-                    <option key={item._id.toString()} value={item._id.toString()}> {item.name} </option>
+                    <option key={'publisherId' in item ? item.publisherId : item.developerId} value={'publisherId' in item ? item.publisherId : item.developerId}> {item.name} </option>
                 )}
             </select>
         </div>

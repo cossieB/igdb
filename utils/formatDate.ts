@@ -9,11 +9,13 @@ export function formatDateForInputElement(date: Date) {
 
     return `${year}-${month}-${day}`;
 }
+export function formatDate(input: Date): string;
+export function formatDate(input: string): string
 export function formatDate(input: Date | string) {
     if (typeof input == 'string') {
         let date = new Date(input)
-        let str = date.toLocaleString(['en-za', 'en-us', 'en-gb'], {dateStyle: 'long', timeStyle: 'medium'})
+        let str = date.toLocaleString(['en-za', 'en-us', 'en-gb'], { dateStyle: 'long', timeStyle: 'medium' })
         return str
     }
-    return input.toLocaleString(['en-za', 'en-us', 'en-gb'], {dateStyle: 'long', timeStyle: 'medium'})
+    return input.toLocaleString(['en-za', 'en-us', 'en-gb'], { dateStyle: 'long', timeStyle: 'medium' })
 }

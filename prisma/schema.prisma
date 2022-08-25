@@ -67,9 +67,9 @@ model Actor {
 
 model GamesOnPlatforms {
     gameId     String   @db.Uuid
-    game       Game     @relation(fields: [gameId], references: [gameId])
+    game       Game     @relation(fields: [gameId], references: [gameId], onDelete: Cascade)
     platformId String   @db.Uuid
-    platform   Platform @relation(fields: [platformId], references: [platformId])
+    platform   Platform @relation(fields: [platformId], references: [platformId], onDelete: Cascade)
 
     @@id([gameId, platformId])
 }
@@ -77,8 +77,8 @@ model GamesOnPlatforms {
 model ActorsInGames {
     actorId String @db.Uuid
     gameId  String @db.Uuid
-    actor   Actor  @relation(fields: [actorId], references: [actorId])
-    game    Game   @relation(fields: [gameId], references: [gameId])
+    actor   Actor  @relation(fields: [actorId], references: [actorId], onDelete: Cascade)
+    game    Game   @relation(fields: [gameId], references: [gameId], onDelete: Cascade)
 
     @@id([actorId, gameId])
 }

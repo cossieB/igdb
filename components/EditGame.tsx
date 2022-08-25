@@ -10,6 +10,7 @@ import gameReducer, { GameReducerAction } from "../utils/gameReducer";
 import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameState";
 import titleCase from "../utils/titleCase";
 import { Game, Publisher, Developer, Platform, GamesOnPlatforms } from "@prisma/client";
+import sendData from "../utils/sendData";
 
 interface Props {
     game: Game | null,
@@ -22,18 +23,23 @@ interface Props {
 }
 function changeType(game: Game | null, gamesOnPlatform: GamesOnPlatforms[]): GameUpdateState | null {
     if (!game) return null;
-    const platformIds = gamesOnPlatform
-        .filter(item => item.gameId == game.gameId)
-        .map(item => item.platformId)
-    
-        return {
+
+    const platformIds: string[] = []
+
+    for (let gop of gamesOnPlatform) {
+        if (gop.gameId == game.gameId) {
+            platformIds.push(gop.platformId)
+        }
+    }
+
+    return {
         ...game,
         platformIds
     }
 }
 
 export default function EditGame(props: Props) {
-    const { game, pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms} = props;
+    const { game, pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms } = props;
     const [genreInput, setGenreInput] = useState("")
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
@@ -48,18 +54,14 @@ export default function EditGame(props: Props) {
         }
     }
     async function send() {
-        const response = await fetch('/api/admin/game', {
-            method: "POST",
-            headers: {
-                "Content-Type": 'application/json'
-            },
-            body: JSON.stringify({
-                ...gameState,
-                title: gameState.title.trim(),
-                summary: marked(gameState.summary),
-            })
-        })
-        const data = await response.json();
+        const method = gameState.gameId ? "PUT" : "POST"
+        const body = {
+            ...gameState,
+            title: gameState.title.trim(),
+            summary: marked(gameState.summary)
+        }
+        const data = await sendData('/api/admin/game', method, body)
+
         if ('msg' in data) {
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
@@ -131,15 +133,7 @@ export default function EditGame(props: Props) {
                     <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='title' value={gameState.title} />
                     <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='cover' value={gameState.cover} />
                     <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='banner' value={gameState.banner || ""} />
-                    <div>
-                        <label> Release Date* </label>
-                        <input
-                            name="releaseDate"
-                            type="date"
-                            value={gameState.releaseDate ? formatDateForInputElement(new Date(gameState.releaseDate)) : ""}
-                            onChange={e => gameDispatch({ type: 'UPDATE_STRING', payload: { name: 'releaseDate', value: e.target.value } })}
-                            placeholder="Release Date" disabled={isDelete} />
-                    </div>
+                    <FormInputString dispatch={gameDispatch} isDelete={isDelete} name='releaseDate' value={gameState.releaseDate.toString()} title="Release Date*" />
                     <SelectElement dispatch={gameDispatch} isDelete={isDelete} list={devs} name='developerId' value={gameState.developerId} title='Developer' />
                     <SelectElement dispatch={gameDispatch} isDelete={isDelete} list={pubs} name='publisherId' value={gameState.publisherId} title='Publisher' />
                     <div>
@@ -209,8 +203,9 @@ function FormInputString(props: P) {
     return (
         <div>
             <label> {title} </label>
-            <input type="text"
-                value={value}
+            <input
+                type={name != "releaseDate" ? 'text' : 'date'}
+                value={name != "releaseDate" ? value : formatDateForInputElement(new Date(value))}
                 name={name}
                 onChange={e => dispatch({ type: 'UPDATE_STRING', payload: { name, value: e.target.value } })}
                 placeholder={title}
@@ -222,7 +217,7 @@ function FormInputString(props: P) {
 function SelectElement(props: P & { list: Publisher[] | Developer[] }) {
     const { name, isDelete, dispatch, value, list } = props;
     const title = props.title || titleCase(name)
-    
+
     return (
         <div>
             <label> {title}* </label>

@@ -6,6 +6,8 @@ import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
 import { Developer } from "@prisma/client";
+import sendData from "../utils/sendData";
+import { Optional } from "../utils/utilityTypes";
 
 interface Props {
     dev: Developer | null,
@@ -23,15 +25,10 @@ export default function EditDev(props: Props) {
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
+        const method = dev?.developerId ? "PUT": "POST"
+        const body: Optional<Developer, 'developerId'> = { name: name.trim(), summary: marked(summary), logo, location, country, developerId: dev?.developerId }
+        const data = await sendData('/api/admin/dev', method, body)
 
-        const response = await fetch('/api/admin/dev', {
-            method: "POST",
-            headers: {
-                "Content-Type": 'application/json'
-            },
-            body: JSON.stringify({ name: name.trim(), summary: marked(summary), logo, location, country, id: dev?.developerId })
-        })
-        const data = await response.json();
         if (data.msg) {
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
@@ -43,14 +40,7 @@ export default function EditDev(props: Props) {
         }
     }
     async function handleDelete() {
-        const response = await fetch('/api/admin/dev', {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ id: dev?.developerId })
-        })
-        const data = await response.json();
+        const data = await sendData('/api/admin/dev', 'DELETE', {developerId: dev!.developerId})
         if (data.msg) {
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }

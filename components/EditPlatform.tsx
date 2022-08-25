@@ -4,11 +4,13 @@ import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { marked } from "marked";
-import { IPlatform } from "../models/platform";
 import { formatDateForInputElement } from "../utils/formatDate";
+import { Platform } from "@prisma/client";
+import { Optional } from "../utils/utilityTypes";
+import sendData from "../utils/sendData";
 
 interface Props {
-    platform: IPlatform | null,
+    platform: Platform | null,
     isDelete: boolean
     dispatch: React.Dispatch<Actions>
 }
@@ -17,20 +19,14 @@ export default function EditPlatform(props: Props) {
     const [name, setName] = useState(platform?.name || "")
     const [summary, setSummary] = useState(platform?.summary || "")
     const [logo, setLogo] = useState(platform?.logo || "")
-    const [releaseDate, setReleaseDate] = useState(platform?.release)
+    const [releaseDate, setReleaseDate] = useState(platform?.release || new Date())
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
-
-        const response = await fetch('/api/admin/platform', {
-            method: "POST",
-            headers: {
-                "Content-Type": 'application/json'
-            },
-            body: JSON.stringify({ name: name.trim(),summary: marked(summary), logo,  id: platform?._id?.toString(), release: releaseDate })
-        })
-        const data = await response.json();
+        const method = platform?.platformId ? "PUT": "POST"
+        const body: Optional<Platform, 'platformId'> = { name: name.trim(),summary: marked(summary), logo,  platformId: platform?.platformId, release: releaseDate }
+        const data = await sendData('/api/admin/platform', method, body)
         if (data.msg) {
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
@@ -42,14 +38,7 @@ export default function EditPlatform(props: Props) {
         }
     }
     async function handleDelete() {
-        const response = await fetch('/api/admin/platform', {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ id: platform?._id.toString() })
-        })
-        const data = await response.json();
+        const data = await sendData('/api/admin/platform', 'DELETE', {platformId: platform?.platformId})
         if (data.msg) {
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
@@ -109,7 +98,7 @@ export default function EditPlatform(props: Props) {
                     </div>
                     <div>
                         <label> Release Date* </label>
-                        <input type="date" value={releaseDate ? formatDateForInputElement(new Date(releaseDate)) : ""} onChange={e => setReleaseDate(e.target.value)} placeholder="Release Date" disabled={isDelete}/>
+                        <input type="date" value={releaseDate ? formatDateForInputElement(new Date(releaseDate)) : ""} onChange={e => setReleaseDate(new Date(e.target.value))} placeholder="Release Date" disabled={isDelete}/>
                     </div>
                     {isDelete &&
                         <>

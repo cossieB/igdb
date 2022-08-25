@@ -5,10 +5,13 @@ import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
-import { IPub } from "../models/publisher";
+import { Publisher } from "@prisma/client";
+import sendData from "../utils/sendData";
+import { Optional } from "../utils/utilityTypes";
+
 
 interface Props {
-    pub: IPub | null,
+    pub: Publisher | null,
     isDelete: boolean
     dispatch: React.Dispatch<Actions>
 }
@@ -23,15 +26,10 @@ export default function EditPub(props: Props) {
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
+        const method = pub?.publisherId ? "PUT": "POST"
+        const body: Optional<Publisher, 'publisherId'> = { name: name.trim(),summary: marked(summary), logo, headquarters, country, publisherId: pub?.publisherId }
+        const data =  await sendData('/api/admin/pub', method, body)
 
-        const response = await fetch('/api/admin/pub', {
-            method: "POST",
-            headers: {
-                "Content-Type": 'application/json'
-            },
-            body: JSON.stringify({ name: name.trim(),summary: marked(summary), logo, headquarters, country, id: pub?._id?.toString() })
-        })
-        const data = await response.json();
         if (data.msg) {
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
@@ -43,15 +41,9 @@ export default function EditPub(props: Props) {
         }
     }
     async function handleDelete() {
-        const response = await fetch('/api/admin/pub', {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ id: pub?._id.toString() })
-        })
-        const data = await response.json();
-        if (data.msg) {
+        const data = await sendData('/api/admin/pub', 'DELETE', {publisherId: pub?.publisherId})
+        
+        if ('msg' in data) {
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
         if (data.error) {

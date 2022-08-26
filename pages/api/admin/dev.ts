@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../prisma/db";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (!process.env.IS_ADMIN) return res.status(401).json({error: "Unauthorized"})
     if (req.method == "POST") {
         try {
             const result = await db.developer.create({
@@ -15,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (req.method == "PUT") {
         try {
-            
+
             const result = await db.developer.update({
                 where: {
                     developerId: req.body.developerId
@@ -25,26 +26,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.json({ msg: "Successfully updated " + result.developerId })
         }
         catch (e: any) {
-            console.error(e)
-            return res.json({ error: e.meta.cause || e.message })
+            switch (e.code) {
+                case 'P2025':
+                    return res.json({error: e.meta.cause || e.message })
+                default:
+                    console.error(e)
+                    return res.json({ error: "Something went wrong" })
+            }
         }
     }
     if (req.method == "DELETE") {
         try {
             const result = await db.developer.delete({
-                where: { 
+                where: {
                     developerId: req.body.developerId
                 }
             })
             return res.json({ msg: "Successfully deleted " + result.developerId })
         }
         catch (e: any) {
-            switch(e.code) {
+            switch (e.code) {
                 case 'P2003':
-                    return res.json({error: "Could not delete because this is a developer of a game. First change that game's developer then try again."})
+                    return res.json({ error: "Could not delete because this is a developer of a game. First change that game's developer then try again." })
+                case 'P2025':
+                    return res.json({ error: e.meta.cause })
                 default:
                     console.error(e)
-                    return res.json({ error: e.meta?.cause || e.message })
+                    return res.json({ error: "Something went wrong" })
             }
         }
     }

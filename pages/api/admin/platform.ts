@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../prisma/db";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (!process.env.IS_ADMIN) return res.status(401).json({error: "Unauthorized"})
+
     if (req.method == "POST") {
         try {
             const result = await db.platform.create({

@@ -4,7 +4,7 @@ import { db } from "../../../prisma/db";
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-
+    if (!process.env.IS_ADMIN) return res.status(401).json({error: "Unauthorized"})
     if (req.method == "POST") {
 
         const { platformIds } = req.body
@@ -59,8 +59,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.json({ msg: "Successfully updated " + result[0].gameId })
         }
         catch (e: any) {
-            console.error(e);
-            return res.json({ error: e.message })
+            switch (e.code) {
+                case 'P2025':
+                    return res.json({error: e.meta.cause || e.message })
+                default:
+                    console.error(e)
+                    return res.json({ error: "Something went wrong" })
+            }
         }
     }
     if (req.method == "DELETE") {

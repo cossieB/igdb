@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const result = await db.developer.create({
                 data: req.body
             })
-            return res.status(201).json({ msg: "Successfully created " + result.developerId })
+            return res.status(201).json({ msg: "Successfully created " + result.developerId, developerId: result.developerId })
         }
         catch (e: any) {
             return res.json({ error: e.meta.causee || e.message })
@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (req.method == "PUT") {
         try {
-            console.log(req.body)
+            
             const result = await db.developer.update({
                 where: {
                     developerId: req.body.developerId
@@ -39,8 +39,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.json({ msg: "Successfully deleted " + result.developerId })
         }
         catch (e: any) {
-            console.error(e)
-            return res.json({ error: e.meta.cause || e.message })
+            switch(e.code) {
+                case 'P2003':
+                    return res.json({error: "Could not delete because this is a developer of a game. First change that game's developer then try again."})
+                default:
+                    console.error(e)
+                    return res.json({ error: e.meta?.cause || e.message })
+            }
         }
     }
     return res.status(501).json({ error: "Invalid method" })

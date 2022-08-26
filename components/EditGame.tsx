@@ -59,12 +59,14 @@ export default function EditGame(props: Props) {
         const method = game ? "PUT" : "POST"
         const body = {
             ...gameState,
+            releaseDate: new Date(gameState.releaseDate),
             title: gameState.title.trim(),
             summary: marked(gameState.summary)
         }
         const data = await sendData('/api/admin/game', method, body)
 
         if ('msg' in data) {
+            // Add object to state or edit existing object in state.
             if (game) {
                 const toEdit: Optional<GameUpdateState, 'platformIds'> = {...gameState}
                 delete toEdit.platformIds

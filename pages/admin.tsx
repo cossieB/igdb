@@ -60,14 +60,14 @@ export default function Dashboard() {
                     games={data.games} />
             }
             {(state.mode == "ADD_DEVELOPER" || state.mode == "EDIT_DEVELOPER" || state.mode == "REMOVE_DEVELOPER") &&
-                <EditDev dev={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_DEVELOPER"} />
+                <EditDev dev={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_DEVELOPER"} developers={data.devs} />
             }
 
             {(state.mode == "ADD_PUBLISHER" || state.mode == "EDIT_PUBLISHER" || state.mode == "REMOVE_PUBLISHER") &&
-                <EditPub pub={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PUBLISHER"} />
+                <EditPub pub={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PUBLISHER"} publishers={data.pubs} />
             }
             {(state.mode == "ADD_PLATFORM" || state.mode == "EDIT_PLATFORM" || state.mode == "REMOVE_PLATFORM") &&
-                <EditPlatform platform={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PLATFORM"} />
+                <EditPlatform platform={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PLATFORM"} platforms={data.platforms} />
             }
 
         </div>

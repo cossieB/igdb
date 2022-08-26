@@ -13,9 +13,10 @@ interface Props {
     dev: Developer | null,
     isDelete?: boolean,
     dispatch: React.Dispatch<Actions>
+    developers: Developer[]
 }
 export default function EditDev(props: Props) {
-    const { dev, isDelete, dispatch } = props;
+    const { dev, isDelete, dispatch, developers } = props;
     const [name, setName] = useState(dev?.name || "")
     const [summary, setSummary] = useState(dev?.summary || "")
     const [logo, setLogo] = useState(dev?.logo || "")
@@ -25,11 +26,25 @@ export default function EditDev(props: Props) {
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
-        const method = dev?.developerId ? "PUT": "POST"
+        const method = dev?.developerId ? "PUT" : "POST"
         const body: Optional<Developer, 'developerId'> = { name: name.trim(), summary: marked(summary), logo, location, country, developerId: dev?.developerId }
         const data = await sendData('/api/admin/dev', method, body)
 
         if (data.msg) {
+            if (dev) {
+                Object.assign(dev, { country, location, summary, logo, name })
+            }
+            else {
+                const toPush: Developer = {
+                    developerId: data.developerId,
+                    country,
+                    location,
+                    summary,
+                    logo,
+                    name
+                }
+                developers.push(toPush)
+            }
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
@@ -40,8 +55,10 @@ export default function EditDev(props: Props) {
         }
     }
     async function handleDelete() {
-        const data = await sendData('/api/admin/dev', 'DELETE', {developerId: dev!.developerId})
+        const data = await sendData('/api/admin/dev', 'DELETE', { developerId: dev!.developerId })
         if (data.msg) {
+            const index = developers.findIndex(item => item.developerId == dev!.developerId)
+            developers.splice(index, 1)
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {

@@ -13,9 +13,10 @@ interface Props {
     platform: Platform | null,
     isDelete: boolean
     dispatch: React.Dispatch<Actions>
+    platforms: Platform[]
 }
 export default function EditPlatform(props: Props) {
-    const { platform, isDelete, dispatch } = props;
+    const { platform, isDelete, dispatch, platforms } = props;
     const [name, setName] = useState(platform?.name || "")
     const [summary, setSummary] = useState(platform?.summary || "")
     const [logo, setLogo] = useState(platform?.logo || "")
@@ -28,6 +29,19 @@ export default function EditPlatform(props: Props) {
         const body: Optional<Platform, 'platformId'> = { name: name.trim(),summary: marked(summary), logo,  platformId: platform?.platformId, release: releaseDate }
         const data = await sendData('/api/admin/platform', method, body)
         if (data.msg) {
+            if (platform) {
+                Object.assign(platform, { releaseDate, summary, logo, name })
+            }
+            else {
+                const toPush: Platform = {
+                    platformId: data.platformId,
+                    release: releaseDate,
+                    summary,
+                    logo,
+                    name
+                }
+                platforms.push(toPush)
+            }
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
         if (data.error) {
@@ -40,6 +54,8 @@ export default function EditPlatform(props: Props) {
     async function handleDelete() {
         const data = await sendData('/api/admin/platform', 'DELETE', {platformId: platform?.platformId})
         if (data.msg) {
+            const index = platforms.findIndex(item => item.platformId == platform!.platformId)
+            platforms.splice(index, 1)
             return dispatch({type: "SUCCESS", payload: data.msg})
         }
         if (data.error) {

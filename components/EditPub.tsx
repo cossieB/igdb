@@ -14,9 +14,10 @@ interface Props {
     pub: Publisher | null,
     isDelete: boolean
     dispatch: React.Dispatch<Actions>
+    publishers: Publisher[]
 }
 export default function EditPub(props: Props) {
-    const { pub, isDelete, dispatch } = props;
+    const { pub, isDelete, dispatch, publishers } = props;
     const [name, setName] = useState(pub?.name || "")
     const [summary, setSummary] = useState(pub?.summary || "")
     const [logo, setLogo] = useState(pub?.logo || "")
@@ -26,12 +27,28 @@ export default function EditPub(props: Props) {
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
-        const method = pub?.publisherId ? "PUT": "POST"
-        const body: Optional<Publisher, 'publisherId'> = { name: name.trim(),summary: marked(summary), logo, headquarters, country, publisherId: pub?.publisherId }
-        const data =  await sendData('/api/admin/pub', method, body)
+        const method = pub?.publisherId ? "PUT" : "POST"
+        const body: Optional<Publisher, 'publisherId'> = { name: name.trim(), summary: marked(summary), logo, headquarters, country, publisherId: pub?.publisherId }
+        const data = await sendData('/api/admin/pub', method, body)
 
         if (data.msg) {
-            return dispatch({type: "SUCCESS", payload: data.msg})
+            if (data.msg) {
+                if (pub) {
+                    Object.assign(pub, { country, headquarters, summary, logo, name })
+                }
+                else {
+                    const toPush: Publisher = {
+                        publisherId: data.publisherId,
+                        country,
+                        headquarters,
+                        summary,
+                        logo,
+                        name
+                    }
+                    publishers.push(toPush)
+                }
+            }
+            return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
             setErrors([data.error]);
@@ -41,10 +58,12 @@ export default function EditPub(props: Props) {
         }
     }
     async function handleDelete() {
-        const data = await sendData('/api/admin/pub', 'DELETE', {publisherId: pub?.publisherId})
-        
+        const data = await sendData('/api/admin/pub', 'DELETE', { publisherId: pub?.publisherId })
+
         if ('msg' in data) {
-            return dispatch({type: "SUCCESS", payload: data.msg})
+            const index = publishers.findIndex(item => item.publisherId == pub!.publisherId)
+            publishers.splice(index, 1)
+            return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
             setErrors([data.error]);
@@ -85,7 +104,7 @@ export default function EditPub(props: Props) {
                             </p>)}
                     </Popup>}
             </AnimatePresence>
-            <h2 style={{ textAlign: 'center' }} >{isDelete? "Delete Publisher" : pub ? "Edit Publisher" : "Add Publisher"}</h2>
+            <h2 style={{ textAlign: 'center' }} >{isDelete ? "Delete Publisher" : pub ? "Edit Publisher" : "Add Publisher"}</h2>
             <div className={styles.change} >
                 <form >
                     <div>

@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const result = await db.platform.create({
                 data: req.body
             })
-            return res.status(201).json({ msg: "Successfully created " + result.platformId })
+            return res.status(201).json({ msg: "Successfully created " + result.platformId, platformId: result.platformId })
         }
         catch (e: any) {
             return res.json({ error: e.meta.causee || e.message })

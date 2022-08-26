@@ -25,7 +25,10 @@ export default function Dashboard() {
     const result = useFetch<API_RESPONSE>('/api/admin')
     if (result[0]) throw new Error("Could receive data")
     const data = result[1]!
-    
+    data?.gamesOnPlatforms.sort((a,b) => {
+        if (a.gameId > b.gameId) return 1
+        else return -1
+    })
     return (
         <div className={styles.container} >
             <div className={styles.h1}>Admin Dashboard</div>
@@ -45,17 +48,25 @@ export default function Dashboard() {
                     </Popup>
                 }
             </AnimatePresence>
-            {(state.mode == "ADD_GAME" || state.mode == "EDIT_GAME" || state.mode == "REMOVE_GAME" ) &&
-                <EditGame devs={data.devs} pubs={data.pubs} game={state.item} platforms={data.platforms} gamesOnPlatforms={data.gamesOnPlatforms} dispatch={dispatch} isDelete={state.mode == "REMOVE_GAME"} />
+            {(state.mode == "ADD_GAME" || state.mode == "EDIT_GAME" || state.mode == "REMOVE_GAME") &&
+                <EditGame
+                    devs={data.devs}
+                    pubs={data.pubs}
+                    game={state.item}
+                    platforms={data.platforms}
+                    gamesOnPlatforms={data.gamesOnPlatforms} 
+                    dispatch={dispatch} 
+                    isDelete={state.mode == "REMOVE_GAME"}
+                    games={data.games} />
             }
-            {(state.mode == "ADD_DEVELOPER" || state.mode == "EDIT_DEVELOPER" || state.mode == "REMOVE_DEVELOPER" ) &&
+            {(state.mode == "ADD_DEVELOPER" || state.mode == "EDIT_DEVELOPER" || state.mode == "REMOVE_DEVELOPER") &&
                 <EditDev dev={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_DEVELOPER"} />
             }
 
-            {(state.mode == "ADD_PUBLISHER" || state.mode == "EDIT_PUBLISHER" || state.mode == "REMOVE_PUBLISHER" ) && 
+            {(state.mode == "ADD_PUBLISHER" || state.mode == "EDIT_PUBLISHER" || state.mode == "REMOVE_PUBLISHER") &&
                 <EditPub pub={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PUBLISHER"} />
             }
-            {(state.mode == "ADD_PLATFORM" || state.mode == "EDIT_PLATFORM" || state.mode == "REMOVE_PLATFORM" ) && 
+            {(state.mode == "ADD_PLATFORM" || state.mode == "EDIT_PLATFORM" || state.mode == "REMOVE_PLATFORM") &&
                 <EditPlatform platform={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PLATFORM"} />
             }
 

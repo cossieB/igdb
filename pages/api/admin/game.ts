@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 },
             })
 
-            return res.status(201).json({ msg: "Successfully created " + result.gameId })
+            return res.status(201).json({ msg: "Successfully created " + result.gameId, gameId: result.gameId })
         }
         catch (e: any) {
             console.error(e);

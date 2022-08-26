@@ -61,7 +61,7 @@ function List(props: P) {
             type: map[h2],
             payload: item
         };
-        dispatch((action as Actions));
+        dispatch(action as Actions);
     }
 
     return (

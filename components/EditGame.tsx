@@ -11,12 +11,14 @@ import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameSta
 import titleCase from "../utils/titleCase";
 import { Game, Publisher, Developer, Platform, GamesOnPlatforms } from "@prisma/client";
 import sendData from "../utils/sendData";
+import { Optional } from "../utils/utilityTypes";
 
 interface Props {
     game: Game | null,
     pubs: Publisher[],
     devs: Developer[],
     platforms: Platform[],
+    games: Game[],
     gamesOnPlatforms: GamesOnPlatforms[],
     isDelete: boolean,
     dispatch: React.Dispatch<Actions>
@@ -39,13 +41,13 @@ function changeType(game: Game | null, gamesOnPlatform: GamesOnPlatforms[]): Gam
 }
 
 export default function EditGame(props: Props) {
-    const { game, pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms } = props;
+    const {  pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms, games, game } = props;
     const [genreInput, setGenreInput] = useState("")
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     const [gameState, gameDispatch] = useReducer(gameReducer, changeType(game, gamesOnPlatforms) || initialGameUpdateState);
-
+    
     function handleKeydown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key == "Enter") {
             if (genreInput.length == 0 || gameState.genres.includes(genreInput)) return;
@@ -54,7 +56,7 @@ export default function EditGame(props: Props) {
         }
     }
     async function send() {
-        const method = gameState.gameId ? "PUT" : "POST"
+        const method = game ? "PUT" : "POST"
         const body = {
             ...gameState,
             title: gameState.title.trim(),
@@ -63,6 +65,30 @@ export default function EditGame(props: Props) {
         const data = await sendData('/api/admin/game', method, body)
 
         if ('msg' in data) {
+            if (game) {
+                const toEdit: Optional<GameUpdateState, 'platformIds'> = {...gameState}
+                delete toEdit.platformIds
+                // Delete elements matching gameId from array. gamesOnPlatforms array is sorted
+                const start = gamesOnPlatforms.findIndex(item => item.gameId == game.gameId)
+                let index = start;
+                let count = 0
+                while (gamesOnPlatforms[index].gameId == game.gameId && index < gamesOnPlatforms.length - 1) {
+                    count++
+                    index++
+                }
+                gamesOnPlatforms.splice(start, count)
+                // Add new elements to the array.
+                const junctionToPush: GamesOnPlatforms[] = gameState.platformIds.map(platformId => ({gameId: gameState.gameId, platformId}))
+                Object.assign(game, toEdit)
+                gamesOnPlatforms.push(...junctionToPush)
+            }
+            else {
+                const toPush: Optional<GameUpdateState, 'platformIds'> = {...gameState, gameId: data.gameId}
+                delete toPush.platformIds
+                games.push(toPush)
+                const junctionToPush: GamesOnPlatforms[] = gameState.platformIds.map(platformId => ({gameId: data.gameId, platformId}))
+                gamesOnPlatforms.push(...junctionToPush)
+            }
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if ('error' in data) {
@@ -73,15 +99,20 @@ export default function EditGame(props: Props) {
         }
     }
     async function handleDelete() {
-        let response = await fetch('/api/admin/game', {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ gameId: gameState.gameId })
-        })
-        const data = await response.json();
+        const data = await sendData('/api/admin/game', 'DELETE', {gameId: gameState.gameId})
         if (data.msg) {
+            
+            // Remove game object from the list of games and from the junction table data.
+            const start = gamesOnPlatforms.findIndex(item => item.gameId == game!.gameId)
+            let index = start;
+            let count = 0
+            while (gamesOnPlatforms[index].gameId == game!.gameId && index < gamesOnPlatforms.length - 1) {
+                count++
+                index++
+            }
+            gamesOnPlatforms.splice(start, count)     
+            const i = games.findIndex(item => item.gameId == game!.gameId)
+            games.splice(i, 1)
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
@@ -106,7 +137,7 @@ export default function EditGame(props: Props) {
         for (let tuple of map) {
             if (!tuple[0]) errors.push(`${tuple[1]} field is missing`)
         }
-
+        if (gameState.platformIds.length == 0) errors.push("Please select at least 1 platform")
         if (errors.length == 0) return send()
 
         setErrors(errors);
@@ -229,7 +260,12 @@ function SelectElement(props: P & { list: Publisher[] | Developer[] }) {
             >
                 <option value="" disabled >Select {title}</option>
                 {list.map(item =>
-                    <option key={'publisherId' in item ? item.publisherId : item.developerId} value={'publisherId' in item ? item.publisherId : item.developerId}> {item.name} </option>
+                    <option
+                        key={'publisherId' in item ? item.publisherId : item.developerId}
+                        value={'publisherId' in item ? item.publisherId : item.developerId}
+                    >
+                        {item.name}
+                    </option>
                 )}
             </select>
         </div>

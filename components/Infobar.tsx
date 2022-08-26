@@ -1,9 +1,7 @@
-import { IDev } from "../models/developers";
-import { IGame } from "../models/game";
-import { IPub } from "../models/publisher";
+import { Developer, Game, Publisher } from "@prisma/client"
 
 interface Props {
-    obj: IGame | IDev | IPub
+    obj: Game | Developer | Publisher
 }
 
 export default function Infobar({obj}: Props) {

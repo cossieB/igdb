@@ -5,7 +5,6 @@ import Description from '../../components/Description'
 import GameTile from '../../components/GameTile'
 import { db } from '../../prisma/db'
 import styles from '../../styles/Devs.module.scss'
-import { extract } from '../../utils/extractDocFields'
 
 interface Props {
     dev: (Developer & {

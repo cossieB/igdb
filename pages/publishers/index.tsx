@@ -27,6 +27,7 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
     return {
         props: {
             pubs
-        }
+        },
+        revalidate: 3600
     }
 }

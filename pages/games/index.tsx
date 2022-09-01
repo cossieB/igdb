@@ -28,6 +28,7 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
     return {
         props: {
             games: JSON.parse(JSON.stringify(games))
-        }
+        },
+        revalidate: 3600
     }
 }

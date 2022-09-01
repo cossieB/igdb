@@ -28,6 +28,7 @@ export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
     return {
         props: {
             devs
-        }
+        },
+        revalidate: 3600
     }
 }

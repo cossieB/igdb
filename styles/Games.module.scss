@@ -32,7 +32,8 @@
 }
 
 .date {
-    width: 45%;
+    width: fit-content;
+    min-width: 45%;
     height: fit-content;
     background-color: #2a2836;
     @include flexCenter(column);

@@ -25,7 +25,11 @@ export default function Dashboard() {
     const result = useFetch<API_RESPONSE>('/api/admin')
     if (result[0]) throw new Error("Could receive data")
     const data = result[1]!
-    data?.gamesOnPlatforms.sort((a,b) => {
+    data?.gamesOnPlatforms.sort((a, b) => {
+        if (a.gameId > b.gameId) return 1
+        else return -1
+    })
+    data?.genresOfGames.sort((a, b) => {
         if (a.gameId > b.gameId) return 1
         else return -1
     })
@@ -54,10 +58,12 @@ export default function Dashboard() {
                     pubs={data.pubs}
                     game={state.item}
                     platforms={data.platforms}
-                    gamesOnPlatforms={data.gamesOnPlatforms} 
-                    dispatch={dispatch} 
+                    gamesOnPlatforms={data.gamesOnPlatforms}
+                    dispatch={dispatch}
                     isDelete={state.mode == "REMOVE_GAME"}
-                    games={data.games} />
+                    games={data.games}
+                    genresOfGames={data.genresOfGames}
+                />
             }
             {(state.mode == "ADD_DEVELOPER" || state.mode == "EDIT_DEVELOPER" || state.mode == "REMOVE_DEVELOPER") &&
                 <EditDev dev={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_DEVELOPER"} developers={data.devs} />

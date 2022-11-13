@@ -1,7 +1,10 @@
 import { Game } from "@prisma/client";
 import { Optional } from "./utilityTypes";
 
-export type GameUpdateState = Game & {platformIds: string[]}
+export type GameUpdateState = Game & {
+    platformIds: string[]
+    genres: string[]
+}
 
 export const initialGameUpdateState: GameUpdateState = {
     gameId: "",

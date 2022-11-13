@@ -1,4 +1,4 @@
-import { Game, GamesOnPlatforms } from "@prisma/client";
+import { Game, GamesOnPlatforms, GenresOfGames } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "../../../prisma/db";
 
@@ -7,11 +7,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!process.env.IS_ADMIN) return res.status(401).json({error: "Unauthorized"})
     if (req.method == "POST") {
 
-        const { platformIds } = req.body
+        const { platformIds, genres } = req.body
         const game = { ...req.body }
+        delete game.gameId // empty string
+        // delete fields which aren't in the DB model
         delete game.platformIds
-        delete game.gameId
-        const onPlatform = platformIds.map((platformId: string) => ({ platformId }))
+        delete game.genres
+        const onPlatform = platformIds.map((platformId: string) => ({ platformId }));
+        const gameGenres = genres.map((genre: string) => ({genre}))
 
         try {
             const result = await db.game.create({
@@ -19,6 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     ...game,
                     GamesOnPlatforms: {
                         create: onPlatform
+                    },
+                    GenresOfGames: {
+                        create: gameGenres
                     }
                 },
             })
@@ -32,15 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (req.method == "PUT") {
         try {
-            const { platformIds } = req.body
-            const game = { ...req.body }
-            delete game.platformIds
-            delete game.gameId
-            const onPlatform: GamesOnPlatforms[] = platformIds.map((platformId: string) => ({ platformId, gameId: req.body.gameId }))
-
+            const {platformIds, genres, gameId, ...game} = req.body
+            const onPlatform: GamesOnPlatforms[] = platformIds.map((platformId: string) => ({ platformId, gameId }))
+            const gameGenres: GenresOfGames[] = genres.map((genre: string) => ({gameId, genre}))
+            
             const prom1 = db.game.update({
                 where: {
-                    gameId: req.body.gameId
+                    gameId
                 },
                 data: {
                     ...(game as Game)
@@ -48,13 +52,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             })
             const prom2 = db.gamesOnPlatforms.deleteMany({
                 where: {
-                    gameId: req.body.gameId
+                    gameId
                 },
             })
             const prom3 = db.gamesOnPlatforms.createMany({
                 data: onPlatform
             })
-            const result = await db.$transaction([prom1, prom2, prom3])
+            
+            const prom4 = db.genresOfGames.deleteMany({
+                where: {
+                    gameId
+                },
+            })
+            const prom5 = db.genresOfGames.createMany({
+                data: gameGenres
+            })
+            const result = await db.$transaction([prom1, prom2, prom3, prom4, prom5])
 
             return res.json({ msg: "Successfully updated " + result[0].gameId })
         }

@@ -3,15 +3,16 @@ import { Dispatch, useReducer, useState } from "react";
 import Tags from "./Tags";
 import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
-import { formatDateForInputElement } from "../utils/formatDate";
 import { Actions } from "../utils/adminReducerTypes";
 import { marked } from "marked";
 import gameReducer, { GameReducerAction } from "../utils/gameReducer";
 import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameState";
 import titleCase from "../utils/titleCase";
-import { Game, Publisher, Developer, Platform, GamesOnPlatforms } from "@prisma/client";
+import { Game, Publisher, Developer, Platform, GamesOnPlatforms, GenresOfGames } from "@prisma/client";
 import sendData from "../utils/sendData";
 import { Optional } from "../utils/utilityTypes";
+import { changeType } from "../utils/changeType";
+import { FormInputString, SelectElement } from "./FormInputElements";
 
 interface Props {
     game: Game | null,
@@ -20,33 +21,17 @@ interface Props {
     platforms: Platform[],
     games: Game[],
     gamesOnPlatforms: GamesOnPlatforms[],
+    genresOfGames: GenresOfGames[]
     isDelete: boolean,
     dispatch: React.Dispatch<Actions>
 }
-function changeType(game: Game | null, gamesOnPlatform: GamesOnPlatforms[]): GameUpdateState | null {
-    if (!game) return null;
-
-    const platformIds: string[] = []
-
-    for (let gop of gamesOnPlatform) {
-        if (gop.gameId == game.gameId) {
-            platformIds.push(gop.platformId)
-        }
-    }
-
-    return {
-        ...game,
-        platformIds
-    }
-}
-
 export default function EditGame(props: Props) {
-    const {  pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms, games, game } = props;
+    const {  pubs, devs, platforms, isDelete, dispatch, gamesOnPlatforms, games, game, genresOfGames } = props;
     const [genreInput, setGenreInput] = useState("")
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
-    const [gameState, gameDispatch] = useReducer(gameReducer, changeType(game, gamesOnPlatforms) || initialGameUpdateState);
+    const [gameState, gameDispatch] = useReducer(gameReducer, changeType(game, gamesOnPlatforms, genresOfGames) || initialGameUpdateState);
     
     function handleKeydown(e: React.KeyboardEvent<HTMLInputElement>) {
         if (e.key == "Enter") {
@@ -68,28 +53,26 @@ export default function EditGame(props: Props) {
         if ('msg' in data) {
             // Add object to state or edit existing object in state.
             if (game) {
+                
+                deleteFromArray(gamesOnPlatforms, game);
+                deleteFromArray(genresOfGames, game);
+                
                 const toEdit: Optional<GameUpdateState, 'platformIds'> = {...gameState}
                 delete toEdit.platformIds
-                // Delete elements matching gameId from array. gamesOnPlatforms array is sorted
-                const start = gamesOnPlatforms.findIndex(item => item.gameId == game.gameId)
-                let index = start;
-                let count = 0
-                while (gamesOnPlatforms[index].gameId == game.gameId && index < gamesOnPlatforms.length - 1) {
-                    count++
-                    index++
-                }
-                gamesOnPlatforms.splice(start, count)
-                // Add new elements to the array.
-                const junctionToPush: GamesOnPlatforms[] = gameState.platformIds.map(platformId => ({gameId: gameState.gameId, platformId}))
+                const gopToPush: GamesOnPlatforms[] = gameState.platformIds.map(platformId => ({gameId: gameState.gameId, platformId}))
+                const gogToPush: GenresOfGames[] = gameState.genres.map(genre => ({gameId: gameState.gameId, genre}))
                 Object.assign(game, toEdit)
-                gamesOnPlatforms.push(...junctionToPush)
+                gamesOnPlatforms.push(...gopToPush)
+                genresOfGames.push(...gogToPush)
             }
             else {
                 const toPush: Optional<GameUpdateState, 'platformIds'> = {...gameState, gameId: data.gameId}
                 delete toPush.platformIds
                 games.push(toPush)
-                const junctionToPush: GamesOnPlatforms[] = gameState.platformIds.map(platformId => ({gameId: data.gameId, platformId}))
-                gamesOnPlatforms.push(...junctionToPush)
+                const gopToPush: GamesOnPlatforms[] = gameState.platformIds.map(platformId => ({gameId: data.gameId, platformId}))
+                gamesOnPlatforms.push(...gopToPush)
+                const gogToPush: GenresOfGames[] = gameState.genres.map(genre => ({gameId: data.gameId, genre}))
+                genresOfGames.push(...gogToPush)
             }
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
@@ -221,55 +204,14 @@ export default function EditGame(props: Props) {
     )
 }
 
-interface P {
-    name: keyof GameUpdateState,
-    value: string,
-    title?: string,
-    isDelete: boolean,
-    dispatch: Dispatch<GameReducerAction>
-}
-
-function FormInputString(props: P) {
-    const { name, isDelete, dispatch, value } = props;
-    const title = props.title || titleCase(name)
-
-    return (
-        <div>
-            <label> {title} </label>
-            <input
-                type={name != "releaseDate" ? 'text' : 'date'}
-                value={name != "releaseDate" ? value : formatDateForInputElement(new Date(value))}
-                name={name}
-                onChange={e => dispatch({ type: 'UPDATE_STRING', payload: { name, value: e.target.value } })}
-                placeholder={title}
-                disabled={isDelete} />
-        </div>
-    )
-}
-
-function SelectElement(props: P & { list: Publisher[] | Developer[] }) {
-    const { name, isDelete, dispatch, value, list } = props;
-    const title = props.title || titleCase(name)
-
-    return (
-        <div>
-            <label> {title}* </label>
-            <select
-                value={value}
-                name={name}
-                onChange={(e) => dispatch({ type: 'UPDATE_STRING', payload: { name, value: e.target.value } })}
-                disabled={isDelete}
-            >
-                <option value="" disabled >Select {title}</option>
-                {list.map(item =>
-                    <option
-                        key={'publisherId' in item ? item.publisherId : item.developerId}
-                        value={'publisherId' in item ? item.publisherId : item.developerId}
-                    >
-                        {item.name}
-                    </option>
-                )}
-            </select>
-        </div>
-    )
+function deleteFromArray(array: {gameId: string}[], game: Game) {
+    // Delete elements matching gameId from array. Array is sorted
+    const start = array.findIndex(item => item.gameId == game.gameId);
+    let index = start;
+    let count = 0;
+    while (array[index].gameId == game.gameId && index < array.length - 1) {
+        count++;
+        index++;
+    }
+    array.splice(start, count);
 }

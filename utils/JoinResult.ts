@@ -21,10 +21,26 @@ export type GameTableJoinResult = {
 export function joinQuery(id: string): Promise<GameTableJoinResult[]> {
     return db.$queryRaw`
         SELECT 
-            "gameId", "publisherId", "developerId", "title", "cover", "Game".summary, "releaseDate", "genres", "images", "banner", "trailer", 
-            "Publisher".name AS pub_name, "Developer".name AS dev_name, "Publisher".logo AS pub_logo, "Developer".logo AS dev_logo
-            FROM "Game" 
-        INNER JOIN "Developer" USING ("developerId") 
-        INNER JOIN "Publisher" USING ("publisherId")
-        WHERE "gameId" = ${id}::UUID;`
+            "gameId", 
+            "publisherId", 
+            "developerId", 
+            "title",
+            "cover", 
+            "Game".summary, 
+            "releaseDate", 
+            "images", 
+            "banner", 
+            "trailer", 
+            "Publisher".name AS pub_name, 
+            "Developer".name AS dev_name, 
+            "Publisher".logo AS pub_logo,
+            "Developer".logo AS dev_logo
+        FROM 
+            "Game" 
+        INNER JOIN 
+            "Developer" USING ("developerId") 
+        INNER JOIN 
+            "Publisher" USING ("publisherId")
+        WHERE 
+            "gameId" = ${id}::UUID;`
 }

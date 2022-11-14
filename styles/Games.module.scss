@@ -146,7 +146,7 @@
 }
 .video {
     margin-top: 2rem;
-    width: 100vw;
+    width: 100%;
     @include flexCenter;
     > iframe {
         width: 75%;

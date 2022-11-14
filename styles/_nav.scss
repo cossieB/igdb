@@ -4,13 +4,8 @@ nav {
     background-color: #222;
     position: fixed;
     z-index: 3;
-    width: 5rem;
-    height: 100vh;
     color: whitesmoke;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
     transition: width 200ms ease;
     overflow: hidden;
     .navIcon {
@@ -22,7 +17,6 @@ nav {
     }
 
     div {
-        width: 1000%;
         height: 5rem;
         display: flex;
         justify-content: flex-start;
@@ -38,6 +32,7 @@ nav {
     .logo1 {
         @include flexCenter();
         width: 5rem;
+        padding-left: 1rem;
         transition: all 200ms ease;
 
         ~span {
@@ -54,6 +49,7 @@ nav {
         height: 5rem;
         width: 100vw;
         flex-direction: row;
+        justify-content: center;
 
         .navText,
         .logo {
@@ -66,6 +62,10 @@ nav {
     nav {
         left: 0;
         top: 0;
+        width: 5rem;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
         &:hover {
             width: 16rem;
             transition: all 200ms ease;

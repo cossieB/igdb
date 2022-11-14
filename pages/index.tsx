@@ -3,6 +3,7 @@ import { GetStaticPropsResult } from 'next'
 import Carousel from '../components/Carousel'
 import DevTile from '../components/DevTile'
 import GameTile from '../components/GameTile'
+import Header from '../components/Header'
 import { db } from '../prisma/db'
 import styles from '../styles/Home.module.scss'
 
@@ -21,26 +22,18 @@ export default function Home({ games, devs, pubs, platforms }: Props) {
             <div className={styles.games} >
                 {games.map(item => <GameTile key={item.gameId} game={item} className="" />)}
             </div>
-            <div className={styles.header} >
-                <h2>Developers</h2>
-                <div className={styles.line} ></div>
-            </div>
+            
+            <Header heading='Developers' />
             <div className={styles.logos}>
                 {devs.map(dev => <DevTile key={dev.developerId} className={styles.tile} href={'developers'} item={{...dev, id: dev.developerId}} />)}
             </div>
             
-            <div className={styles.header} >
-                <h2>Publishers</h2>
-                <div className={styles.line} ></div>
-            </div>
+            <Header heading='Publishers' />
             <div className={styles.logos}>
                 {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publishers" item={{...pub, id: pub.publisherId}} />)}
             </div>
 
-            <div className={styles.header} >
-                <h2>Platforms</h2>
-                <div className={styles.line} ></div>
-            </div>
+            <Header heading='Platforms' />
             <div className={styles.logos}>
                 {platforms.map(pform => <DevTile key={pform.platformId} className={styles.tile} href="platforms" item={{...pform, id: pform.platformId}} />)}
             </div>

@@ -115,8 +115,15 @@ button {
         align-items: center;
         border-radius: 0.5rem;
         margin-right: 1rem;
+        margin-bottom: 0.5rem;
         padding: 0.5rem;
         white-space: nowrap;
+        transition: all 250ms ease;
+
+        &:hover {
+            box-shadow: 0 0 50px #00c3ff;
+            background-color: #00ff00;
+        }
 
         svg {
             height: unset;

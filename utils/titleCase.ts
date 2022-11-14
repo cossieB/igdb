@@ -1,5 +1,5 @@
 export default function (value: string) {
-    let arr = value.split(' ')
+    const arr = value.split(' ')
     let titleCased = ''
     const ignoreList = ['of', 'the', 'a', 'an']
     for (let i = 0; i < arr.length; i++) {
@@ -7,7 +7,7 @@ export default function (value: string) {
         if (ignoreList.includes(word) && i > 0 ) continue
         word = word.toLowerCase()
         word = word[0].toUpperCase() + word.slice(1,)
-        titleCased += word
+        titleCased += word + " "
     }
-    return titleCased
+    return titleCased.trimEnd()
 }

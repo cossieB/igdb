@@ -41,7 +41,7 @@ export default function GameId({ game, genres }: Props) {
                         <div> {new Date(game.releaseDate).toLocaleString('en-za', { month: 'short' })} </div>
                         <div> {new Date(game.releaseDate).getFullYear()} </div>
                     </div>
-                    <Tags tags={genres} />
+                    <Tags isLink={true} tags={genres} />
                 </div>
                 <Description className={styles.description} html={game.summary} />
             </div>
@@ -69,10 +69,16 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
         }
     }
     const platforms: Pick<Platform, 'platformId' | 'name' | 'logo'>[] = await db.$queryRaw`
-        SELECT "platformId", "Platform".name , "Platform".logo
-            FROM "Platform"
-        INNER JOIN "GamesOnPlatforms" USING ("platformId")
-        INNER JOIN "Game" USING ("gameId")
+        SELECT 
+            "platformId", 
+            "Platform".name , 
+            "Platform".logo
+        FROM 
+            "Platform"
+        INNER JOIN 
+            "GamesOnPlatforms" USING ("platformId")
+        INNER JOIN 
+            "Game" USING ("gameId")
         WHERE "gameId" = ${id}::UUID;
         `
     const game: GameResult = {

@@ -17,7 +17,6 @@ body {
     font-family: 'Nunito', sans-serif;
     color: var(--primaryClr);
     width: 100vw;
-    overflow-x: hidden;
 }
 
 img {
@@ -41,7 +40,9 @@ svg {
     height: 2rem;
     width: 2rem;
 }
-
+.container {
+    width: 100%;
+}
 .hero {
     @include flexCenter();
     position: relative;
@@ -107,7 +108,7 @@ button {
     display: flex;
     align-items: center;
 
-    >div {
+    >div, a {
         background-color: #00f7ff;
         color: black;
         display: flex;

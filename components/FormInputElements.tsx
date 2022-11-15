@@ -1,9 +1,9 @@
 import { Publisher, Developer } from "@prisma/client";
 import { Dispatch } from "react";
-import { formatDateForInputElement } from "../utils/formatDate";
+import { formatDateForInputElement } from "../lib/formatDate";
 import { GameReducerAction } from "../utils/gameReducer";
 import { GameUpdateState } from "../utils/initialGameState";
-import titleCase from "../utils/titleCase";
+import titleCase from "../lib/titleCase";
 
 export interface P {
     name: keyof GameUpdateState,

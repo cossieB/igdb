@@ -12,6 +12,10 @@ export default function Search({ setIsSearch }: P) {
         document.body.style.overflow = 'hidden'
         inputElem.current?.focus();
     }, [])
+
+    async function getData() {
+        
+    }
     return (
         <motion.div
             className={styles.container}

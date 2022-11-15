@@ -4,10 +4,10 @@ import styles from '../styles/dashboard.module.scss'
 import Popup from "./Popup";
 import { Actions } from "../utils/adminReducerTypes";
 import { marked } from "marked";
-import { formatDateForInputElement } from "../utils/formatDate";
+import { formatDateForInputElement } from "../lib/formatDate";
 import { Platform } from "@prisma/client";
-import { Optional } from "../utils/utilityTypes";
-import sendData from "../utils/sendData";
+import { Optional } from "../lib/utilityTypes";
+import sendData from "../lib/sendData";
 
 interface Props {
     platform: Platform | null,

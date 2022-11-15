@@ -6,9 +6,8 @@ import { Actions } from "../utils/adminReducerTypes";
 import { countryList } from "../utils/countryList";
 import { marked } from "marked";
 import { Publisher } from "@prisma/client";
-import sendData from "../utils/sendData";
-import { Optional } from "../utils/utilityTypes";
-
+import sendData from "../lib/sendData";
+import { Optional } from "../lib/utilityTypes";
 
 interface Props {
     pub: Publisher | null,

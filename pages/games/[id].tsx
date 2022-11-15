@@ -4,10 +4,11 @@ import Head from 'next/head'
 import Description from '../../components/Description'
 import DevTile from '../../components/DevTile'
 import Tags from '../../components/Tags'
+import { Optional } from '../../lib/utilityTypes'
 import { db } from '../../prisma/db'
 import styles from '../../styles/Games.module.scss'
 import { joinQuery } from '../../utils/JoinResult'
-import { Optional } from '../../utils/utilityTypes'
+
 
 type GameResult = (Game & {
     developer: Optional<Developer, 'country' | 'location' | 'summary'>;

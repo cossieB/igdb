@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import GameTile from "../../components/GameTile";
 import styles from '../../styles/Games.module.scss'
-import titleCase from "../../utils/titleCase";
+import titleCase from "../../lib/titleCase";
 
 type T = Pick<Game, 'title' | 'cover' | 'releaseDate' | 'gameId'>;
 

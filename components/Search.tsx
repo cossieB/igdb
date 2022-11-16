@@ -1,5 +1,5 @@
-import { motion } from "framer-motion"
-import { SetStateAction, useEffect, useRef, useState } from "react"
+import { motion } from "framer-motion";
+import { SetStateAction, useEffect, useState } from "react"
 import styles from "../styles/Search.module.scss"
 import { GamePick, PubPick, DevPick } from "../utils/customTypes";
 import { circleCloseSvg } from "../utils/svgs";

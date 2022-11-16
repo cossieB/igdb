@@ -1,28 +1,33 @@
 import { motion } from "framer-motion"
-import { SetStateAction, useEffect, useRef } from "react"
+import { SetStateAction, useEffect, useRef, useState } from "react"
 import styles from "../styles/Search.module.scss"
+import { GamePick, PubPick, DevPick } from "../utils/customTypes";
+import { circleCloseSvg } from "../utils/svgs";
+import DevTile from "./DevTile";
+import GameTile from "./GameTile";
+import Header from "./Header";
+import SearchInput from "./SearchInput";
 
 interface P {
     setIsSearch: React.Dispatch<SetStateAction<boolean>>
 }
-
 export default function Search({ setIsSearch }: P) {
-    const inputElem = useRef<HTMLInputElement>(null)!;
+    const [games, setGames] = useState<GamePick[]>([])
+    const [pubs, setPubs] = useState<PubPick[]>([])
+    const [devs, setDevs] = useState<DevPick[]>([])
+    const [error, setError] = useState("")
+
     useEffect(() => {
         document.body.style.overflow = 'hidden'
-        inputElem.current?.focus();
     }, [])
 
-    async function getData() {
-        
-    }
     return (
         <motion.div
-            className={styles.container}
-            initial={{ y: '-100vh' }}
-            animate={{ y: 0 }}
-            exit={{y: '-100vh'}}
-            transition={{type: 'tween', ease: "easeOut", duration: 0.25}}
+            className={devs.length + pubs.length + games.length == 0 ? `${styles.container} ${styles.init}` : `${styles.container}`}
+            initial={{ y: '-100vh', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '-100vh', opacity: 0 }}
+            transition={{ type: 'tween', ease: "easeOut", duration: 0.25 }}
         >
             <button
                 className={styles.close}
@@ -31,17 +36,61 @@ export default function Search({ setIsSearch }: P) {
                     document.body.style.overflow = 'auto'
                 }}
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                </svg>
+                {circleCloseSvg}
             </button>
-            <input
-                className={styles.input}
-                type="search"
-                placeholder="Search..."
-                ref={inputElem}
+            <SearchInput
+                setGames={setGames}
+                setPubs={setPubs}
+                setDevs={setDevs}
+                setError={setError}
             />
+            {error && <div className={styles.error}>{error}</div>}
+            {games.length > 0 &&
+                <>
+                    <Header heading="Games" />
+                    <div className={styles.games}>
+                        {games.map(game =>
+                            <GameTile
+                                game={game}
+                            />
+                        )}
+                    </div>
+                </>
+            }
+            {devs.length > 0 &&
+                <>
+                    <Header heading="Developers" />
+                    <div className={styles.logos}>
+                        {devs.map(dev =>
+                            <DevTile
+                                item={{
+                                    id: dev.developerId,
+                                    logo: dev.logo,
+                                    name: dev.name
+                                }}
+                                href="developers"
+                            />
+                        )}
+                    </div>
+                </>
+            }
+            {pubs.length > 0 &&
+                <>
+                    <Header heading="Publishers" />
+                    <div className={styles.logos}>
+                        {pubs.map(pub =>
+                            <DevTile
+                                item={{
+                                    id: pub.publisherId,
+                                    logo: pub.logo,
+                                    name: pub.name
+                                }}
+                                href="publishers"
+                            />
+                        )}
+                    </div>
+                </>
+            }
         </motion.div>
     )
 }

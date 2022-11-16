@@ -1,4 +1,5 @@
-import Link from "next/link"
+import Link from "next/link";
+import styles from './../styles/Devs.module.scss'
 
 interface Props {
     item: {
@@ -6,7 +7,7 @@ interface Props {
         name: string,
         logo: string
     },
-    className: string,
+    className?: string,
     href: 'developers' | 'publishers' | 'platforms'
 }
 
@@ -14,7 +15,7 @@ export default function DevTile({item, className, href}: Props) {
     return (
         <Link href={`/${href}/${item.id}`} >
         <a>
-            <div className={className} key={`${item.name}`} >
+            <div className={className || styles.tile} key={`${item.name}`} >
                 <img src={item.logo} alt={`${item.name} Logo`} />
             </div>
         </a>

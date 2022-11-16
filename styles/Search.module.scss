@@ -1,8 +1,7 @@
-@import 'mixins';
+@import 'mixins', 'grids';
 
 .container {
     background-color: rgba(0, 0, 0, 0.85);
-    @include flexCenter();
     position: fixed;
     left: 0;
     top: 0;
@@ -10,6 +9,15 @@
     width: 100vw;
     z-index: 999;
     backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    overflow: auto;
+    &.init {
+        @include flexCenter();
+        
+    }
 }
 
 .close {
@@ -32,4 +40,11 @@
     &:focus {
         outline: none;
     }
+}
+.games, .logos {
+    width: 100%;
+}
+.error {
+    color: red;
+    font-size: 1.5rem;
 }

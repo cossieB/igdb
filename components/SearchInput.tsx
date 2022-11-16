@@ -11,7 +11,7 @@ interface P {
     setError: Dispatch<SetStateAction<string>>
 }
 
-export default function (props: P) {
+export default function SearchInput(props: P) {
     const {setDevs, setGames, setPubs, setError} = props;
     const ref = useRef<HTMLInputElement>(null);
     useEffect(() => {

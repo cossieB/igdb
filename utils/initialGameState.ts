@@ -1,5 +1,4 @@
 import { Game } from "@prisma/client";
-import { Optional } from "./utilityTypes";
 
 export type GameUpdateState = Game & {
     platformIds: string[]

@@ -1,4 +1,4 @@
-export default function (value: string) {
+export default function titleCase(value: string) {
     const arr = value.split(' ')
     let titleCased = ''
     const ignoreList = ['of', 'the', 'a', 'an']

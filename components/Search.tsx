@@ -52,6 +52,7 @@ export default function Search({ setIsSearch }: P) {
                         {games.map(game =>
                             <GameTile
                                 game={game}
+                                key={game.gameId}
                             />
                         )}
                     </div>
@@ -63,6 +64,7 @@ export default function Search({ setIsSearch }: P) {
                     <div className={styles.logos}>
                         {devs.map(dev =>
                             <DevTile
+                                key={dev.developerId}
                                 item={{
                                     id: dev.developerId,
                                     logo: dev.logo,
@@ -80,6 +82,7 @@ export default function Search({ setIsSearch }: P) {
                     <div className={styles.logos}>
                         {pubs.map(pub =>
                             <DevTile
+                                key={pub.publisherId}
                                 item={{
                                     id: pub.publisherId,
                                     logo: pub.logo,

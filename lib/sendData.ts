@@ -1,7 +1,7 @@
 type Methods = "GET" | "POST" | "PUT" | "DELETE"
 export default async function sendData<T = any>(url: string, method?: "GET"): Promise<T>;
-export default async function sendData<T = any>(url: string, method: Exclude<Methods, "GET"> , body: BodyInit): Promise<T>;
-export default async function sendData<T = any>(url: string, method?: Methods, body?: BodyInit) {
+export default async function sendData<T = any>(url: string, method: Exclude<Methods, "GET"> , body: { [key: string]: any }): Promise<T>;
+export default async function sendData<T = any>(url: string, method?: Methods, body?: { [key: string]: any }) {
     
     method = method || "GET";
     const obj: RequestInit = {

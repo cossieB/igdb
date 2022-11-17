@@ -5,16 +5,21 @@
     @include flexCenter;
     text-align: center;
     height: 100vh;
+    width: 100%;
 
     >div {
         height: 50%;
     }
     >div:first-child {
         display: flex;
-        font-size: 10rem;
+        font-size: 8rem; 
         align-items: flex-end;
     }
     >div:nth-child(2) {
         @include flexCenter
     }
+}
+
+@media (max-width: 768px) {
+    
 }

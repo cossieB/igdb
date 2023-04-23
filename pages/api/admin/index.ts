@@ -12,7 +12,7 @@ export type API_RESPONSE = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<API_RESPONSE | {error: string}>) {
-    if (req.method != "GET") return res.status(501).json({ error: "Unsupported method" })
+    if (req.method != "GET") return res.status(400).json({ error: "Unsupported method" })
 
     try {
         const gamesQuery = db.game.findMany()

@@ -2,28 +2,29 @@
     position: relative;
     overflow-x: hidden;
     display: flex;
-    height: 50vh;
     img {
-        width: 50%;
-        height: 100%;
-        position: absolute;
-        
+        aspect-ratio: 16/9;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+    $width: 100vw;
     .carousel {
-        height: 25vh;
+        height: calc(9 / 16 * $width);
         img {
-            width: 100%;
-            left: 50vw
+            width: $width;
+            position: absolute;
+            left: 50vw;
         }
-
     }
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
+    $width: 50vw;
     .carousel {
+        height: calc(9 / 16 * $width);
         img {
+            width: $width;
+            position: absolute;
             right: 0;
         }
     }

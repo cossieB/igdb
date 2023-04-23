@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.12",
     "@as-integrations/next": "^1.2.0",
     "@prisma/client": "^4.2.1",
     "framer-motion": "^6.3.3",
+    "graphql": "^16.6.0",
     "marked": "^4.0.16",
     "next": "^12.1.6",
     "prisma": "^4.2.1",

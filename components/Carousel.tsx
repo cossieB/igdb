@@ -16,7 +16,7 @@ export default function Carousel() {
         const newCurrent = inc(current)
         const newPrev = inc(previous)
         const newNext = inc(next)
-        let interval = setTimeout(() => {
+        const interval = setTimeout(() => {
             setCurrent(newCurrent)
             setPrevious(newPrev)
             setNext(newNext)

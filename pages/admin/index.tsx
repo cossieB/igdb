@@ -1,17 +1,15 @@
 import React, { useEffect, useReducer } from "react"
-import adminReducer from "../utils/adminReducer"
-import { Actions, States } from "../utils/adminReducerTypes";
-import styles from '../styles/dashboard.module.scss'
-import Panel from "../components/DashboardPanel";
-import useFetch from "../utils/useFetch";
-import { backSvg } from "../utils/svgs";
-import EditGame from "../components/EditGame";
-import Popup from "../components/Popup";
-import EditDev from "../components/EditDev";
+import adminReducer from "../../utils/adminReducer"
+import { Actions, States } from "../../utils/adminReducerTypes";
+import styles from '../../styles/dashboard.module.scss'
+import Panel from "../../components/admin/DashboardPanel";
+import useFetch from "../../utils/useFetch";
+import { backSvg } from "../../utils/svgs";
+import Popup from "../../components/Popup";
+import EditDev from "../../components/admin/EditDev";
 import { AnimatePresence } from "framer-motion";
-import EditPub from "../components/EditPub";
-import EditPlatform from "../components/EditPlatform";
-import { API_RESPONSE } from "./api/admin";
+import { API_RESPONSE } from "./../api/admin";
+import DashboardNav from "../../components/admin/DashboardNav";
 
 const init: States = {
     mode: "HOME",
@@ -21,22 +19,23 @@ const init: States = {
 }
 
 export default function Dashboard() {
-    const [state, dispatch] = useReducer(adminReducer, init);
-    const result = useFetch<API_RESPONSE>('/api/admin')
-    if (result[0]) throw new Error("Could receive data")
-    const data = result[1]!
-    data?.gamesOnPlatforms.sort((a, b) => {
-        if (a.gameId > b.gameId) return 1
-        else return -1
-    })
-    data?.genresOfGames.sort((a, b) => {
-        if (a.gameId > b.gameId) return 1
-        else return -1
-    })
+    // const [state, dispatch] = useReducer(adminReducer, init);
+    // const result = useFetch<API_RESPONSE>('/api/admin')
+    // if (result[0]) throw new Error("Could receive data")
+    // const data = result[1]!
+    // data?.gamesOnPlatforms.sort((a, b) => {
+    //     if (a.gameId > b.gameId) return 1
+    //     else return -1
+    // })
+    // data?.genresOfGames.sort((a, b) => {
+    //     if (a.gameId > b.gameId) return 1
+    //     else return -1
+    // })
     return (
         <div className={styles.container} >
             <div className={styles.h1}>Admin Dashboard</div>
-            {state.mode != "HOME" && <span onClick={() => dispatch({ type: "HOME" })} className={styles.backBtn} >{backSvg}</span>}
+            <DashboardNav />
+            {/* {state.mode != "HOME" && <span onClick={() => dispatch({ type: "HOME" })} className={styles.backBtn} >{backSvg}</span>}
             {state.mode == "HOME" &&
                 <div className={styles.main} >
                     <Panel displayField="title" items={data?.games} h2="Games" dispatch={dispatch} />
@@ -74,7 +73,7 @@ export default function Dashboard() {
             }
             {(state.mode == "ADD_PLATFORM" || state.mode == "EDIT_PLATFORM" || state.mode == "REMOVE_PLATFORM") &&
                 <EditPlatform platform={state.item} dispatch={dispatch} isDelete={state.mode == "REMOVE_PLATFORM"} platforms={data.platforms} />
-            }
+            } */}
 
         </div>
     )

@@ -1,0 +1,19 @@
+@import 'mixins';
+
+.ul {
+    display: flex;
+
+    li {
+        margin: 0 1rem;
+
+        a {
+            @include flexCenter;
+        }
+        &.active {
+            color: #f0f;
+            svg {
+                color: #f0f;
+            }
+        }
+    }
+}

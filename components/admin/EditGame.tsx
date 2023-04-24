@@ -1,17 +1,17 @@
 import { AnimatePresence } from "framer-motion";
 import { useReducer, useState } from "react";
-import Tags from "./Tags";
+import Tags from "../Tags";
 import styles from '../styles/dashboard.module.scss'
-import Popup from "./Popup";
-import { Actions } from "../utils/adminReducerTypes";
+import Popup from "./../Popup";
+import { Actions } from "../../utils/adminReducerTypes";
 import { marked } from "marked";
-import gameReducer from "../utils/gameReducer";
-import { GameUpdateState, initialGameUpdateState } from "../utils/initialGameState";
+import gameReducer from "../../utils/gameReducer";
+import { GameUpdateState, initialGameUpdateState } from "../../utils/initialGameState";
 import { Game, Publisher, Developer, Platform, GamesOnPlatforms, GenresOfGames } from "@prisma/client";
-import { Optional } from "../lib/utilityTypes";
-import { changeType } from "../utils/changeType";
-import { FormInputString, SelectElement } from "./FormInputElements";
-import sendData from "../lib/sendData";
+import { Optional } from "../../lib/utilityTypes";
+import { changeType } from "../../utils/changeType";
+import { FormInputString, SelectElement } from "./../FormInputElements";
+import sendData from "../../lib/sendData";
 
 interface Props {
     game: Game | null,

@@ -1,49 +1,51 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import styles from '../styles/dashboard.module.scss'
-import Popup from "./Popup";
-import { Actions } from "../utils/adminReducerTypes";
-import { countryList } from "../utils/countryList";
+import Popup from "./../Popup";
+import { Actions } from "../../utils/adminReducerTypes";
+import { countryList } from "../../utils/countryList";
 import { marked } from "marked";
-import { Developer } from "@prisma/client";
-import sendData from "../lib/sendData";
-import { Optional } from "../lib/utilityTypes";
+import { Publisher } from "@prisma/client";
+import sendData from "../../lib/sendData";
+import { Optional } from "../../lib/utilityTypes";
 
 interface Props {
-    dev: Developer | null,
-    isDelete?: boolean,
+    pub: Publisher | null,
+    isDelete: boolean
     dispatch: React.Dispatch<Actions>
-    developers: Developer[]
+    publishers: Publisher[]
 }
-export default function EditDev(props: Props) {
-    const { dev, isDelete, dispatch, developers } = props;
-    const [name, setName] = useState(dev?.name || "")
-    const [summary, setSummary] = useState(dev?.summary || "")
-    const [logo, setLogo] = useState(dev?.logo || "")
-    const [location, setLocation] = useState(dev?.location || "")
-    const [country, setCountry] = useState(dev?.country || "")
+export default function EditPub(props: Props) {
+    const { pub, isDelete, dispatch, publishers } = props;
+    const [name, setName] = useState(pub?.name || "")
+    const [summary, setSummary] = useState(pub?.summary || "")
+    const [logo, setLogo] = useState(pub?.logo || "")
+    const [headquarters, setHeadquarters] = useState(pub?.headquarters || "")
+    const [country, setCountry] = useState(pub?.country || "")
     const [errors, setErrors] = useState<string[]>([])
     const [challengeAnswer, setChallengeAnswer] = useState("");
 
     async function send() {
-        const method = dev?.developerId ? "PUT" : "POST"
-        const body: Optional<Developer, 'developerId'> = { name: name.trim(), summary: marked(summary), logo, location, country, developerId: dev?.developerId }
-        const data = await sendData('/api/admin/dev', method, body)
+        const method = pub?.publisherId ? "PUT" : "POST"
+        const body: Optional<Publisher, 'publisherId'> = { name: name.trim(), summary: marked(summary), logo, headquarters, country, publisherId: pub?.publisherId }
+        const data = await sendData('/api/admin/pub', method, body)
 
         if (data.msg) {
-            if (dev) {
-                Object.assign(dev, { country, location, summary, logo, name })
-            }
-            else {
-                const toPush: Developer = {
-                    developerId: data.developerId,
-                    country,
-                    location,
-                    summary,
-                    logo,
-                    name
+            if (data.msg) {
+                if (pub) {
+                    Object.assign(pub, { country, headquarters, summary, logo, name })
                 }
-                developers.push(toPush)
+                else {
+                    const toPush: Publisher = {
+                        publisherId: data.publisherId,
+                        country,
+                        headquarters,
+                        summary,
+                        logo,
+                        name
+                    }
+                    publishers.push(toPush)
+                }
             }
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
@@ -55,10 +57,11 @@ export default function EditDev(props: Props) {
         }
     }
     async function handleDelete() {
-        const data = await sendData('/api/admin/dev', 'DELETE', { developerId: dev!.developerId })
-        if (data.msg) {
-            const index = developers.findIndex(item => item.developerId == dev!.developerId)
-            developers.splice(index, 1)
+        const data = await sendData('/api/admin/pub', 'DELETE', { publisherId: pub?.publisherId })
+
+        if ('msg' in data) {
+            const index = publishers.findIndex(item => item.publisherId == pub!.publisherId)
+            publishers.splice(index, 1)
             return dispatch({ type: "SUCCESS", payload: data.msg })
         }
         if (data.error) {
@@ -73,7 +76,7 @@ export default function EditDev(props: Props) {
         let map = [
             [name, "Name"],
             [logo, "Logo"],
-            [location, "Location"],
+            [headquarters, "Headquarters"],
             [summary, "Summary"],
             [country, "Country"]
         ] as const
@@ -100,20 +103,20 @@ export default function EditDev(props: Props) {
                             </p>)}
                     </Popup>}
             </AnimatePresence>
-            <h2 style={{ textAlign: 'center' }} >{isDelete ? "Delete Developer" : dev ? "Edit Developer" : "Add Developer"}</h2>
+            <h2 style={{ textAlign: 'center' }} >{isDelete ? "Delete Publisher" : pub ? "Edit Publisher" : "Add Publisher"}</h2>
             <div className={styles.change} >
                 <form >
                     <div>
                         <label> Name* </label>
-                        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Developer Name" disabled={isDelete} />
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Publisher Name" disabled={isDelete} />
                     </div>
                     <div>
                         <label> Logo* </label>
-                        <input type="text" value={logo} onChange={e => setLogo(e.target.value)} placeholder="Cover" disabled={isDelete} />
+                        <input type="text" value={logo} onChange={e => setLogo(e.target.value)} placeholder="Logo" disabled={isDelete} />
                     </div>
                     <div>
-                        <label> Location* </label>
-                        <input type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="Location" disabled={isDelete} />
+                        <label> Headquarters* </label>
+                        <input type="text" value={headquarters} onChange={e => setHeadquarters(e.target.value)} placeholder="Location" disabled={isDelete} />
                     </div>
                     <div>
                         <label> Country* </label>

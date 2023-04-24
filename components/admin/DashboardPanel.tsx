@@ -1,5 +1,5 @@
 import { Dispatch } from "react"
-import { Actions, ActionWithPayload, Models, Tables, TypesWithPayload } from "../utils/adminReducerTypes";
+import { Actions, ActionWithPayload, Models, Tables, TypesWithPayload } from "../../utils/adminReducerTypes";
 import styles from '../styles/dashboard.module.scss'
 import { Game, Publisher, Developer, Platform } from "@prisma/client";
 

@@ -6,6 +6,7 @@ import GameTile from '../components/GameTile'
 import Header from '../components/Header'
 import { db } from '../prisma/db'
 import styles from '../styles/Home.module.scss'
+import { gql, useQuery } from '@apollo/client'
 
 interface Props {
     games: Game[],
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function Home({ games, devs, pubs, platforms }: Props) {
+    
     return (
         <div>
             <Carousel />

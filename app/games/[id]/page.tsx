@@ -16,6 +16,8 @@ type Props = {
     }
 }
 
+export const revalidate = 60 * 60 * 24;
+
 export async function generateMetadata({params}: Props): Promise<Metadata> {
     const {title} = (await getStaticProps({params})).game
     return {
@@ -28,7 +30,6 @@ export default async function GameId({ params }: Props) {
 
     return (
         <div className='container'>
-            <title> {game.title} </title>
             <div className={styles.header} >
                 <img className={styles.boxart} src={game.cover} alt="" />
                 <div className={`${styles.title} hero`} style={{ backgroundImage: `url(${game.banner || '/images/image1.jpg'})` }} >
@@ -128,14 +129,9 @@ async function getStaticProps({ params }: Props) {
         genres
     }
 }
-async function getStaticPaths(): Promise<GetStaticPathsResult> {
+export async function generateStaticParams() {
     const games = await db.game.findMany()
-
-    let paths = games.map(game => ({
-        params: { id: game.gameId }
+    return games.map(game => ({
+        id: game.gameId
     }))
-    return {
-        paths,
-        fallback: 'blocking'
-    }
 }

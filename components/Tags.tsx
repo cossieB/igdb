@@ -16,25 +16,23 @@ export default function Tags({ tags, changeTags, isLink }: P) {
             {isLink ?
                 tags.map((tag, idx) =>
                     <Link href={`/tags/${tag}`} key={tag + idx} >
-                        <a>
-                            <span>{tag} </span>
-                            {changeTags &&
-                                <span onClick={() => changeTags({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'genres', value: tag } })} >
-                                    {closeSvg}
-                                </span>}
-                        </a>
+                        <span>{tag} </span>
+                        {changeTags &&
+                            <span onClick={() => changeTags({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'genres', value: tag } })} >
+                                {closeSvg}
+                            </span>}
                     </Link>
                 ) :
                 tags.map((tag, idx) =>
                     <div key={tag + idx} >
-                            <span>{tag} </span>
-                            {changeTags &&
-                                <span onClick={() => changeTags({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'genres', value: tag } })} >
-                                    {closeSvg}
-                                </span>}
+                        <span>{tag} </span>
+                        {changeTags &&
+                            <span onClick={() => changeTags({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'genres', value: tag } })} >
+                                {closeSvg}
+                            </span>}
                     </div>
                 )
-        }
+            }
         </div>
     )
 }

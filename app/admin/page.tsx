@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useReducer } from "react"
 import adminReducer from "../../utils/adminReducer"
 import { Actions, States } from "../../utils/adminReducerTypes";

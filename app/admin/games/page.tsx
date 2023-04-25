@@ -1,5 +1,8 @@
+"use client";
+
 import { gql, useQuery } from "@apollo/client";
-import Loader from "../../components/Loading/Loader";
+import Loader from "../../../components/Loading/Loader";
+import { client } from "../../../utils/apollo";
 
 const gamesQuery = gql`
     query GetPforms {
@@ -18,7 +21,7 @@ const gamesQuery = gql`
 `
 
 export default function GamesAdmin() {
-    const { data, loading } = useQuery(gamesQuery)
+const { data, loading } = useQuery(gamesQuery, {client})
     console.log(data)
 
     return (

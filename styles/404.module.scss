@@ -1,6 +1,6 @@
 @import 'mixins';
 
-.div {
+.container {
     font-family: 'Press Start 2P', cursive;
     @include flexCenter;
     text-align: center;
@@ -18,8 +18,4 @@
     >div:nth-child(2) {
         @include flexCenter
     }
-}
-
-@media (max-width: 768px) {
-    
 }

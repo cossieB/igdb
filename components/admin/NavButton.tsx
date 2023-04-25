@@ -8,8 +8,8 @@ type Props = {
 
 export default function NavButton(props: Props) {
     const { icon, label } = props;
-    const router = useRouter();
-    const className = router.pathname.toLowerCase() == `/admin/${label}`.toLowerCase() ? "active" : ""
+    
+    const className = ""
     return (
         <li className={className}>
             <Link href={`/admin/${label.toLowerCase()}`}>

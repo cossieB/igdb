@@ -1,32 +1,34 @@
 import { Developer, Game, Platform, Publisher } from '@prisma/client'
-import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult } from 'next'
+import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult, Metadata } from 'next'
 import Head from 'next/head'
-import Description from '../../components/Description'
-import DevTile from '../../components/DevTile'
-import Tags from '../../components/Tags'
-import { Optional } from '../../lib/utilityTypes'
-import { db } from '../../prisma/db'
-import styles from '../../styles/Games.module.scss'
-import { joinQuery } from '../../utils/JoinResult'
-
-
-type GameResult = (Game & {
-    developer: Optional<Developer, 'country' | 'location' | 'summary'>;
-    publisher: Optional<Publisher, 'country' | 'headquarters' | 'summary'>;
-    platforms: Pick<Platform, 'platformId' | 'name' | 'logo'>[]
-})
+import Description from '../../../components/Description'
+import DevTile from '../../../components/DevTile'
+import Tags from '../../../components/Tags'
+import { Optional } from '../../../lib/utilityTypes'
+import { db } from '../../../prisma/db'
+import styles from '../../../styles/Games.module.scss'
+import { joinQuery } from '../../../utils/JoinResult'
+import { useParams, notFound, usePathname } from 'next/navigation'
 
 type Props = {
-    game: GameResult,
-    genres: string[]
+    params: {
+        id: string
+    }
 }
 
-export default function GameId({ game, genres }: Props) {
+export async function generateMetadata({params}: Props): Promise<Metadata> {
+    const {title} = (await getStaticProps({params})).game
+    return {
+        title
+    }
+}
+
+export default async function GameId({ params }: Props) {
+    const { game, genres } = await getStaticProps({ params });
+
     return (
         <div className='container'>
-            <Head>
-                <title> IGDB | {game.title} </title>
-            </Head>
+            <title> {game.title} </title>
             <div className={styles.header} >
                 <img className={styles.boxart} src={game.cover} alt="" />
                 <div className={`${styles.title} hero`} style={{ backgroundImage: `url(${game.banner || '/images/image1.jpg'})` }} >
@@ -58,17 +60,17 @@ export default function GameId({ game, genres }: Props) {
     )
 }
 
-export async function getStaticProps(context: GetStaticPropsContext): Promise<GetStaticPropsResult<Props>> {
-    const id = context.params!.id as string
-    if (id.length != 36) return { notFound: true }
+async function getStaticProps({ params }: Props) {
+    const id = params.id;
+
+    if (id.length != 36)
+        return notFound()
 
     const queryRes = await joinQuery(id)
 
-    if (queryRes.length == 0) {
-        return {
-            notFound: true
-        }
-    }
+    if (queryRes.length == 0)
+        return notFound()
+
     const platforms: Pick<Platform, 'platformId' | 'name' | 'logo'>[] = await db.$queryRaw`
         SELECT 
             "platformId", 
@@ -82,6 +84,12 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
             "Game" USING ("gameId")
         WHERE "gameId" = ${id}::UUID;
         `
+    type GameResult = (Game & {
+        developer: Optional<Developer, 'country' | 'location' | 'summary'>;
+        publisher: Optional<Publisher, 'country' | 'headquarters' | 'summary'>;
+        platforms: Pick<Platform, 'platformId' | 'name' | 'logo'>[]
+    })
+
     const game: GameResult = {
         banner: queryRes[0].banner,
         title: queryRes[0].title,
@@ -116,14 +124,11 @@ export async function getStaticProps(context: GetStaticPropsContext): Promise<Ge
     const genres = genresQuery.map(g => g.genre)
 
     return {
-        props: {
-            game: JSON.parse(JSON.stringify(game)),
-            genres
-        },
-        revalidate: 3600
+        game,
+        genres
     }
 }
-export async function getStaticPaths(): Promise<GetStaticPathsResult> {
+async function getStaticPaths(): Promise<GetStaticPathsResult> {
     const games = await db.game.findMany()
 
     let paths = games.map(game => ({

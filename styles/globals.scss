@@ -18,7 +18,9 @@ body {
     color: var(--primaryClr);
     width: 100vw;
 }
-
+main {
+    height: 100vh;
+}
 img {
     aspect-ratio: initial;
 }

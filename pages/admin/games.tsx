@@ -1,20 +1,31 @@
 import { gql, useQuery } from "@apollo/client";
+import Loader from "../../components/Loading/Loader";
 
-const gamesQuery = gql`#graphql
+const gamesQuery = gql`
     query GetPforms {
         games {
             title
+            developer {
+                name
+                developerId
+            }
+            publisher {
+                name
+                publisherId
+            }
         }
     }
 `
 
 export default function GamesAdmin() {
-    const data = useQuery(gamesQuery)
+    const { data, loading } = useQuery(gamesQuery)
     console.log(data)
 
     return (
-        <div>
-            
-        </div>
+        <Loader loading={loading}>
+            <div>
+
+            </div>
+        </Loader>
     )
 }

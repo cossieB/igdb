@@ -126,7 +126,7 @@ export const resolvers = {
             try {
                 return await prisma.game.findMany({
                     where: {
-                        developerId: parent.publisherId
+                        publisherId: parent.publisherId
                     }
                 })
             } catch (e: any) {

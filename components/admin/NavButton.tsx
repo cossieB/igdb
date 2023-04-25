@@ -13,10 +13,8 @@ export default function NavButton(props: Props) {
     return (
         <li className={className}>
             <Link href={`/admin/${label.toLowerCase()}`}>
-                <a>
                     {icon}
                     <span>{label}</span>
-                </a>
             </Link>
         </li>
     )

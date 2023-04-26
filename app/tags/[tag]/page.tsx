@@ -2,14 +2,12 @@
 
 import { Game } from "@prisma/client";
 import { notFound, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import GameTile from "../../../components/GameTile";
-import styles from '/styles/Games.module.scss'
-import titleCase from "../../../lib/titleCase";
-import NotFound from "../../not-found";
+import styles from '/styles/Games.module.scss';
 import { gql, useQuery } from "@apollo/client";
 import { client } from "../../../utils/apollo";
 import Loader from "../../../components/Loading/Loader";
+import { useEffect } from "react";
 
 type T = Pick<Game, 'title' | 'cover' | 'releaseDate' | 'gameId'>;
 
@@ -19,13 +17,12 @@ query get($tag: String!) {
         title,
         cover,
         releaseDate,
-        gameId
+        gameId,
     }
 }
 `
 
 export default function SearchByTag() {
-    const [games, setGames] = useState<T[]>([])
     const params = useParams()!;
     const { tag } = params as { tag: string };
 
@@ -33,6 +30,10 @@ export default function SearchByTag() {
         client,
         variables: { tag }
     })
+
+    useEffect(() =>  {
+        document.title = `"${tag} games :: IGDB`
+    }, [])
 
     if (data?.gamesByGenre.length == 0) {
         return notFound()

@@ -141,6 +141,22 @@ button {
 .popup {
     @include popup()
 }
+.mask {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.877);
+    backdrop-filter: blur(15px);
+    z-index: 50;
+}
+
+.formControl {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    // margin-bottom: 0.75rem;
+}
 
 ::-webkit-scrollbar {
     width: 10px;

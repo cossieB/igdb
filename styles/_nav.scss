@@ -3,7 +3,7 @@
 nav {
     background-color: #222;
     position: fixed;
-    z-index: 3;
+    z-index: 999;
     color: whitesmoke;
     display: flex;
     transition: width 200ms ease;
@@ -40,6 +40,48 @@ nav {
             transition: transform 200ms ease;
         }
     }
+    .formControl {
+    
+        input {
+            height: 2rem;
+        }
+    
+        input,
+        textarea {
+            color: $clrInfo;
+            margin-bottom: 1rem;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            background: none;
+            transition: all 500ms ease;
+            border-color: $clrInfo;
+            width: 0%;
+            opacity: 0;
+            top: -12px;
+    
+            &:focus, &:not(:placeholder-shown) {
+                outline: none;
+                width: 100%;
+                opacity: 1;
+                border-color: #f0f;
+                +label {
+                    top: -15px;
+                    font-size: 12px;
+                }
+            }
+        }
+    
+        textarea {
+            height: 10rem;
+        }
+    
+        label {
+            position: absolute;
+            top: 12px;
+            transition: all 250ms ease-in-out;
+        }
+    }
 }
 
 @media (max-width: 768px) {
@@ -59,6 +101,18 @@ nav {
 }
 
 @media (min-width: 768px) {
+    .navbar_active {
+        width: 16rem;
+        transition: all 200ms ease;
+
+        .logo1 {
+            align-items: flex-end;
+            transform: rotateZ(360deg);
+            ~span {
+                transform: rotateX(0deg);
+            }
+        }
+    }
     nav {
         left: 0;
         top: 0;
@@ -67,25 +121,19 @@ nav {
         flex-direction: column;
         justify-content: center;
         &:hover {
-            width: 16rem;
-            transition: all 200ms ease;
-
-            .logo1 {
-                align-items: flex-end;
-                transform: rotateZ(360deg);
-                ~span {
-                    transform: rotateX(0deg);
-                }
-            }
+            @extend.navbar_active
         }
 
-        div:not(.logo) {
+        .navItem{
             &:hover {
                 background-color: #070a0f;
 
                 svg {
                     color: #f0f;
                     transition: color 200ms ease;
+                }
+                &:is(.searchIcon) {
+                    cursor: cell;
                 }
             }
         }

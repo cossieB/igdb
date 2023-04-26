@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
 import { SetStateAction, useEffect, useState } from "react"
-import styles from "../styles/Search.module.scss"
-import { GamePick, PubPick, DevPick } from "../utils/customTypes";
-import { circleCloseSvg } from "../utils/svgs";
-import DevTile from "./DevTile";
-import GameTile from "./GameTile";
-import Header from "./Header";
+import styles from "/styles/Search.module.scss"
+import { GamePick, PubPick, DevPick } from "../../utils/customTypes";
+import { circleCloseSvg } from "../../utils/svgs";
+import DevTile from "./../DevTile";
+import GameTile from "./../GameTile";
+import Header from "./../Header";
 import SearchInput from "./SearchInput";
 
 interface P {
     setIsSearch: React.Dispatch<SetStateAction<boolean>>
 }
-export default function Search({ setIsSearch }: P) {
+export default function SearchResults({ setIsSearch }: P) {
     const [games, setGames] = useState<GamePick[]>([])
     const [pubs, setPubs] = useState<PubPick[]>([])
     const [devs, setDevs] = useState<DevPick[]>([])

@@ -12,7 +12,7 @@ export default function GameTile({ game, className }: Props) {
     return (
         <div className={className || styles.tile} key={`${game.title}${game.releaseDate.toString()}`} title={game.title} >
             <Link href={`/games/${game.gameId}`} >
-                <img src={game.cover} alt={`${game.title} Cover Image`} />
+                <img src={game.cover} loading="lazy" alt={`${game.title} Cover Image`} />
             </Link>
         </div>
     )

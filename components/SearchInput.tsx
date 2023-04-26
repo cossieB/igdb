@@ -1,4 +1,4 @@
-import { Dispatch, RefObject, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import debounce from "../lib/debounce";
 import sendData from "../lib/sendData";
 import styles from "../styles/Search.module.scss";

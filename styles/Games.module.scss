@@ -7,6 +7,8 @@
 
     img {
         height: 100%;
+        box-shadow: 5px -25px 50px whitesmoke;
+        z-index: 2;
     }
 }
 
@@ -165,11 +167,5 @@
         >iframe {
             width: 98%;
         }
-    }
-}
-
-@media (min-width: 768px) {
-    .main {
-        margin-right: 2rem;
     }
 }

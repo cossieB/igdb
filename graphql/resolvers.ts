@@ -66,6 +66,17 @@ export const resolvers = {
                 throw new Error(e.meta.message || e.meta.cause || e.message || "Something went wrong");
             }
         },
+        gamesByGenre: async (_: any, args: {genre: string}) => {
+            const genre = decodeURI(args.genre)
+            const results: Pick<Game, 'title' | 'cover' | 'releaseDate' | 'gameId'>[] = await prisma.$queryRaw`
+            SELECT "Game".*
+            FROM "GenresOfGames"
+            JOIN "Game"
+            USING ("gameId")
+            WHERE "genre" = ${genre};
+            `
+            return results
+        }
     },
     Game: {
         genres: async (parent: Game) => {

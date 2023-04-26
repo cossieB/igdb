@@ -44,6 +44,7 @@
 }
 @mixin description($color) {
     margin-top: 1rem;
+    margin-right: 1rem;
     border: 2px solid $color;
     box-shadow: 0 0 50px $color, inset 0 0 50px $color;
     padding: 1rem;

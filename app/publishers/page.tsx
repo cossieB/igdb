@@ -1,33 +1,16 @@
-import { GetStaticPropsResult } from "next";
-import styles from '../../styles/Pubs.module.scss'
+import styles from '../../styles/Pubs.module.scss';
 import DevTile from "../../components/DevTile";
-import Head from "next/head";
 import { db } from "../../prisma/db";
-import { Publisher } from "@prisma/client";
 
-interface Props {
-    pubs: Publisher[]
-}
-
-export default function PublisherIndex({ pubs }: Props) {
+export default async function PublisherIndex() {
+    const pubs = await getStaticProps()
     return (
-        <>
-        <Head>
-            <title> IGDB | Publishers </title>
-        </Head>
         <div className={styles.logos} >
             {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publishers" item={{...pub, id: pub.publisherId}}  /> )}
         </div>
-        </>
     )
 }
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const pubs = await db.publisher.findMany()
-    return {
-        props: {
-            pubs
-        },
-        revalidate: 3600
-    }
+export async function getStaticProps() {
+    return await db.publisher.findMany()
 }

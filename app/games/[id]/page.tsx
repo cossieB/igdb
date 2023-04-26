@@ -1,6 +1,5 @@
 import { Developer, Game, Platform, Publisher } from '@prisma/client'
-import { GetStaticPropsContext, GetStaticPropsResult, GetStaticPathsResult, Metadata } from 'next'
-import Head from 'next/head'
+import { Metadata } from 'next'
 import Description from '../../../components/Description'
 import DevTile from '../../../components/DevTile'
 import Tags from '../../../components/Tags'
@@ -8,7 +7,7 @@ import { Optional } from '../../../lib/utilityTypes'
 import { db } from '../../../prisma/db'
 import styles from '../../../styles/Games.module.scss'
 import { joinQuery } from '../../../utils/JoinResult'
-import { useParams, notFound, usePathname } from 'next/navigation'
+import { notFound } from 'next/navigation'
 
 type Props = {
     params: {
@@ -16,7 +15,7 @@ type Props = {
     }
 }
 
-export const revalidate = 60 * 60 * 24;
+export const revalidate = 3600;
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
     const {title} = (await getStaticProps({params})).game

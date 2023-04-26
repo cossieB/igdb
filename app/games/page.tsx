@@ -1,34 +1,22 @@
-import { Game } from '@prisma/client';
-import { GetStaticPropsResult } from 'next';
-import Head from 'next/head';
 import GameTile from '../../components/GameTile';
 import { db } from '../../prisma/db';
 import styles from '../../styles/Games.module.scss'
 
-interface Props {
-    games: Game[]
+export const metadata = {
+    title: "Games"
 }
 
-export default function GamesIndex({ games }: Props) {
+export const revalidate = 3600;
+
+export default async function GamesIndex() {
+    const games = await getStaticProps()
     return (
-        <>
-            <Head>
-                <title> IGDB | Games </title>
-            </Head>
-            <div className={styles.games} >
-                {games.map(game => <GameTile key={game.gameId} className={styles.tile} game={game} />)}
-            </div>
-        </>
+        <div className={styles.games} >
+            {games.map(game => <GameTile key={game.gameId} className={styles.tile} game={game} />)}
+        </div>
     )
 }
 
-export async function getStaticProps(): Promise<GetStaticPropsResult<Props>> {
-    const games = await db.game.findMany()
-
-    return {
-        props: {
-            games: JSON.parse(JSON.stringify(games))
-        },
-        revalidate: 3600
-    }
+export async function getStaticProps() {
+    return await db.game.findMany()
 }

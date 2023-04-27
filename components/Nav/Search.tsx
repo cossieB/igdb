@@ -39,6 +39,9 @@ export default function Search(props: Props) {
                 />
                 <label htmlFor="search">Search</label>
             </span>
+            {isFocused &&
+                createPortal(<div onClick={() => setIsFocused(false)} className="mask" />, document.querySelector('main')!)
+            }
         </div>
     )
 }

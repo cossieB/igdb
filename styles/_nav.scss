@@ -1,5 +1,18 @@
 @import '_mixins';
 
+@mixin active {
+    width: 16rem;
+    transition: all 200ms ease;
+
+    .logo1 {
+        align-items: flex-end;
+        transform: rotateZ(360deg);
+        ~span {
+            transform: rotateX(0deg);
+        }
+    }
+}
+
 nav {
     background-color: #222;
     position: fixed;
@@ -92,26 +105,32 @@ nav {
         width: 100vw;
         flex-direction: row;
         justify-content: center;
+        overflow: visible;
 
-        .navText,
+        .navText:not(.formControl),
         .logo {
             display: none;
+        }
+        .formControl {
+            position: fixed;
+            opacity: 0;
+            bottom: 5rem;
+            z-index: 100;
+            width: 100vw;
+            left: 0;
+            transition: all 500ms ease;
+        }
+        &.navbar_active {
+            .formControl {
+                opacity: 1;
+            }
         }
     }
 }
 
 @media (min-width: 768px) {
     .navbar_active {
-        width: 16rem;
-        transition: all 200ms ease;
-
-        .logo1 {
-            align-items: flex-end;
-            transform: rotateZ(360deg);
-            ~span {
-                transform: rotateX(0deg);
-            }
-        }
+        @include active();
     }
     nav {
         left: 0;
@@ -121,7 +140,7 @@ nav {
         flex-direction: column;
         justify-content: center;
         &:hover {
-            @extend.navbar_active
+            @include active();
         }
 
         .navItem{

@@ -9,7 +9,7 @@ export const metadata = {
 export const revalidate = 3600;
 
 export default async function DeveloperIndex() {
-    const devs = await getStaticProps()
+    const devs = await getData()
     return (
         <div className={styles.logos} >
             {devs.map(dev => <DevTile key={dev.developerId} className={styles.tile} href={'developers'} item={{ ...dev, id: dev.developerId }} />)}
@@ -17,6 +17,6 @@ export default async function DeveloperIndex() {
     )
 }
 
-export async function getStaticProps() {
+export async function getData() {
     return await db.developer.findMany();
 }

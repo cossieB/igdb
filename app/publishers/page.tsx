@@ -3,7 +3,7 @@ import DevTile from "../../components/DevTile";
 import { db } from "../../prisma/db";
 
 export default async function PublisherIndex() {
-    const pubs = await getStaticProps()
+    const pubs = await getData()
     return (
         <div className={styles.logos} >
             {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publishers" item={{...pub, id: pub.publisherId}}  /> )}
@@ -11,6 +11,6 @@ export default async function PublisherIndex() {
     )
 }
 
-export async function getStaticProps() {
+export async function getData() {
     return await db.publisher.findMany()
 }

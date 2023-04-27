@@ -18,14 +18,14 @@ type Props = {
 export const revalidate = 3600;
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
-    const {title} = (await getStaticProps({params})).game
+    const {title} = (await getData({params})).game
     return {
         title
     }
 }
 
 export default async function GameId({ params }: Props) {
-    const { game, genres } = await getStaticProps({ params });
+    const { game, genres } = await getData({ params });
 
     return (
         <div className='container'>
@@ -60,7 +60,7 @@ export default async function GameId({ params }: Props) {
     )
 }
 
-async function getStaticProps({ params }: Props) {
+async function getData({ params }: Props) {
     const id = params.id;
 
     if (id.length != 36)

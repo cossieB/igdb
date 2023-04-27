@@ -1,3 +1,5 @@
+"use client"
+
 import { motion, Variant } from "framer-motion"
 import styles from "../../styles/Spinner.module.scss";
 

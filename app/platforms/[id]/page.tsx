@@ -13,14 +13,14 @@ type Props = {
 }
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
-    const {name: title} = (await getStaticProps({params})).pform
+    const {name: title} = (await getData({params})).pform
     return {
         title
     }
 }
 
 export default async function PlatformId({ params }: Props) {
-    const { pform } = await getStaticProps({ params })
+    const { pform } = await getData({ params })
     return (
         <div>
             <div className={styles.header} >
@@ -33,7 +33,7 @@ export default async function PlatformId({ params }: Props) {
     )
 }
 
-async function getStaticProps({ params }: Props) {
+async function getData({ params }: Props) {
     const id = params.id
     const pform = await db.platform.findUnique({
         where: {

@@ -1,4 +1,3 @@
-import { Game } from "@prisma/client"
 import Link from "next/link"
 import { GamePick } from "../utils/customTypes"
 import styles from './../styles/Games.module.scss'
@@ -17,3 +16,18 @@ export default function GameTile({ game, className }: Props) {
         </div>
     )
 }
+
+export async function GamesStreaming({ promise, className }: { promise: Promise<GamePick[]>, className: string }) {
+    const games = await promise;
+    return (
+        <div className={className}>
+            {games.map(game =>
+                <GameTile
+                    game={game}
+                    key={game.gameId}
+                />
+            )}
+        </div>
+    )
+}
+

@@ -4,6 +4,7 @@ import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from
 import { createPortal } from "react-dom"
 import { searchSvg } from "../../utils/svgs"
 import { AnimatePresence, motion } from "framer-motion"
+import SearchInput from "./SearchInput"
 
 type Props = {
     navbar: RefObject<HTMLElement>,
@@ -14,10 +15,7 @@ type Props = {
 export default function Search(props: Props) {
     const { isFocused, navbar, setIsFocused } = props
     const ref = useRef<HTMLInputElement>(null)
-    useEffect(() => {
-        if (isFocused)
-            ref.current!.focus()
-    }, [isFocused])
+
 
     return (
         <div
@@ -27,16 +25,7 @@ export default function Search(props: Props) {
                 {searchSvg}
             </span>
             <span className="formControl navText">
-                <input
-                    ref={ref}
-                    type="text"
-                    name="search"
-                    id="search"
-                    required
-                    placeholder=" "
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                />
+                <SearchInput setIsFocused={setIsFocused} isFocused={isFocused}/>
                 <label htmlFor="search">Search</label>
             </span>
             {isFocused &&
@@ -45,3 +34,4 @@ export default function Search(props: Props) {
         </div>
     )
 }
+

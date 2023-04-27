@@ -6,7 +6,7 @@ import { db } from '../prisma/db'
 import styles from '../styles/Home.module.scss'
 
 export default async function Home() {
-    const { games, devs, pubs, platforms } = await getStaticProps();
+    const { games, devs, pubs, platforms } = await getData();
     return (
         <div>
             <Carousel />
@@ -33,7 +33,7 @@ export default async function Home() {
     )
 }
 
-async function getStaticProps() {
+async function getData() {
     const gamesQuery = db.game.findMany({ take: 14 });
     const devsQuery = db.developer.findMany({ take: 20 });
     const pubsQuery = db.publisher.findMany({ take: 20 });

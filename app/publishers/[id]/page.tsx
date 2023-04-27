@@ -14,14 +14,14 @@ type Props = {
 }
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
-    const {name: title} = (await getStaticProps({params})).pub
+    const {name: title} = (await getData({params})).pub
     return {
         title
     }
 }
 
 export default async function PublisherId({ params }: Props) {
-    const { pub } = await getStaticProps({ params })
+    const { pub } = await getData({ params })
     return (
         <div>
             <div className={styles.header} >
@@ -37,7 +37,7 @@ export default async function PublisherId({ params }: Props) {
     )
 }
 
-async function getStaticProps({ params }: Props) {
+async function getData({ params }: Props) {
     const id = params.id
     const pub = await db.publisher.findUnique({
         where: {

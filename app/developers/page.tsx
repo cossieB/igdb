@@ -17,6 +17,6 @@ export default async function DeveloperIndex() {
     )
 }
 
-export async function getData() {
+async function getData() {
     return await db.developer.findMany();
 }

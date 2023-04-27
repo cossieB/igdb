@@ -11,6 +11,6 @@ export default async function PublisherIndex() {
     )
 }
 
-export async function getData() {
+async function getData() {
     return await db.publisher.findMany()
 }

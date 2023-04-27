@@ -17,6 +17,6 @@ export default async function GamesIndex() {
     )
 }
 
-export async function getData() {
+async function getData() {
     return await db.game.findMany()
 }

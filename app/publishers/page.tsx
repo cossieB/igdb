@@ -6,7 +6,7 @@ export default async function PublisherIndex() {
     const pubs = await getData()
     return (
         <div className={styles.logos} >
-            {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publishers" item={{...pub, id: pub.publisherId}}  /> )}
+            {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publisher" item={{...pub, id: pub.publisherId}}  /> )}
         </div>
     )
 }

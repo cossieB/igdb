@@ -40,7 +40,7 @@ export default function SearchInput(props: Props) {
     }
 
     function handleEnter(e: KeyboardEvent) {
-        if (e.key == "Enter") {
+        if (e.key == "Enter" && ref.current!.value.length > 0) {
             navigate(ref.current!.value)
             ref.current!.blur()
         }

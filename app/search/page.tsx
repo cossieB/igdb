@@ -16,40 +16,33 @@ type Props = {
     }
 }
 
-export default async function SearchPage({searchParams}: Props) {
+export default async function SearchPage({ searchParams }: Props) {
     const text = searchParams.q
     if (!text) return notFound()
     const [games, devs, pubs] = [getGames(text), getDevs(text), getPubs(text)]
 
     return (
         <div>
-                <Suspense fallback={<Spinner />}>
-                    <Header heading="Games" />
-                    {/* @ts-expect-error Server Component */}
-                    <GamesStreaming className={styles.games} promise={games} />
-                </Suspense>
-                <Suspense fallback={<Spinner />}>
-                    <Header heading="Developers" />
-                    {/* @ts-expect-error Server Component */}
-                    <DevsStreaming className={styles.logos} promise={devs} href="developer" />
-                </Suspense>
-                <Suspense fallback={<Spinner />}>
-                    <Header heading="Publishers" />
-                    {/* @ts-expect-error Server Component */}
-                    <DevsStreaming className={styles.logos} promise={pubs} href="publisher" />
-                </Suspense>
+            <Suspense fallback={<Spinner />}>
+                <Header heading="Games" />
+                {/* @ts-expect-error Server Component */}
+                <GamesStreaming className={styles.games} promise={games} />
+            </Suspense>
+            <Suspense fallback={<Spinner />}>
+                <Header heading="Developers" />
+                {/* @ts-expect-error Server Component */}
+                <DevsStreaming className={styles.logos} promise={devs} href="developer" />
+            </Suspense>
+            <Suspense fallback={<Spinner />}>
+                <Header heading="Publishers" />
+                {/* @ts-expect-error Server Component */}
+                <DevsStreaming className={styles.logos} promise={pubs} href="publisher" />
+            </Suspense>
         </div>
     )
 }
-function wait(delay = 1000): Promise<void> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve()
-        }, delay)
-    })
-}
+
 async function getGames(text: string) {
-    await wait(1000)
     return await db.$queryRaw`
         SELECT
             DISTINCT("gameId"),title, cover, "releaseDate"
@@ -62,7 +55,6 @@ async function getGames(text: string) {
 }
 
 async function getDevs(text: string) {
-    await wait(2000)
     return await db.developer.findMany({
         where: {
             OR: [{
@@ -86,7 +78,6 @@ async function getDevs(text: string) {
 }
 
 async function getPubs(text: string) {
-    await wait(5000)
     return await db.publisher.findMany({
         where: {
             OR: [{

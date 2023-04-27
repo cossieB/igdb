@@ -17,17 +17,17 @@ export default async function Home() {
 
             <Header heading='Developers' />
             <div className={styles.logos}>
-                {devs.map(dev => <DevTile key={dev.developerId} className={styles.tile} href={'developers'} item={{ ...dev, id: dev.developerId }} />)}
+                {devs.map(dev => <DevTile key={dev.developerId} className={styles.tile} href={'developer'} item={{ ...dev, id: dev.developerId }} />)}
             </div>
 
             <Header heading='Publishers' />
             <div className={styles.logos}>
-                {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publishers" item={{ ...pub, id: pub.publisherId }} />)}
+                {pubs.map(pub => <DevTile key={pub.publisherId} className={styles.tile} href="publisher" item={{ ...pub, id: pub.publisherId }} />)}
             </div>
 
             <Header heading='Platforms' />
             <div className={styles.logos}>
-                {platforms.map(pform => <DevTile key={pform.platformId} className={styles.tile} href="platforms" item={{ ...pform, id: pform.platformId }} />)}
+                {platforms.map(pform => <DevTile key={pform.platformId} className={styles.tile} href="platform" item={{ ...pform, id: pform.platformId }} />)}
             </div>
         </div>
     )

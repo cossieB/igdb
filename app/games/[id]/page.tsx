@@ -50,11 +50,11 @@ export default async function GameId({ params }: Props) {
             </div>
             {game.trailer && <div className={styles.video} dangerouslySetInnerHTML={{ __html: game.trailer }} />}
             <div className={styles.companies} >
-                <DevTile className={styles.logoTile} href="developers" item={{ ...game.developer, id: game.developer.developerId }} />
-                <DevTile className={styles.logoTile} href="publishers" item={{ ...game.publisher, id: game.publisher.publisherId }} />
+                <DevTile className={styles.logoTile} href="developer" item={{ ...game.developer, id: game.developer.developerId }} />
+                <DevTile className={styles.logoTile} href="publisher" item={{ ...game.publisher, id: game.publisher.publisherId }} />
             </div>
             <div className={styles.platforms} >
-                {game.platforms.map(item => <DevTile key={item.platformId} item={{ ...item, id: item.platformId }} href="platforms" className={styles.logoTile} />)}
+                {game.platforms.map(item => <DevTile key={item.platformId} item={{ ...item, id: item.platformId }} href="platform" className={styles.logoTile} />)}
             </div>
         </div>
     )

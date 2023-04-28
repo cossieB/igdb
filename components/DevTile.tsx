@@ -8,17 +8,46 @@ interface Props {
         logo: string
     },
     className?: string,
-    href: 'developers' | 'publishers' | 'platforms'
+    href: 'developer' | 'publisher' | 'platform'
 }
 
-export default function DevTile({item, className, href}: Props) {
+export default function DevTile({ item, className, href }: Props) {
     return (
-        <Link href={`/${href}/${item.id}`} >
-        <a>
+        <Link href={`/${href}s/${item.id}`} >
             <div className={className || styles.tile} key={`${item.name}`} >
                 <img src={item.logo} alt={`${item.name} Logo`} />
             </div>
-        </a>
-    </Link>
+        </Link>
+    )
+}
+type Item = ({ developerId: string } | { publisherId: string } | { platformId: string }) & {
+    name: string,
+    logo: string
+}
+
+type P = {
+    promise: Promise<Item[]>,
+    className?: string,
+    href: Props['href']
+}
+
+export async function DevsStreaming({ promise, className, href }: P) {
+    const items = await promise
+    return (
+        <div className={className}>
+            {items.map(item =>
+                <DevTile
+                    //@ts-expect-error
+                    key={item[`${href}Id`]}
+                    item={{
+                        //@ts-expect-error
+                        id: item[`${href}Id`],
+                        logo: item.logo,
+                        name: item.name
+                    }}
+                    href={href}
+                />
+            )}
+        </div>
     )
 }

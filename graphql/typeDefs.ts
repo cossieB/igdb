@@ -28,6 +28,7 @@ export const typeDefs = `#graphql
         gameId: ID!
         title: String!
         summary: String!
+        cover: String!
         banner: String!
         trailer: String!
         releaseDate: Date!
@@ -54,6 +55,12 @@ export const typeDefs = `#graphql
         publishers: [Publisher!]!
         platform(id: ID!): Platform
         platforms: [Platform!]!
+        gamesByGenre(genre: String!): [Game!]!
+        # search(searchTerm: String!): {
+        #     games: [Game!]!,
+        #     developers: [Developer!]!
+        #     publishers: [Publisher!]!
+        # }
   }
 `;
 

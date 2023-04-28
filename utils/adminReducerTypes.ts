@@ -42,7 +42,7 @@ type ActionGenerator<T extends keyof TableToTypeMap> = {
 } | {
     type: Uppercase<`EDIT_${T}`> | Uppercase<`REMOVE_${T}`>
     payload: TableToTypeMap[T]
-} 
+}
 export type Actions = { [k in keyof TableToTypeMap]: ActionGenerator<k> }[keyof TableToTypeMap]
     | {
         type: 'SUCCESS', payload: string
@@ -63,9 +63,12 @@ type StateGenerator<T extends keyof TableToTypeMap> = {
     rand: number
     msg: string
 }
-export type States = { [k in keyof TableToTypeMap]: StateGenerator<k> }[keyof TableToTypeMap] | {
-    mode: "HOME"
-    item: null
-    rand: number
-    msg: string
-}
+export type States = {
+    [k in keyof TableToTypeMap]: StateGenerator<k>
+}[keyof TableToTypeMap]
+    | {
+        mode: "HOME"
+        item: null
+        rand: number
+        msg: string
+    }

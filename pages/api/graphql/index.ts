@@ -6,6 +6,7 @@ import { typeDefs } from '../../../graphql/typeDefs';
 import allowCors from '../../../utils/cors';
 
 const server = new ApolloServer({
+    introspection: true,
     resolvers,
     typeDefs,
     plugins: [ApolloServerPluginLandingPageProductionDefault()]

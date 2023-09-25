@@ -25,17 +25,14 @@ export default async function SearchPage({ searchParams }: Props) {
         <div>
             <Suspense fallback={<Spinner />}>
                 <Header heading="Games" />
-                {/* @ts-expect-error Server Component */}
                 <GamesStreaming className={styles.games} promise={games} />
             </Suspense>
             <Suspense fallback={<Spinner />}>
                 <Header heading="Developers" />
-                {/* @ts-expect-error Server Component */}
                 <DevsStreaming className={styles.logos} promise={devs} href="developer" />
             </Suspense>
             <Suspense fallback={<Spinner />}>
                 <Header heading="Publishers" />
-                {/* @ts-expect-error Server Component */}
                 <DevsStreaming className={styles.logos} promise={pubs} href="publisher" />
             </Suspense>
         </div>

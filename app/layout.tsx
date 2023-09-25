@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     description: 'Gaming database developed by full-stack developer Buntu Cossie using Next.js 13, SASS and GraphQL',
     authors: [{
         name: "Buntu Cossie",
-        url: "https://cossie-91.web.app",
+        url: "https://cossie.dev",
     }],
     applicationName: "Internet Games Database",
     creator: "Buntu Cossie",
@@ -26,9 +26,10 @@ export const metadata: Metadata = {
     keywords: ["next.js", "react", "project"],
     openGraph: {
         title: "Internet Games Database",
-        authors: new URL("https://cossie-91.web.app"),
+        authors: new URL("https://cossie.dev"),
         description: "Gaming database developed by full-stack developer Buntu Cossie using Next.js 13, SASS and GraphQL",
-    }
+    },
+    metadataBase: new URL("https://internet-games-database.vercel.app")
 }
 
 export default function RootLayout({

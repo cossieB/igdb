@@ -6,10 +6,15 @@ import { db } from '../prisma/db'
 import styles from '../styles/Home.module.scss'
 
 export default async function Home() {
+    const images: string[] = []
+    for (let i = 1; i <= 38; i++) {
+        images.push(`/images/image${i}.jpg`)
+    }
     const { games, devs, pubs, platforms } = await getData();
+
     return (
         <div>
-            <Carousel />
+            <Carousel images={images}/>
             <h1 className={styles.h1} > <span>The</span> <span>Internet</span> <span >Games</span> <span >Database</span></h1>
             <div className={styles.games} >
                 {games.map(item => <GameTile key={item.gameId} game={item} className="" />)}

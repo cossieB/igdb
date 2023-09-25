@@ -8,17 +8,18 @@ import { db } from '../../../prisma/db'
 import styles from '../../../styles/Games.module.scss'
 import { joinQuery } from '../../../utils/JoinResult'
 import { notFound } from 'next/navigation'
+import YouTubeIframe from '../../../components/YouTubeIframe'
+import Carousel from '../../../components/Carousel'
 
 type Props = {
     params: {
         id: string
     }
 }
-
 export const revalidate = 3600;
 
-export async function generateMetadata({params}: Props): Promise<Metadata> {
-    const {title} = (await getData({params})).game
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { title } = (await getData({ params })).game
     return {
         title
     }
@@ -48,7 +49,9 @@ export default async function GameId({ params }: Props) {
                 </div>
                 <Description className={styles.description} html={game.summary} />
             </div>
-            {game.trailer && <div className={styles.video} dangerouslySetInnerHTML={{ __html: game.trailer }} />}
+            <div className={styles.video} >
+                <YouTubeIframe link={game.trailer} />
+            </div>
             <div className={styles.companies} >
                 <DevTile className={styles.logoTile} href="developer" item={{ ...game.developer, id: game.developer.developerId }} />
                 <DevTile className={styles.logoTile} href="publisher" item={{ ...game.publisher, id: game.publisher.publisherId }} />
@@ -56,6 +59,7 @@ export default async function GameId({ params }: Props) {
             <div className={styles.platforms} >
                 {game.platforms.map(item => <DevTile key={item.platformId} item={{ ...item, id: item.platformId }} href="platform" className={styles.logoTile} />)}
             </div>
+            <Carousel images={game.images} />
         </div>
     )
 }

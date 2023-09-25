@@ -4,12 +4,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styles from '../styles/Carousel.module.scss'
 
-const images: string[] = []
-for (let i = 1; i <= 38; i++) {
-    images.push(`/images/image${i}.jpg`)
+type Props = {
+    images: string[]
 }
 
-export default function Carousel() {
+export default function Carousel({images}: Props) {
     const [current, setCurrent] = useState(0)
     const [previous, setPrevious] = useState(images.length - 1)
     const [next, setNext] = useState(1)

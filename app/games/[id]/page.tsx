@@ -59,7 +59,7 @@ export default async function GameId({ params }: Props) {
             <div className={styles.platforms} >
                 {game.platforms.map(item => <DevTile key={item.platformId} item={{ ...item, id: item.platformId }} href="platform" className={styles.logoTile} />)}
             </div>
-            <Carousel images={game.images} />
+            {/* <Carousel images={game.images} /> */}
         </div>
     )
 }

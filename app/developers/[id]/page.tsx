@@ -1,6 +1,6 @@
 import { Metadata } from 'next/types'
 import Description from '../../../components/Description'
-import GameTile from '../../../components/GameTile'
+import GameTile, { GameGrid } from '../../../components/GameTile'
 import { db } from '../../../prisma/db'
 import styles from '/styles/Devs.module.scss'
 import { notFound } from 'next/navigation'
@@ -30,9 +30,7 @@ export default async function DeveloperId({ params }: Props) {
             <div className={styles.main} >
                 <Description html={dev.summary} className={styles.description} />
             </div>
-            <div className={styles.gamegrid}>
-                {dev.Game.map(game => <GameTile key={game.gameId} game={game} className="" />)}
-            </div>
+            <GameGrid games={dev.Game} />
         </div>
     )
 }

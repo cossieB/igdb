@@ -142,22 +142,35 @@
 }
 
 .cast {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 1rem;
-    padding: 0 5rem;
+    margin: 0 auto;
+    @media (min-width: 768px) {
+        padding: 0 5rem;
+    }
 }
 
 .actorCard {
     background-color: #2a2836;
-    width: 10rem;
     text-align: center;
-    >div {
+    overflow: hidden;
+    height: 100%;
+    >div:last-child {
         padding: 0.5rem;
+    }
+    .imgContainer {
+        height: 15rem;
+        overflow: hidden;
     }
     img {
         object-fit: cover;
-        height: 15rem;
         width: 100%;
+        height: 100%;
+        transition: scale 250ms ease;
+        &:hover {
+            scale: 1.05;
+        }
     }
     .char {
         color: var(--neongreen);

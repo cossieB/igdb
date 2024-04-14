@@ -31,3 +31,15 @@ export async function GamesStreaming({ promise, className }: { promise: Promise<
     )
 }
 
+type P = {
+    games: GamePick[],
+    className?: string,
+}
+
+export function GameGrid({ games, className }: P) {
+    return (
+        <div className={styles.games}>
+            {games.map(game => <GameTile key={game.gameId} className={className} game={game} />)}
+        </div>
+    )
+}

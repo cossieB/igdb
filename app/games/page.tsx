@@ -1,4 +1,4 @@
-import GameTile from '../../components/GameTile';
+import GameTile, { GameGrid } from '../../components/GameTile';
 import { db } from '../../prisma/db';
 import styles from '../../styles/Games.module.scss'
 
@@ -10,11 +10,7 @@ export const revalidate = 3600;
 
 export default async function GamesIndex() {
     const games = await getData()
-    return (
-        <div className={styles.games} >
-            {games.map(game => <GameTile key={game.gameId} className={styles.tile} game={game} />)}
-        </div>
-    )
+    return <GameGrid className={styles.tile} games={games} />
 }
 
 async function getData() {

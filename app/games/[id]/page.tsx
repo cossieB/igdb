@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation'
 import YouTubeIframe from '../../../components/YouTubeIframe'
 import Header from '../../../components/Header'
 import { DevSvg, PubSvg } from '../../../utils/svgs'
+import { ActorCard } from '../../../components/ActorCard'
 
 type Props = {
     params: {
@@ -52,15 +53,7 @@ export default async function GameId({ params }: Props) {
                 <>
                     <Header heading='Cast' />
                     <div className={styles.cast}>
-                        {game.ActorsInGames.map(item =>
-                            <div className={styles.actorCard} key={item.actorId}>
-                                <img src={item.actor.photo ?? "https://upload.wikimedia.org/wikipedia/commons/5/55/Question_Mark.svg"} alt={item.actor.name} />
-                                <div>
-                                    <span>{item.actor.name}</span> <br />
-                                    <span className={styles.char} >{item.character}</span>
-                                </div>
-                            </div>
-                        )}
+                        {game.ActorsInGames.map(item => <ActorCard key={item.actorId} item={item} />)}
                     </div>
                 </>
             )}

@@ -31,7 +31,7 @@ export default async function GameId({ params }: Props) {
         <div className='container'>
             <div className={styles.header} >
                 <img className={styles.boxart} src={game.cover} alt="" />
-                <div className={`${styles.title} hero`} style={{ backgroundImage: `url(${game.banner || '/images/image1.jpg'})` }} >
+                <div className={`${styles.title} ${styles.hero}`} style={{ backgroundImage: `url(${game.banner || '/images/image1.jpg'})` }} >
                     <h1> {game.title} </h1>
                 </div>
             </div>

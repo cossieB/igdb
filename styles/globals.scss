@@ -45,32 +45,7 @@ svg {
 .container {
     width: 100%;
 }
-.hero {
-    @include flexCenter();
-    position: relative;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 100%;
-    text-align: center;
 
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: black;
-        opacity: 0.3;
-        z-index: 1;
-    }
-
-    h1 {
-        position: absolute;
-        z-index: 2;
-        color: white;
-        font-size: 4.25rem;
-        font-family: 'Press Start 2P', cursive;
-    }
-}
 
 button {
     height: 2.5rem;
@@ -189,10 +164,6 @@ iframe {
 
     .hero {
         height: 25vh;
-
-        h1 {
-            font-size: initial;
-        }
     }
 
     .tags {

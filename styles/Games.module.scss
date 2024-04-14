@@ -140,6 +140,30 @@
         aspect-ratio: 16/9;
     }
 }
+
+.cast {
+    display: flex;
+    gap: 1rem;
+    padding: 0 5rem;
+}
+
+.actorCard {
+    background-color: #2a2836;
+    width: 10rem;
+    text-align: center;
+    >div {
+        padding: 0.5rem;
+    }
+    img {
+        object-fit: cover;
+        height: 15rem;
+        width: 100%;
+    }
+    .char {
+        color: var(--neongreen);
+    }
+}
+
 @media (max-width: 768px) {
     .header {
         height: 25vh;

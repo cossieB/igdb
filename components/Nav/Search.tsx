@@ -2,7 +2,7 @@
 
 import { Dispatch, RefObject, SetStateAction, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { searchSvg } from "../../utils/svgs"
+import { SearchSvg } from "../../utils/svgs"
 import { AnimatePresence, motion } from "framer-motion"
 import SearchInput from "./SearchInput"
 
@@ -22,7 +22,7 @@ export default function Search(props: Props) {
             onClick={() => setIsFocused(true)}
             className="navItem">
             <span className="navIcon" >
-                {searchSvg}
+                {<SearchSvg />}
             </span>
             <span className="formControl navText">
                 <SearchInput setIsFocused={setIsFocused} isFocused={isFocused}/>

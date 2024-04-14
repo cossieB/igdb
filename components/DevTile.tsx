@@ -9,12 +9,14 @@ interface Props {
     },
     className?: string,
     href: 'developer' | 'publisher' | 'platform'
+    icon?: JSX.Element
 }
 
-export default function DevTile({ item, className, href }: Props) {
+export default function DevTile({ item, className, href, icon }: Props) {
     return (
         <Link href={`/${href}s/${item.id}`} >
-            <div className={className || styles.tile} key={`${item.name}`} >
+            <div className={`${className} ${styles.tile}`} key={`${item.name}`} >
+                {icon}
                 <img src={item.logo} alt={`${item.name} Logo`} />
             </div>
         </Link>

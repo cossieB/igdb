@@ -1,7 +1,7 @@
 "use client"
 import Search from "./Search";
 import NavItem from "./NavItem";
-import { devSvg, gamesSvg, homeSvg, pubSvg } from "../../utils/svgs";
+import { DevSvg, GamesSvg, HomeSvg, PubSvg } from "../../utils/svgs";
 import { useRef, useState } from "react";
 
 export default function Nav() {
@@ -13,10 +13,10 @@ export default function Nav() {
             <div className="logo" >
                 <span className="logo1" style={{ color: 'var(--neongreen)' }} >I</span> <span style={{ color: 'var(--neonblue)' }} >G</span> <span style={{ color: 'var(--neonpink)' }} >D</span><span style={{ color: 'white' }} >B</span>
             </div>
-            <NavItem label="Home" icon={homeSvg} href="/" />
-            <NavItem label="Games" icon={gamesSvg} href="/games" />
-            <NavItem label="Developers" icon={devSvg} href="/developers" />
-            <NavItem label="Publishers" icon={pubSvg} href="/publishers" />
+            <NavItem label="Home" icon={<HomeSvg />} href="/" />
+            <NavItem label="Games" icon={<GamesSvg />} href="/games" />
+            <NavItem label="Developers" icon={<DevSvg />} href="/developers" />
+            <NavItem label="Publishers" icon={<PubSvg />} href="/publishers" />
             <Search
                 navbar={ref!}
                 isFocused={isFocused}

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Dispatch } from "react"
 import { GameReducerAction } from "../utils/gameReducer"
-import { closeSvg } from "../utils/svgs"
+import { CloseSvg } from "../utils/svgs"
 
 interface P {
     tags: string[],
@@ -19,7 +19,7 @@ export default function Tags({ tags, changeTags, isLink }: P) {
                         <span>{tag} </span>
                         {changeTags &&
                             <span onClick={() => changeTags({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'genres', value: tag } })} >
-                                {closeSvg}
+                                {<CloseSvg />}
                             </span>}
                     </Link>
                 ) :
@@ -28,7 +28,7 @@ export default function Tags({ tags, changeTags, isLink }: P) {
                         <span>{tag} </span>
                         {changeTags &&
                             <span onClick={() => changeTags({ type: 'REMOVE_FROM_ARRAY', payload: { name: 'genres', value: tag } })} >
-                                {closeSvg}
+                                {<CloseSvg />}
                             </span>}
                     </div>
                 )

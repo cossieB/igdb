@@ -14,8 +14,11 @@ export default async function Home() {
 
     return (
         <div>
-            <Carousel images={images}/>
-            <h1 className={styles.h1} > <span>The</span> <span>Internet</span> <span >Games</span> <span >Database</span></h1>
+            <div className={styles.heading}>
+                <Carousel images={images} />
+                <h1 className={styles.h1} > <span>The</span> <span>Internet</span> <span >Games</span> <span >Database</span></h1>
+            </div>
+            <Header heading='Games' />
             <div className={styles.games} >
                 {games.map(item => <GameTile key={item.gameId} game={item} className="" />)}
             </div>

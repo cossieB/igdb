@@ -4,3 +4,16 @@
     @include description(var(--neongreen));
 }
 
+.tile {
+    position: relative;
+    svg {
+        position: absolute;
+        color: black;
+        @media (max-width: 768px) {
+            top: 5%;
+        }
+        @media (min-width: 768px) {
+            left: 100px;
+        }
+    }
+}

@@ -33,6 +33,22 @@
 
 }
 
+.screens {
+    display: grid;
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    }
+    img {
+        width: 100%;
+    }
+}
+
 .date {
     width: fit-content;
     min-width: 45%;
@@ -106,38 +122,6 @@
         flex: 1;
     }
 
-    >a:first-child {
-        position: relative;
-        z-index: 1;
-
-        &::before {
-            content: "<Developer";
-            top: 0%;
-            @include befaft();
-        }
-        &::after {
-            content: "/>";
-            bottom: 0%;
-            right: 0;
-            @include befaft();
-        }
-    }
-    >a:nth-child(2) {
-        position: relative;
-        z-index: 1;
-
-        &::before {
-            content: "<Publisher";
-            top: 0%;
-            @include befaft();
-        }
-        &::after {
-            content: "/>";
-            bottom: 0%;
-            right: 0;
-            @include befaft();
-        }
-    }
 }
 
 .platforms {

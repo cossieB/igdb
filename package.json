@@ -1,0 +1,22 @@
+{
+  "name": "igdb",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^1.2.2",
+    "@scalar/hono-api-reference": "^0.9.46",
+    "better-auth": "^1.4.19",
+    "drizzle-orm": "^1.0.0-beta.15-859cf75",
+    "hono": "^4.12.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^1.0.0-beta.15-859cf75",
+    "wrangler": "^4.4.0"
+  }
+}

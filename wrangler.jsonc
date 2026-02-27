@@ -1,0 +1,38 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "igdb",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-02-27",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "igdb",
+			"database_id": "7d8123b4-c1ec-41ab-a386-c6a7879c10f9"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "a3c15ebc6c6345389f2c4898358767f6"
+		}
+	],
+	"compatibility_flags": [
+	  "nodejs_compat"
+	],
+	// "vars": {
+	//   "MY_VAR": "my-variable"
+	// },
+	// "r2_buckets": [
+	//   {
+	//     "binding": "MY_BUCKET",
+	//     "bucket_name": "my-bucket"
+	//   }
+	// ],
+	// "ai": {
+	//   "binding": "AI"
+	// },
+	// "observability": {
+	//   "enabled": true,
+	//   "head_sampling_rate": 1
+	// }
+}

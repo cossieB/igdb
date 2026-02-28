@@ -9,7 +9,7 @@ app.get('/', (c) => {
     return c.text('Hello Hono!')
 })
 
-app.route("/actors", actorRoutes)
+app.route("/api/actors", actorRoutes)
 
 app.doc("/docs", {
     openapi: "3.0.0",

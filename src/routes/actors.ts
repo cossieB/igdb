@@ -1,7 +1,10 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { ActorInsertSchema, ActorSelectSchema } from "~/drizzle/models";
+import { ActorInsertSchema, ActorSelectSchema, AppearanceSelectSchema, GameSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import * as actorRepositiory from "~/repositories/actor"
+import * as actorRepositiory from "~/repositories/actorsRepository"
+import * as gamesRepository from "~/repositories/gamesRepository"
+import * as appearanceRepository from "~/repositories/appearanceRepository"
+import { ErrorSchema } from "~/utils/ErrorSchema";
 
 export const actorRoutes = createApp()
 
@@ -40,6 +43,43 @@ actorRoutes.openapi(
 actorRoutes.openapi(
     createRoute({
         tags: ["Actors"],
+        method: "post",
+        path: "/",
+        description: "Route to add an actor to the database. This is an admin-only route.",
+        request: {
+            body: {
+                content: {
+                    "application/json": {
+                        schema: z.object({
+                            name: z.string(),
+                            photo: z.string().optional(),
+                            bio: z.string().default("")
+                        })
+                    }
+                }
+            }
+        },
+        responses: {
+            201: {
+                content: {
+                    "application/json": {
+                        schema: ActorSelectSchema
+                    }
+                },
+                description: "The actor object with extra database"
+            }
+        },
+    }),
+    async c => {
+        const body = c.req.valid('json')
+        const actor = await actorRepositiory.createActor(body)
+        return c.json(actor, 201)
+    }
+)
+
+actorRoutes.openapi(
+    createRoute({
+        tags: ["Actors"],
         method: "get",
         path: "/{id}",
         request: {
@@ -74,39 +114,156 @@ actorRoutes.openapi(
     }
 )
 
+
+
 actorRoutes.openapi(
     createRoute({
         tags: ["Actors"],
-        method: "post",
-        path: "/",
-        description: "Route to add an actor to the database. This is an admin-only route.",
+        method: "put",
+        path: "/{id}",
         request: {
+            params: z.object({
+                id: z.coerce.number()
+            }),
             body: {
                 content: {
                     "application/json": {
                         schema: z.object({
-                            name: z.string(),
+                            name: z.string().optional(),
                             photo: z.url().optional(),
-                            bio: z.string().default("")
-                        })
+                            bio: z.string().optional()
+                        }).openapi({ minProperties: 1 })
                     }
-                }                
+                }
             }
         },
         responses: {
-            201: {
+            200: {
                 content: {
                     "application/json": {
                         schema: ActorSelectSchema
                     }
                 },
-                description: "The actor object with extra database"
+                description: "The updated actor"
+            },
+            422: {
+                content: {
+                    'application/json': {
+                        schema: ErrorSchema
+                    }
+                },
+                description: "Error response if the request body is empty"
+            },
+            404: {
+                content: {
+                    "application/json": {
+                        schema: z.object({ error: z.string() })
+                    }
+                },
+                description: "No actor with given id found"
             }
-        },
+        }
     }),
     async c => {
-        const body = c.req.valid('json')
-        const actor = await actorRepositiory.createActor(body)
-        return c.json(actor, 201)
+        const body = c.req.valid("json")
+        const bodyEmpty = Object.keys(body).length === 0
+        if (bodyEmpty)
+            return c.json({ error: "Empty request body" }, 422)
+        const { id } = c.req.valid("param")
+        const actor = (await actorRepositiory.editActor(id, body)).at(0)
+        if (!actor) return c.json({ error: "Actor not found" }, 404)
+        return c.json(actor, 200)
+    }
+)
+
+actorRoutes.openapi(
+    createRoute({
+        tags: ["Actors"],
+        method: "delete",
+        path: "/{id}",
+        request: {
+            params: z.object({ id: z.coerce.number() }),
+        },
+        responses: {
+            200: {
+                content: {
+                    "application/json": {
+                        schema: z.object({ id: z.number() })
+                    }
+                },
+                description: "Id of deleted actor"
+            },
+            404: {
+                content: {
+                    "application/json": {
+                        schema: ErrorSchema
+                    }
+                },
+                description: "No actor exists with the given id"
+            }
+        }
+    }),
+    async c => {
+        const {id} = c.req.valid('param');
+        const deleted = await actorRepositiory.deleteActor(id);
+        if (!deleted) 
+            return c.json({error: "Actor not found"}, 404)
+        return c.json({id}, 200)
+    }
+)
+
+actorRoutes.openapi(
+    createRoute({
+        tags: ["Actors", "Games"],
+        path: "/{id}/games",
+        method: "get",
+        request: {
+            params: z.object({ id: z.coerce.number() }),
+            query: QuerySchema
+        },
+        responses: {
+            200: {
+                content: {
+                    "application/json": {
+                        schema: GameSelectSchema.array()
+                    }
+                },
+                description: "List of games starring this actor"
+            }
+        }
+    }),
+    async c => {
+        const actorId = c.req.valid('param').id;
+        const { limit, cursor } = c.req.valid('query')
+        const games = await gamesRepository.findAll({ actorId, limit, cursor })
+        return c.json(games)
+    }
+)
+
+actorRoutes.openapi(
+    createRoute({
+        path: "/{id}/roles",
+        method: "get",
+        tags: ["Actors"],
+        request: {
+            params: z.object({ id: z.coerce.number() }),
+            query: QuerySchema
+        },
+        responses: {
+            200: {
+                content: {
+                    "application/json": {
+                        schema: AppearanceSelectSchema.array()
+                    }
+                },
+                description: "The actor's roles"
+            }
+        }
+    }),
+    async c => {
+        const actorId = c.req.valid('param').id;
+        const { limit, cursor } = c.req.valid('query')
+        const appearances = await appearanceRepository.findAll({ actorId, limit, cursor })
+        return c.json(appearances, 200)
     }
 )

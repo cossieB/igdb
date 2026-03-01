@@ -1,6 +1,6 @@
-import { and, eq, getColumns, type InferInsertModel, type InferSelectModel, notInArray, sql } from "drizzle-orm";
+import { eq, type InferInsertModel, type InferSelectModel } from "drizzle-orm";
 import { db } from "~/drizzle/db";
-import { actors, gameActors, games } from "~/drizzle/schema";
+import { actors } from "~/drizzle/schema";
 
 export function findById(actorId: number) {
     return db.query.actors.findFirst({
@@ -30,5 +30,10 @@ export async function createActor(actor: InferInsertModel<typeof actors>) {
 }
 
 export async function editActor(actorId: number, actor: Partial<InferSelectModel<typeof actors>>) {
-    return db.update(actors).set(actor).where(eq(actors.actorId, actorId))
+    return db.update(actors).set(actor).where(eq(actors.actorId, actorId)).returning()
 };
+
+export async function deleteActor(actorId: number) {
+    const a = (await db.delete(actors).where(eq(actors.actorId, actorId)).returning()).at(0)
+    return a
+}

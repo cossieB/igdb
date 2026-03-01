@@ -36,7 +36,7 @@ gamesRoutes.openapi(
 
 gamesRoutes.openapi(
     createRoute({
-        tags: ["Games"],
+        tags: ["Games", "Admin"],
         description: "Admin-only route to add a game",
         path: "/",
         method: "post",
@@ -107,7 +107,7 @@ gamesRoutes.openapi(
 
 gamesRoutes.openapi(
     createRoute({
-        tags: ["Games"],
+        tags: ["Games", "Admin"],
         method: "put",
         path: "{id}",
         description: "Admin-only route to update the game with the given id",
@@ -158,6 +158,44 @@ gamesRoutes.openapi(
         const g = await gamesRepository.updateGame(id, game, {genres, media, platforms})
         if (!g) return c.json({error: "Game not found"}, 404)
         return c.json(g, 200)
+    }
+)
+
+gamesRoutes.openapi(
+    createRoute({
+        tags: ["Games", "Admin"],
+        method: "delete",
+        path: "/{id}",
+        description: "Admin-only route to delete the game",
+        request: {
+            params: z.object({
+                id: z.coerce.number()
+            })
+        },
+        responses: {
+            200: {
+                content: {
+                    "application/json": {
+                        schema: GameSelectSchema
+                    }
+                },
+                description: "The deleted game"
+            },
+            404: {
+                content: {
+                    "application/json": {
+                        schema: ErrorSchema
+                    }
+                },
+                description: "Game not found"
+            }            
+        }        
+    }),
+    async c => {
+        const { id } = c.req.valid("param")
+        const game = await gamesRepository.deleteGame(id)
+        if (!game) return c.json({error: "Game not found"}, 404)
+        return c.json(game, 200)
     }
 )
 

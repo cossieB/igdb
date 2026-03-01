@@ -35,7 +35,7 @@ publisherRoutes.openapi(
 
 publisherRoutes.openapi(
     createRoute({
-        tags: ["Publishers"],
+        tags: ["Publishers", "Admin"],
         method: "post",
         path: "/",
         description: "Admin-only route to add a publisher",
@@ -105,7 +105,7 @@ publisherRoutes.openapi(
 
 publisherRoutes.openapi(
     createRoute({
-        tags: ["Publishers"],
+        tags: ["Publishers", "Admin"],
         method: "put",
         path: "/{id}",
         description: "Admin-only route to update a publisher",        
@@ -161,7 +161,7 @@ publisherRoutes.openapi(
 
 publisherRoutes.openapi(
     createRoute({
-        tags: ["Publishers"],
+        tags: ["Publishers", "Admin"],
         method: "delete",
         path: "/{id}",
         description: "Admin-only route to delete a publisher",        

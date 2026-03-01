@@ -1,5 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { ActorInsertSchema, ActorSelectSchema, AppearanceSelectSchema, GameSelectSchema } from "~/drizzle/models";
+import { ActorSelectSchema, AppearanceSelectSchema, GameSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
 import * as actorRepositiory from "~/repositories/actorsRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
@@ -7,8 +7,6 @@ import * as appearanceRepository from "~/repositories/appearanceRepository"
 import { ErrorSchema, QuerySchema } from "~/utils/schemas";
 
 export const actorRoutes = createApp()
-
-
 
 actorRoutes.openapi(
     createRoute({
@@ -37,7 +35,7 @@ actorRoutes.openapi(
 
 actorRoutes.openapi(
     createRoute({
-        tags: ["Actors"],
+        tags: ["Actors", "Admin"],
         method: "post",
         path: "/",
         description: "Admin-only route to add an actor.",
@@ -113,7 +111,7 @@ actorRoutes.openapi(
 
 actorRoutes.openapi(
     createRoute({
-        tags: ["Actors"],
+        tags: ["Actors", "Admin"],
         method: "put",
         path: "/{id}",
         description: "Admin-only route to update an actor.",
@@ -174,9 +172,10 @@ actorRoutes.openapi(
 
 actorRoutes.openapi(
     createRoute({
-        tags: ["Actors"],
+        tags: ["Actors", "Admin"],
         method: "delete",
         path: "/{id}",
+        description: "Admin-only route to delete an actor",
         request: {
             params: z.object({ id: z.coerce.number() }),
         },

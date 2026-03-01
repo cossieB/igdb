@@ -4,16 +4,11 @@ import { createApp } from "~/utils/createApp";
 import * as actorRepositiory from "~/repositories/actorsRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as appearanceRepository from "~/repositories/appearanceRepository"
-import { ErrorSchema } from "~/utils/ErrorSchema";
+import { ErrorSchema, QuerySchema } from "~/utils/schemas";
 
 export const actorRoutes = createApp()
 
-const QuerySchema = z.object({
-    cursor: z.coerce.number().int().optional(),
-    limit: z.coerce.number().int().min(1).optional().default(10).transform(num => num > 50 ? 50 : num).openapi({
-        maximum: 50
-    })
-})
+
 
 actorRoutes.openapi(
     createRoute({
@@ -36,7 +31,7 @@ actorRoutes.openapi(
     }),
     async c => {
         const { cursor, limit } = c.req.valid('query')
-        const actors = await actorRepositiory.findAll(cursor, limit)
+        const actors = await actorRepositiory.findAll({cursor, limit})
         return c.json(actors)
     })
 
@@ -45,7 +40,7 @@ actorRoutes.openapi(
         tags: ["Actors"],
         method: "post",
         path: "/",
-        description: "Route to add an actor to the database. This is an admin-only route.",
+        description: "Admin-only route to add an actor.",
         request: {
             body: {
                 content: {
@@ -66,7 +61,7 @@ actorRoutes.openapi(
                         schema: ActorSelectSchema
                     }
                 },
-                description: "The actor object with extra database"
+                description: "The actor object"
             }
         },
     }),
@@ -121,6 +116,7 @@ actorRoutes.openapi(
         tags: ["Actors"],
         method: "put",
         path: "/{id}",
+        description: "Admin-only route to update an actor.",
         request: {
             params: z.object({
                 id: z.coerce.number()
@@ -234,7 +230,8 @@ actorRoutes.openapi(
     }),
     async c => {
         const actorId = c.req.valid('param').id;
-        const { limit, cursor } = c.req.valid('query')
+        const { limit, cursor } = c.req.valid('query');
+        console.log(actorId, limit, cursor)
         const games = await gamesRepository.findAll({ actorId, limit, cursor })
         return c.json(games)
     }

@@ -14,39 +14,62 @@ export type GameQueryFilters = {
 }
 
 export async function findAll(obj: GameQueryFilters = {}) {
-    const filters: SQL[] = []
-    if (obj.developerId)
-        filters.push(eq(games.developerId, obj.developerId))
-    if (obj.publisherId)
-        filters.push(eq(games.publisherId, obj.publisherId))
-    if (obj.actorId)
-        filters.push(inArray(
-            games.gameId,
-            db
-                .select({ gameId: gameActors.gameId })
-                .from(gameActors)
-                .where(eq(gameActors.actorId, obj.actorId))
-        ))
-    if (obj.platformId)
-        filters.push(inArray(
-            games.gameId,
-            db
-                .select({ gameId: gamePlatforms.gameId })
-                .from(gamePlatforms)
-                .where(eq(gamePlatforms.platformId, obj.platformId))
-        ))
-    if (obj.genre)
-        filters.push(inArray(
-            games.gameId,
-            db
-                .select({ gameId: gameGenres.gameId })
-                .from(gameGenres)
-                .where(eq(gameGenres.genre, obj.genre))
-        ))
-    if (obj.cursor)
-        filters.push(lt(games.gameId, obj.cursor))    
+    return db.query.games.findMany({
+        where: {
+            developerId: obj.developerId,
+            publisherId: obj.publisherId,
+            actors: {
+                actorId: obj.actorId
+            },
+            genres: {
+                name: obj.genre
+            },
+            platforms: {
+                platformId: obj.platformId
+            },
+            gameId: {
+                gt: obj.cursor
+            }
+        },
+        limit: obj.limit,
+    })
+    // const filters: SQL[] = []
+    // if (obj.developerId)
+    //     filters.push(eq(games.developerId, obj.developerId))
+    // if (obj.publisherId)
+    //     filters.push(eq(games.publisherId, obj.publisherId))
+    // if (obj.actorId)
+    //     filters.push(inArray(
+    //         games.gameId,
+    //         db
+    //             .select({ gameId: gameActors.gameId })
+    //             .from(gameActors)
+    //             .where(eq(gameActors.actorId, obj.actorId))
+    //     ))
+    // if (obj.platformId)
+    //     filters.push(inArray(
+    //         games.gameId,
+    //         db
+    //             .select({ gameId: gamePlatforms.gameId })
+    //             .from(gamePlatforms)
+    //             .where(eq(gamePlatforms.platformId, obj.platformId))
+    //     ))
+    // if (obj.genre)
+    //     filters.push(inArray(
+    //         games.gameId,
+    //         db
+    //             .select({ gameId: gameGenres.gameId })
+    //             .from(gameGenres)
+    //             .where(eq(gameGenres.genre, obj.genre))
+    //     ))
+    // if (obj.cursor)
+    //     filters.push(gt(games.gameId, obj.cursor))    
     
-    return db.select().from(games).where(and(...filters))
+    // const query = db.select().from(games).where(and(...filters))
+    
+    // if (obj.limit)
+    //     query.limit(obj.limit)
+    // return query
 }
 
 export async function findById(gameId: number) {
@@ -75,13 +98,13 @@ export async function createGame(game: InferInsertModel<typeof games>, other: Ga
         if (other.platforms.length > 0)
             await tx.insert(gamePlatforms).values(other.platforms.map(platformId => ({ platformId, gameId: g.gameId })))
 
-        return g.gameId
+        return g
     })
 }
 
 export async function updateGame(gameId: number, game: Partial<InferSelectModel<typeof games>>, other: Partial<GameInsert>) {
     return db.transaction(async tx => {
-        await tx.update(games).set(game).where(eq(games.gameId, gameId))
+        const list = await tx.update(games).set(game).where(eq(games.gameId, gameId)).returning()
         if (other.platforms) {
             if (other.platforms.length === 0) {
                 await tx.delete(gamePlatforms).where(eq(gamePlatforms.gameId, gameId));
@@ -127,6 +150,22 @@ export async function updateGame(gameId: number, game: Partial<InferSelectModel<
                 await tx.update(media).set({ gameId: null }).where(eq(media.gameId, gameId))
             else
                 await tx.insert(media).values(other.media.map(m => ({ ...m, gameId }))).onConflictDoNothing()
+        }
+        return list.at(0)
+    })
+}
+
+export async function getPlatforms(gameId: number) {
+    return db.query.games.findFirst({
+        where: {
+            gameId
+        },
+        with: {
+            platforms: true
+        },
+        
+        columns: {
+            
         }
     })
 }

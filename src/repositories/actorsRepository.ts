@@ -10,17 +10,26 @@ export function findById(actorId: number) {
     })
 }
 
-export async function findAll(cursor?: number, limit?: number) {
+type Filter = {
+    cursor?: number,
+    gameId?: number
+    limit?: number
+}
+
+export async function findAll(filter: Filter) {
     return db.query.actors.findMany({
         orderBy: {
             actorId: 'asc',
         },
         where: {
             actorId: {
-                gt: cursor
+                gt: filter.cursor
+            },
+            games: {
+                gameId: filter.gameId
             }
         },
-        limit
+        limit: filter.limit
     })
 }
 

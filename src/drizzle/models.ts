@@ -16,3 +16,5 @@ export const PublisherSelectSchema = createSelectSchema(publishers)
 export const GameSelectSchema = createSelectSchema(games)
 
 export const ActorInsertSchema = createInsertSchema(actors)
+export const DeveloperInsertSchema = createInsertSchema(developers)
+export const PublisherInsertSchema = createInsertSchema(publishers)

@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { ActorSelectSchema, GameSelectSchema, PlatformSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ErrorSchema, GameCreateSchema, QuerySchema } from "~/utils/schemas";
+import { ErrorSchema, GameCreateSchema, GameEditSchema, QuerySchema } from "~/utils/schemas";
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
@@ -118,7 +118,7 @@ gamesRoutes.openapi(
             body: {
                 content: {
                     "application/json": {
-                        schema: GameCreateSchema.partial().extend({ gameId: z.number() })
+                        schema: GameEditSchema
                     }
                 }
             }
@@ -152,7 +152,7 @@ gamesRoutes.openapi(
     }),
     async c => {
         const { id } = c.req.valid('param')
-        const { media, platforms, genres, ...game } = c.req.valid('json')
+        const { media, platforms, genres, gameId, ...game } = c.req.valid('json')
         const isEmpty = Object.keys(game).length === 0 && !media && !platforms && !genres
         if (isEmpty) return c.json({ error: "Empty request body" }, 422)
         const g = await gamesRepository.updateGame(id, game, {genres, media, platforms})

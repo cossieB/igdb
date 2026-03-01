@@ -3,6 +3,8 @@ import packageJson from "../package.json"
 import { actorRoutes } from './routes/actors'
 import { Scalar } from '@scalar/hono-api-reference'
 import { gamesRoutes } from './routes/games'
+import { developerRoutes } from './routes/developers'
+import { publisherRoutes } from './routes/publisher'
 
 const app = new OpenAPIHono<{ Bindings: Cloudflare.Env }>()
 
@@ -13,6 +15,8 @@ app.get('/', (c) => {
 app
     .route("/api/actors", actorRoutes)
     .route("/api/games", gamesRoutes)
+    .route("/api/developers", developerRoutes)
+    .route("/api/publishers", publisherRoutes)
 
 app.doc("/docs", {
     openapi: "3.0.0",

@@ -107,8 +107,6 @@ actorRoutes.openapi(
     }
 )
 
-
-
 actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],

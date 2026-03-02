@@ -1,7 +1,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "igdb",
-	"main": "src/index.ts",
+	"main": "src/index.tsx",
 	"compatibility_date": "2026-02-27",
 	"d1_databases": [
 		{
@@ -19,6 +19,9 @@
 	"compatibility_flags": [
 	  "nodejs_compat"
 	],
+	"assets": {
+		"directory": "src/public"
+	}
 	// "vars": {
 	//   "MY_VAR": "my-variable"
 	// },

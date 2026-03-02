@@ -6,10 +6,18 @@ import { gamesRoutes } from './routes/games'
 import { developerRoutes } from './routes/developers'
 import { publisherRoutes } from './routes/publishers'
 import { platformRoutes } from './routes/platforms'
+import { betterAuthRoutes as betterAuthRoutes } from './routes/betterAuth'
+import { authRoutes } from './routes/auth'
+import { setSession } from './middleware/setSessions'
+import type { MyEnv } from './utils/types'
 
-const app = new OpenAPIHono<{ Bindings: Cloudflare.Env }>()
+const app = new OpenAPIHono<MyEnv>()
+
+app.use(setSession)
 
 app.get('/', (c) => {
+    const session = c.var.session
+    if (!session) return c.redirect("/auth")
     return c.text('Hello Hono!')
 })
 
@@ -19,6 +27,8 @@ app
     .route("/api/developers", developerRoutes)
     .route("/api/publishers", publisherRoutes)
     .route("/api/platforms", platformRoutes)
+    .route("/api/auth/*", betterAuthRoutes)
+    .route("/auth", authRoutes)
 
 app.doc("/docs", {
     openapi: "3.0.0",

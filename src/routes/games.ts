@@ -5,6 +5,7 @@ import { ErrorSchema, GameCreateSchema, GameEditSchema, QuerySchema } from "~/ut
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
+import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 
 export const gamesRoutes = createApp()
 
@@ -13,6 +14,7 @@ gamesRoutes.openapi(
         tags: ["Games"],
         path: "/",
         method: "get",
+        middleware: [verifyApiKeyMware()],
         request: {
             query: QuerySchema
         },
@@ -40,6 +42,7 @@ gamesRoutes.openapi(
         description: "Admin-only route to add a game",
         path: "/",
         method: "post",
+        middleware: [verifyApiKeyMware("admin")],
         request: {
             body: {
                 content: {
@@ -71,6 +74,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
             params: z.object({
@@ -109,6 +113,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Admin"],
         method: "put",
+        middleware: [verifyApiKeyMware("admin")],
         path: "{id}",
         description: "Admin-only route to update the game with the given id",
         request: {
@@ -165,6 +170,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Admin"],
         method: "delete",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to delete the game",
         request: {
@@ -203,6 +209,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}/genres",
         request: {
             params: z.object({
@@ -231,6 +238,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Platforms"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}/platforms",
         request: {
             params: z.object({
@@ -268,6 +276,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Actors"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}/actors",
         request: {
             params: z.object({

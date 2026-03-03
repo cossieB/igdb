@@ -26,6 +26,34 @@ export const auth = betterAuth({
         }
     },
     plugins: [
-        apiKey()
+        apiKey([
+            {
+                configId: "user",
+                defaultPrefix: "uk_",
+                rateLimit: {
+                    enabled: true,
+                    maxRequests: 50,
+                },                
+                references: "user",
+                disableKeyHashing: true,
+            },
+            {
+                configId: "admin",
+                defaultPrefix: "ak_",
+                rateLimit: {
+                    enabled: false
+                },
+                keyExpiration: {
+                    defaultExpiresIn: 1000*60*5
+                },                
+                references: "user",
+            },])
     ],
+    session: {
+        cookieCache: {
+            enabled: true,
+            maxAge: 60 * 15,
+        },
+    },
+    disabledPaths: ["/api-key/*"]
 })

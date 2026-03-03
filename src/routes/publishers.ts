@@ -4,6 +4,7 @@ import { createApp } from "~/utils/createApp";
 import { ErrorSchema, QuerySchema } from "~/utils/schemas";
 import * as publisherRepository from "~/repositories/publisherRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
+import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 
 export const publisherRoutes = createApp()
 
@@ -11,6 +12,7 @@ publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
             query: QuerySchema
@@ -37,6 +39,7 @@ publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers", "Admin"],
         method: "post",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/",
         description: "Admin-only route to add a publisher",
         request: {
@@ -70,6 +73,7 @@ publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
             params: z.object({
@@ -107,6 +111,7 @@ publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers", "Admin"],
         method: "put",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to update a publisher",        
         request: {
@@ -163,6 +168,7 @@ publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers", "Admin"],
         method: "delete",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to delete a publisher",        
         request: {
@@ -201,6 +207,7 @@ publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers", "Games"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}/games",
         request: {
             query: QuerySchema,

@@ -7,7 +7,6 @@ import type { MyEnv } from "~/utils/types";
 export const authRoutes = new Hono<MyEnv>()
 
 authRoutes
-
     .get("/", async c => {
         const session = c.var.session
         if (session) return c.redirect("/")

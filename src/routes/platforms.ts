@@ -4,6 +4,7 @@ import { createApp } from "~/utils/createApp";
 import { ErrorSchema, QuerySchema } from "~/utils/schemas";
 import * as platformRepository from "~/repositories/platformRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
+import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 
 export const platformRoutes = createApp()
 
@@ -11,6 +12,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
             query: QuerySchema
@@ -37,6 +39,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Admin"],
         method: "post",
+        middleware: [verifyApiKeyMware('admin')],
         path: "/",
         description: "Admin-only route to add a platform",
         request: {
@@ -70,6 +73,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
             params: z.object({
@@ -107,6 +111,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Admin"],
         method: "put",
+        middleware: [verifyApiKeyMware('admin')],
         path: "/{id}",
         description: "Admin-only route to update a platform",        
         request: {
@@ -163,6 +168,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Admin"],
         method: "delete",
+        middleware: [verifyApiKeyMware('admin')],
         path: "/{id}",
         description: "Admin-only route to delete a platform",        
         request: {
@@ -201,6 +207,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Games"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}/games",
         request: {
             query: QuerySchema,

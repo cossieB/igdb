@@ -5,6 +5,7 @@ import * as actorRepositiory from "~/repositories/actorsRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as appearanceRepository from "~/repositories/appearanceRepository"
 import { ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 
 export const actorRoutes = createApp()
 
@@ -12,6 +13,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
             query: QuerySchema
@@ -37,6 +39,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "post",
+        middleware: [verifyApiKeyMware()],
         path: "/",
         description: "Admin-only route to add an actor.",
         request: {
@@ -74,6 +77,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
             params: z.object({
@@ -111,6 +115,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "put",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         description: "Admin-only route to update an actor.",
         request: {
@@ -172,6 +177,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "delete",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         description: "Admin-only route to delete an actor",
         request: {
@@ -210,6 +216,7 @@ actorRoutes.openapi(
         tags: ["Actors", "Games"],
         path: "/{id}/games",
         method: "get",
+        middleware: [verifyApiKeyMware()],
         request: {
             params: z.object({ id: z.coerce.number() }),
             query: QuerySchema
@@ -238,6 +245,7 @@ actorRoutes.openapi(
     createRoute({
         path: "/{id}/roles",
         method: "get",
+        middleware: [verifyApiKeyMware()],
         tags: ["Actors"],
         request: {
             params: z.object({ id: z.coerce.number() }),

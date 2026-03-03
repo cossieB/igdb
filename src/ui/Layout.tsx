@@ -10,6 +10,7 @@ export const Layout: FC = (props) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="google.css" />
+    <script src="script.js" defer></script>
         <title>IGDB</title>
     </head>
     <body>
@@ -17,7 +18,6 @@ export const Layout: FC = (props) => {
             ${props.children}
         </main>
 
-        <script src="script.js"></script>
     </body>
     </html>
     

@@ -4,6 +4,7 @@ import { createApp } from "~/utils/createApp";
 import { ErrorSchema, QuerySchema } from "~/utils/schemas";
 import * as developerRepository from "~/repositories/developerRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
+import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 
 export const developerRoutes = createApp()
 
@@ -11,6 +12,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
             query: QuerySchema
@@ -37,6 +39,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
         method: "post",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/",
         description: "Admin-only route to add a developer",
         request: {
@@ -70,6 +73,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
             params: z.object({
@@ -107,6 +111,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
         method: "put",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to update a developer",
         request: {
@@ -163,6 +168,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
         method: "delete",
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to delete a developer",        
         request: {
@@ -201,6 +207,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Games"],
         method: "get",
+        middleware: [verifyApiKeyMware()],
         path: "/{id}/games",
         request: {
             query: QuerySchema,

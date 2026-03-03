@@ -10,16 +10,29 @@ import { betterAuthRoutes as betterAuthRoutes } from './routes/betterAuth'
 import { authRoutes } from './routes/auth'
 import { setSession } from './middleware/setSessions'
 import type { MyEnv } from './utils/types'
+import { Layout } from './ui/Layout'
+import { keyRoutes } from './routes/keys'
+import { auth } from './utils/auth'
 
 const app = new OpenAPIHono<MyEnv>()
 
 app.use(setSession)
 
-app.get('/', (c) => {
+app.get('/', async (c) => {
     const session = c.var.session
     if (!session) return c.redirect("/auth")
-    return c.text('Hello Hono!')
+
+    return c.html(
+        <Layout>
+            <div id='keyDiv'>
+                <button id="genBtn">Get API Key</button>
+                <code></code>
+            </div>
+        </Layout>
+    )
 })
+    .route("/auth", authRoutes)
+    .route("/api/auth/*", betterAuthRoutes)
 
 app
     .route("/api/actors", actorRoutes)
@@ -27,8 +40,7 @@ app
     .route("/api/developers", developerRoutes)
     .route("/api/publishers", publisherRoutes)
     .route("/api/platforms", platformRoutes)
-    .route("/api/auth/*", betterAuthRoutes)
-    .route("/auth", authRoutes)
+    .route("/api/keys", keyRoutes)
 
 app.doc("/docs", {
     openapi: "3.0.0",
@@ -38,6 +50,6 @@ app.doc("/docs", {
     }
 })
 
-app.get("/scalar", Scalar({url: "/docs"}))
+app.get("/scalar", Scalar({ url: "/docs" }))
 
 export default app

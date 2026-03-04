@@ -15,7 +15,8 @@ export function verifyApiKeyMware(configId: "user" | "admin" = "user") {
             request: c.req.raw,
             
         })
-
+        if (res.error?.code == "RATE_LIMITED")
+            return c.json(res, 429)
         if (!res.valid) {
             return c.json(res, 403)
         }

@@ -1,10 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { PlatformInsertSchema, PlatformSelectSchema, GameSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
 import * as platformRepository from "~/repositories/platformRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
+import { commonErrors } from "~/utils/commonErrors";
 
 export const platformRoutes = createApp()
 
@@ -19,6 +20,7 @@ platformRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -54,6 +56,7 @@ platformRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             201: {
                 content: {
                     "application/json": {
@@ -78,12 +81,11 @@ platformRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     'application/json': {
@@ -118,9 +120,7 @@ platformRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to update a platform",        
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             body: {
                 content: {
                     "application/json": {
@@ -131,6 +131,7 @@ platformRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -180,12 +181,11 @@ platformRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to delete a platform",        
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -220,12 +220,11 @@ platformRoutes.openapi(
         path: "/{id}/games",
         request: {
             query: QuerySchema,
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },        
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {

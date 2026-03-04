@@ -4,8 +4,9 @@ import { createApp } from "~/utils/createApp";
 import * as actorRepositiory from "~/repositories/actorsRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as appearanceRepository from "~/repositories/appearanceRepository"
-import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
+import { commonErrors } from "~/utils/commonErrors";
 
 export const actorRoutes = createApp()
 
@@ -20,6 +21,7 @@ actorRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             200: {
                 description: "List of actors",
                 content: {
@@ -32,7 +34,7 @@ actorRoutes.openapi(
     }),
     async c => {
         const { cursor, limit } = c.req.valid('query')
-        const actors = await actorRepositiory.findAll({cursor, limit})
+        const actors = await actorRepositiory.findAll({ cursor, limit })
         return c.json(actors)
     })
 
@@ -58,6 +60,7 @@ actorRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             201: {
                 content: {
                     "application/json": {
@@ -82,12 +85,11 @@ actorRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             200: {
                 description: "Actor",
                 content: {
@@ -100,7 +102,7 @@ actorRoutes.openapi(
                 description: "No actor matches the given id",
                 content: {
                     "application/json": {
-                        schema: z.object({ error: z.string() })
+                        schema: ErrorSchema
                     }
                 }
             }
@@ -109,7 +111,7 @@ actorRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const actor = await actorRepositiory.findById(id)
-        if (!actor) return c.json({ error: "No actor matches the given id" }, 404)
+        if (!actor) return c.json({ error: {message: "No actor matches the given id"} }, 404)
         return c.json(actor, 200)
     }
 )
@@ -122,9 +124,7 @@ actorRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to update an actor.",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema,
             body: {
                 content: {
@@ -139,6 +139,7 @@ actorRoutes.openapi(
             }
         },
         responses: {
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -170,10 +171,10 @@ actorRoutes.openapi(
         const bodyEmpty = Object.keys(body).length === 0
         if (bodyEmpty)
             return c.json({
-            error: {
-                message: "Empty request body"
-            }
-        }, 422)
+                error: {
+                    message: "Empty request body"
+                }
+            }, 422)
         const { id } = c.req.valid("param")
         const actor = (await actorRepositiory.editActor(id, body)).at(0)
         if (!actor) return c.json({ error: "Actor not found" }, 404)
@@ -189,10 +190,11 @@ actorRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to delete an actor",
         request: {
-            params: z.object({ id: z.coerce.number() }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -208,15 +210,15 @@ actorRoutes.openapi(
                     }
                 },
                 description: "No actor exists with the given id"
-            }
+            },
         }
     }),
     async c => {
-        const {id} = c.req.valid('param');
+        const { id } = c.req.valid('param');
         const deleted = await actorRepositiory.deleteActor(id);
-        if (!deleted) 
-            return c.json({error: {message: "Actor not found"}}, 404)
-        return c.json({id}, 200)
+        if (!deleted)
+            return c.json({ error: { message: "Actor not found" } }, 404)
+        return c.json({ id }, 200)
     }
 )
 
@@ -227,11 +229,12 @@ actorRoutes.openapi(
         method: "get",
         middleware: [verifyApiKeyMware()],
         request: {
-            params: z.object({ id: z.coerce.number() }),
+            params: NumberIdSchema,
             query: QuerySchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -258,11 +261,12 @@ actorRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         tags: ["Actors"],
         request: {
-            params: z.object({ id: z.coerce.number() }),
+            params: NumberIdSchema,
             query: QuerySchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {

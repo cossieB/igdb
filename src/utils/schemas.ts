@@ -3,7 +3,8 @@ import z from "zod";
 export const ErrorSchema = z.object({
     error: z.object({
         message: z.string(),
-        name: z.string().optional()
+        name: z.string().optional(),
+        code: z.string().optional()
     })
 })
 
@@ -34,5 +35,17 @@ export const GameCreateSchema = z.object({
 export const GameEditSchema = GameCreateSchema.partial().extend({ gameId: z.number() })
 
 export const ApiHeaderSchema = z.object({
-    "x-api-key": z.string()
+    "x-api-key": z.string().openapi({ example: "uk_1234567890abcdefghijklmnopqrstuz" })
+})
+
+export const NumberIdSchema = z.object({
+    id: z.coerce.number()
+        .openapi({
+            example: 7,
+            param: {
+                in: "path",
+                required: true,
+                name: "id"
+            }
+        })
 })

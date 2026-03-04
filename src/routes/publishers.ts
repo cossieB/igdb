@@ -5,6 +5,7 @@ import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
 import * as publisherRepository from "~/repositories/publisherRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
+import { commonErrors } from "~/utils/commonErrors";
 
 export const publisherRoutes = createApp()
 
@@ -19,6 +20,7 @@ publisherRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -54,6 +56,7 @@ publisherRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             201: {
                 content: {
                     "application/json": {
@@ -84,6 +87,7 @@ publisherRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     'application/json': {
@@ -131,6 +135,7 @@ publisherRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -186,6 +191,7 @@ publisherRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -226,6 +232,7 @@ publisherRoutes.openapi(
             headers: ApiHeaderSchema
         },        
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {

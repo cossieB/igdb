@@ -1,10 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { DeveloperInsertSchema, DeveloperSelectSchema, GameSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
 import * as developerRepository from "~/repositories/developerRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
+import { commonErrors } from "~/utils/commonErrors";
 
 export const developerRoutes = createApp()
 
@@ -78,9 +79,7 @@ developerRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
@@ -122,9 +121,7 @@ developerRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to update a developer",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             body: {
                 content: {
                     "application/json": {
@@ -135,6 +132,7 @@ developerRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -188,12 +186,11 @@ developerRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to delete a developer",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -233,11 +230,10 @@ developerRoutes.openapi(
         request: {
             query: QuerySchema,
             headers: ApiHeaderSchema,
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
         },
         responses: {
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {

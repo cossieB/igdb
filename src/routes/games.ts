@@ -1,11 +1,12 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { ActorSelectSchema, GameSelectSchema, PlatformSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
+import { commonErrors } from "~/utils/commonErrors";
 
 export const gamesRoutes = createApp()
 
@@ -20,6 +21,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     'application/json': {
@@ -55,6 +57,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             201: {
                 content: {
                     "application/json": {
@@ -79,12 +82,11 @@ gamesRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     'application/json': {
@@ -120,9 +122,7 @@ gamesRoutes.openapi(
         path: "{id}",
         description: "Admin-only route to update the game with the given id",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             body: {
                 content: {
                     "application/json": {
@@ -133,6 +133,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -182,12 +183,11 @@ gamesRoutes.openapi(
         path: "/{id}",
         description: "Admin-only route to delete the game",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -221,12 +221,11 @@ gamesRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}/genres",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -251,12 +250,11 @@ gamesRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}/platforms",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {
@@ -290,12 +288,11 @@ gamesRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/{id}/actors",
         request: {
-            params: z.object({
-                id: z.coerce.number()
-            }),
+            params: NumberIdSchema,
             headers: ApiHeaderSchema
         },
         responses: {
+            ...commonErrors,            
             200: {
                 content: {
                     "application/json": {

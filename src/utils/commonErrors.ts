@@ -1,7 +1,5 @@
-import { z, type createRoute, type RouteConfig } from "@hono/zod-openapi";
+import { z, type RouteConfig } from "@hono/zod-openapi";
 import { ErrorSchema } from "./schemas";
-
-type T = Parameters<typeof createRoute>
 
 export const commonErrors: RouteConfig['responses'] = {
     400: {

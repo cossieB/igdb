@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { Layout } from "~/ui/Layout";
+import { GithubSignin } from "~/ui/SignInWithGithub";
 import { SignInWithGoogle } from "~/ui/SignInWithGoogle";
 import { auth } from "~/utils/auth";
 import type { MyEnv } from "~/utils/types";
@@ -12,7 +13,10 @@ authRoutes
         if (session) return c.redirect("/")
         return c.html(
             <Layout>
-                <SignInWithGoogle />
+                <div style={{ display: "flex" }}>
+                    <SignInWithGoogle />
+                    <GithubSignin />
+                </div>
             </Layout>
         )
     })
@@ -23,6 +27,21 @@ authRoutes
             asResponse: true,
             body: {
                 provider: "google",
+            },
+        })
+        const cookie = res.headers.get("set-cookie")
+        const location = res.headers.get("location")
+        if (!cookie || !location) return c.text("OOPS", 500)
+        c.header("Set-Cookie", cookie)
+        return c.redirect(location)
+    })
+    .get("/github", async c => {
+        const session = c.var.session
+        if (session) return c.redirect("/")
+        const res = await auth.api.signInSocial({
+            asResponse: true,
+            body: {
+                provider: "github",
             },
         })
         const cookie = res.headers.get("set-cookie")

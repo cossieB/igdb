@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { ActorSelectSchema, GameSelectSchema, PlatformSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ErrorSchema, GameCreateSchema, GameEditSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, QuerySchema } from "~/utils/schemas";
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
@@ -16,7 +16,8 @@ gamesRoutes.openapi(
         method: "get",
         middleware: [verifyApiKeyMware()],
         request: {
-            query: QuerySchema
+            query: QuerySchema,
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -50,7 +51,8 @@ gamesRoutes.openapi(
                         schema: GameCreateSchema
                     }
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             201: {
@@ -79,7 +81,8 @@ gamesRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -104,7 +107,7 @@ gamesRoutes.openapi(
         const { id } = c.req.valid('param')
         const game = await gamesRepository.findById(id)
         if (!game)
-            return c.json({ error: "Game not found" }, 404)
+            return c.json({ error: {message: "Game not found"} }, 404)
         return c.json(game, 200)
     }
 )
@@ -126,7 +129,8 @@ gamesRoutes.openapi(
                         schema: GameEditSchema
                     }
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -159,7 +163,11 @@ gamesRoutes.openapi(
         const { id } = c.req.valid('param')
         const { media, platforms, genres, gameId, ...game } = c.req.valid('json')
         const isEmpty = Object.keys(game).length === 0 && !media && !platforms && !genres
-        if (isEmpty) return c.json({ error: "Empty request body" }, 422)
+        if (isEmpty) return c.json({
+            error: {
+                message: "Empty request body"
+            }
+        }, 422)
         const g = await gamesRepository.updateGame(id, game, {genres, media, platforms})
         if (!g) return c.json({error: "Game not found"}, 404)
         return c.json(g, 200)
@@ -176,7 +184,8 @@ gamesRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -200,7 +209,7 @@ gamesRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const game = await gamesRepository.deleteGame(id)
-        if (!game) return c.json({error: "Game not found"}, 404)
+        if (!game) return c.json({ error: {message: "Game not found"} }, 404)
         return c.json(game, 200)
     }
 )
@@ -214,7 +223,8 @@ gamesRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -243,7 +253,8 @@ gamesRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -267,7 +278,7 @@ gamesRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const game = await gamesRepository.getPlatforms(id)
-        if (!game) return c.json({ error: "Game not found" }, 404)
+        if (!game) return c.json({ error: {message: "Game not found"} }, 404)
         return c.json(game.platforms, 200)
     }
 )
@@ -281,7 +292,8 @@ gamesRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {

@@ -1,7 +1,10 @@
 import z from "zod";
 
 export const ErrorSchema = z.object({
-    error: z.string()
+    error: z.object({
+        message: z.string(),
+        name: z.string().optional()
+    })
 })
 
 export const QuerySchema = z.object({
@@ -30,14 +33,6 @@ export const GameCreateSchema = z.object({
 
 export const GameEditSchema = GameCreateSchema.partial().extend({ gameId: z.number() })
 
-const developerCreateSchema = z.object({
-        name: z.string(),
-        logo: z.string(),
-        summary: z.string().default(""),
-        location: z.string().nullish(),
-        country: z.string().nullish()
-    })
-
-const developerEditSchema = developerCreateSchema.partial().extend({
-    developerId: z.number()
-})    
+export const ApiHeaderSchema = z.object({
+    "x-api-key": z.string()
+})

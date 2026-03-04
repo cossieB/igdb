@@ -9,18 +9,30 @@ export const keyRoutes = new Hono<MyEnv>()
 keyRoutes
     .use(authenticatedMiddleware)
     .post("/", async c => {
-        
-        const key = await db.query.apikeys.findFirst({
+
+        const existing = await db.query.apikeys.findFirst({
             where: {
                 referenceId: c.var.user.id
             }
         })
-        if (key) return c.json({key: key.key})
+        if (existing) return c.json(existing)
         const obj = await auth.api.createApiKey({
             body: {
-                configId: "user"
+                configId: "user",
             },
             headers: c.req.raw.headers
         })
-        return c.json({key: obj.key}, 201)
+        return c.json(obj, 201)
+    })
+    .post("/admin", async c => {
+        if (c.var.user.role != "admin")
+            return c.text("Forbidden", 403)
+
+        const obj = await auth.api.createApiKey({
+            body: {
+                configId: "admin",
+            },
+            headers: c.req.raw.headers
+        })
+        return c.json(obj, 201)
     })

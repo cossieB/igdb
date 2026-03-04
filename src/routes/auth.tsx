@@ -31,16 +31,3 @@ authRoutes
         c.header("Set-Cookie", cookie)
         return c.redirect(location)
     })
-    .post("/key", async c => {
-        const user = await auth.api.getSession({
-            headers: c.req.raw.headers
-        })
-        if (!user) return c.redirect("/auth")
-        const key = await auth.api.createApiKey({
-            headers: c.req.raw.headers,
-            body: {
-
-            }
-        })
-        return c.json({ key })
-    })

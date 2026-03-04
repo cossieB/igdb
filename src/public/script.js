@@ -4,7 +4,7 @@ googleBtn?.addEventListener("click", e => {
 })
 
 const keyDiv = document.getElementById("keyDiv")
-const codeElem = keyDiv?.querySelector("code")
+const codeElem = document?.querySelector("code")
 /**@type HTMLButtonElement */
 const genBtn = document.getElementById("genBtn")
 
@@ -18,12 +18,28 @@ genBtn?.addEventListener("click", async () => {
         return;
     }
     const data = await res.json()
-    codeElem.innerText = data.key.slice(0,6) + "".padStart(data.key.length - 6, "*")
+    const {key, ...others} = data
+    codeElem.innerText = key.slice(0,6) + "".padStart(data.key.length - 6, "*")
     const copyBtn = document.createElement("button")
     keyDiv.appendChild(copyBtn)
     copyBtn.innerText = "Copy to clipboard"
     copyBtn.onclick = () => {
         window.navigator.clipboard.writeText(data.key)
     }
+    const pre = document.querySelector("pre")
+    pre.innerText = JSON.stringify(others, null, 4)
 })
 
+const adminBtn = document.getElementById("adminBtn")
+
+adminBtn?.addEventListener("click", async () => {
+    const res = await fetch("/api/keys/admin", {
+        method: "post"
+    })
+    if (!res.ok) {
+
+        return;
+    }
+    const data = await res.json()
+    alert(data.key)
+})

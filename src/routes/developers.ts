@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { DeveloperInsertSchema, DeveloperSelectSchema, GameSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
 import * as developerRepository from "~/repositories/developerRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
@@ -15,7 +15,8 @@ developerRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
-            query: QuerySchema
+            query: QuerySchema,
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -49,7 +50,8 @@ developerRoutes.openapi(
                         schema: DeveloperInsertSchema
                     },
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             201: {
@@ -78,7 +80,8 @@ developerRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -102,7 +105,11 @@ developerRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const dev = await developerRepository.findById(id)
-        if (!dev) return c.json({ error: "Developer not found" }, 404)
+        if (!dev) return c.json({
+            error: {
+                message: "Developer not found"
+            }
+        }, 404)
         return c.json(dev, 200)
     }
 )
@@ -124,7 +131,8 @@ developerRoutes.openapi(
                         schema: DeveloperInsertSchema.omit({ developerId: true, dateAdded: true, dateModified: true }).partial()
                     }
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -146,7 +154,7 @@ developerRoutes.openapi(
             404: {
                 content: {
                     "application/json": {
-                        schema: z.object({ error: z.string() })
+                        schema: ErrorSchema
                     }
                 },
                 description: "No developer with given id found"
@@ -157,9 +165,17 @@ developerRoutes.openapi(
         const { id } = c.req.valid("param")
         const body = c.req.valid('json')
         const isEmpty = Object.keys(body).length === 0
-        if (isEmpty) return c.json({ error: "Empty request body" }, 422)
+        if (isEmpty) return c.json({
+            error: {
+                message: "Empty request body"
+            }
+        }, 422)
         const dev = await developerRepository.editDeveloper(id, c.req.valid('json'))
-        if (!dev) return c.json({ error: "Developer not found" }, 404)
+        if (!dev) return c.json({
+            error: {
+                message: "Developer not found"
+            }
+        }, 404)
         return c.json(dev, 200)
     }
 )
@@ -170,11 +186,12 @@ developerRoutes.openapi(
         method: "delete",
         middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
-        description: "Admin-only route to delete a developer",        
+        description: "Admin-only route to delete a developer",
         request: {
             params: z.object({
                 id: z.coerce.number()
             }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -188,7 +205,7 @@ developerRoutes.openapi(
             404: {
                 content: {
                     "application/json": {
-                        schema: z.object({ error: z.string() })
+                        schema: ErrorSchema
                     }
                 },
                 description: "No developer with given id found"
@@ -198,7 +215,11 @@ developerRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const dev = await developerRepository.deleteDeveloper(id)
-        if (!dev) return c.json({ error: "Developer not found" }, 404)
+        if (!dev) return c.json({
+            error: {
+                message: "Developer not found"
+            }
+        }, 404)
         return c.json(dev, 200)
     }
 )
@@ -211,10 +232,11 @@ developerRoutes.openapi(
         path: "/{id}/games",
         request: {
             query: QuerySchema,
+            headers: ApiHeaderSchema,
             params: z.object({
                 id: z.coerce.number()
             }),
-        },        
+        },
         responses: {
             200: {
                 content: {
@@ -228,8 +250,8 @@ developerRoutes.openapi(
     }),
     async c => {
         const { id } = c.req.valid("param")
-        const { cursor, limit } = c.req.valid('query')        
-        const games = await gamesRepository.findAll({developerId: id, cursor, limit})
+        const { cursor, limit } = c.req.valid('query')
+        const games = await gamesRepository.findAll({ developerId: id, cursor, limit })
         return c.json(games, 200)
     }
 )

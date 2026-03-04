@@ -4,7 +4,7 @@ import { createApp } from "~/utils/createApp";
 import * as actorRepositiory from "~/repositories/actorsRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as appearanceRepository from "~/repositories/appearanceRepository"
-import { ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 
 export const actorRoutes = createApp()
@@ -16,7 +16,8 @@ actorRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
-            query: QuerySchema
+            query: QuerySchema,
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -39,7 +40,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "post",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware("admin")],
         path: "/",
         description: "Admin-only route to add an actor.",
         request: {
@@ -53,7 +54,8 @@ actorRoutes.openapi(
                         })
                     }
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             201: {
@@ -82,7 +84,8 @@ actorRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -115,13 +118,14 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "put",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to update an actor.",
         request: {
             params: z.object({
                 id: z.coerce.number()
             }),
+            headers: ApiHeaderSchema,
             body: {
                 content: {
                     "application/json": {
@@ -165,7 +169,11 @@ actorRoutes.openapi(
         const body = c.req.valid("json")
         const bodyEmpty = Object.keys(body).length === 0
         if (bodyEmpty)
-            return c.json({ error: "Empty request body" }, 422)
+            return c.json({
+            error: {
+                message: "Empty request body"
+            }
+        }, 422)
         const { id } = c.req.valid("param")
         const actor = (await actorRepositiory.editActor(id, body)).at(0)
         if (!actor) return c.json({ error: "Actor not found" }, 404)
@@ -177,11 +185,12 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "delete",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to delete an actor",
         request: {
             params: z.object({ id: z.coerce.number() }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -206,7 +215,7 @@ actorRoutes.openapi(
         const {id} = c.req.valid('param');
         const deleted = await actorRepositiory.deleteActor(id);
         if (!deleted) 
-            return c.json({error: "Actor not found"}, 404)
+            return c.json({error: {message: "Actor not found"}}, 404)
         return c.json({id}, 200)
     }
 )
@@ -219,7 +228,8 @@ actorRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         request: {
             params: z.object({ id: z.coerce.number() }),
-            query: QuerySchema
+            query: QuerySchema,
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -249,7 +259,8 @@ actorRoutes.openapi(
         tags: ["Actors"],
         request: {
             params: z.object({ id: z.coerce.number() }),
-            query: QuerySchema
+            query: QuerySchema,
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {

@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { PublisherInsertSchema, PublisherSelectSchema, GameSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ErrorSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, QuerySchema } from "~/utils/schemas";
 import * as publisherRepository from "~/repositories/publisherRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
@@ -15,7 +15,8 @@ publisherRoutes.openapi(
         middleware: [verifyApiKeyMware()],
         path: "/",
         request: {
-            query: QuerySchema
+            query: QuerySchema,
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -49,7 +50,8 @@ publisherRoutes.openapi(
                         schema: PublisherInsertSchema
                     },
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             201: {
@@ -78,7 +80,8 @@ publisherRoutes.openapi(
         request: {
             params: z.object({
                 id: z.coerce.number()
-            })
+            }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -102,7 +105,7 @@ publisherRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const dev = await publisherRepository.findById(id)
-        if (!dev) return c.json({ error: "Publisher not found" }, 404)
+        if (!dev) return c.json({ error: {message: "Publisher not found"} }, 404)
         return c.json(dev, 200)
     }
 )
@@ -124,7 +127,8 @@ publisherRoutes.openapi(
                         schema: PublisherInsertSchema.omit({ publisherId: true, dateAdded: true, dateModified: true }).partial()
                     }
                 }
-            }
+            },
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -146,7 +150,7 @@ publisherRoutes.openapi(
             404: {
                 content: {
                     "application/json": {
-                        schema: z.object({ error: z.string() })
+                        schema: ErrorSchema
                     }
                 },
                 description: "No publisher with given id found"
@@ -157,9 +161,13 @@ publisherRoutes.openapi(
         const { id } = c.req.valid("param")
         const body = c.req.valid('json')
         const isEmpty = Object.keys(body).length === 0
-        if (isEmpty) return c.json({ error: "Empty request body" }, 422)
+        if (isEmpty) return c.json({
+            error: {
+                message: "Empty request body"
+            }
+        }, 422)
         const dev = await publisherRepository.editPublisher(id, c.req.valid('json'))
-        if (!dev) return c.json({ error: "Publisher not found" }, 404)
+        if (!dev) return c.json({ error: {message: "Publisher not found"} }, 404)
         return c.json(dev, 200)
     }
 )
@@ -175,6 +183,7 @@ publisherRoutes.openapi(
             params: z.object({
                 id: z.coerce.number()
             }),
+            headers: ApiHeaderSchema
         },
         responses: {
             200: {
@@ -214,6 +223,7 @@ publisherRoutes.openapi(
             params: z.object({
                 id: z.coerce.number()
             }),
+            headers: ApiHeaderSchema
         },        
         responses: {
             200: {

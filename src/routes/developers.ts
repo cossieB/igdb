@@ -116,7 +116,7 @@ developerRoutes.openapi(
 developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
-        method: "put",
+        method: "patch",
         middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to update a developer",

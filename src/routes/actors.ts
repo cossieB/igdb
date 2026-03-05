@@ -119,7 +119,7 @@ actorRoutes.openapi(
 actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
-        method: "put",
+        method: "patch",
         middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to update an actor.",

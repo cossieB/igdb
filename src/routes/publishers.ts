@@ -117,7 +117,7 @@ publisherRoutes.openapi(
 publisherRoutes.openapi(
     createRoute({
         tags: ["Publishers", "Admin"],
-        method: "put",
+        method: "patch",
         middleware: [verifyApiKeyMware("admin")],
         path: "/{id}",
         description: "Admin-only route to update a publisher",        

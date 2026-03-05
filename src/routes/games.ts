@@ -117,7 +117,7 @@ gamesRoutes.openapi(
 gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Admin"],
-        method: "put",
+        method: "patch",
         middleware: [verifyApiKeyMware("admin")],
         path: "{id}",
         description: "Admin-only route to update the game with the given id",

@@ -1,10 +1,11 @@
 import { createRoute, z } from "@hono/zod-openapi";
-import { ActorSelectSchema, GameSelectSchema, PlatformSelectSchema } from "~/drizzle/models";
+import { ActorSelectSchema, GameSelectSchema, PlatformSelectSchema, ReviewInsertSchema, ReviewSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, GameSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
+import * as reviewRepositiory from "~/repositories/reviewRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 import { commonErrors } from "~/utils/commonErrors";
 import { setRateLimitHeaders } from "~/middleware/setRateLimitHeaders";
@@ -22,11 +23,11 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     'application/json': {
-                        schema: GameSelectSchema.array()
+                        schema: GameSchema.array()
                     }
                 },
                 description: "List of games"
@@ -53,12 +54,13 @@ gamesRoutes.openapi(
                     "application/json": {
                         schema: GameCreateSchema
                     }
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             201: {
                 content: {
                     "application/json": {
@@ -87,11 +89,11 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     'application/json': {
-                        schema: GameSelectSchema
+                        schema: GameSchema
                     }
                 },
                 description: "List of games"
@@ -110,7 +112,7 @@ gamesRoutes.openapi(
         const { id } = c.req.valid('param')
         const game = await gamesRepository.findById(id)
         if (!game)
-            return c.json({ error: {message: "Game not found"} }, 404)
+            return c.json({ error: { message: "Game not found" } }, 404)
         return c.json(game, 200)
     }
 )
@@ -129,12 +131,13 @@ gamesRoutes.openapi(
                     "application/json": {
                         schema: GameEditSchema
                     }
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -170,8 +173,8 @@ gamesRoutes.openapi(
                 message: "Empty request body"
             }
         }, 422)
-        const g = await gamesRepository.updateGame(id, game, {genres, media, platforms})
-        if (!g) return c.json({error: "Game not found"}, 404)
+        const g = await gamesRepository.updateGame(id, game, { genres, media, platforms })
+        if (!g) return c.json({ error: "Game not found" }, 404)
         return c.json(g, 200)
     }
 )
@@ -188,7 +191,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -204,13 +207,13 @@ gamesRoutes.openapi(
                     }
                 },
                 description: "Game not found"
-            }            
-        }        
+            }
+        }
     }),
     async c => {
         const { id } = c.req.valid("param")
         const game = await gamesRepository.deleteGame(id)
-        if (!game) return c.json({ error: {message: "Game not found"} }, 404)
+        if (!game) return c.json({ error: { message: "Game not found" } }, 404)
         return c.json(game, 200)
     }
 )
@@ -226,7 +229,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -255,7 +258,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -277,7 +280,7 @@ gamesRoutes.openapi(
     async c => {
         const { id } = c.req.valid("param")
         const game = await gamesRepository.getPlatforms(id)
-        if (!game) return c.json({ error: {message: "Game not found"} }, 404)
+        if (!game) return c.json({ error: { message: "Game not found" } }, 404)
         return c.json(game.platforms, 200)
     }
 )
@@ -293,7 +296,7 @@ gamesRoutes.openapi(
             headers: ApiHeaderSchema
         },
         responses: {
-            ...commonErrors,            
+            ...commonErrors,
             200: {
                 content: {
                     "application/json": {
@@ -308,5 +311,134 @@ gamesRoutes.openapi(
         const { id } = c.req.valid("param")
         const actors = await actorRepositiory.findAll({ gameId: id });
         return c.json(actors, 200)
+    }
+)
+
+gamesRoutes.openapi(
+    createRoute({
+        tags: ["Games", "Reviews"],
+        method: "post",
+        path: "/{id}/reviews",
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
+        request: {
+            params: NumberIdSchema,
+            headers: ApiHeaderSchema,
+            body: {
+                content: {
+                    "application/json": {
+                        schema: z.object({
+                            text: z.string().max(500),
+                            score: z.int().min(1).max(5)
+                        })
+                    }
+                },
+                required: true
+            }
+        },
+        responses: {
+            ...commonErrors,
+            200: {
+                content: {
+                    "application/json": {
+                        schema: ReviewSelectSchema
+                    }
+                },
+                description: "Edited review"
+            },
+            404: {
+                content: {
+                    "application/json": {
+                        schema: ErrorSchema
+                    }
+                },
+                description: "Game Not Found"
+            }
+        }
+    }),
+    async c => {
+        const body = c.req.valid("json")
+        const { id: gameId } = c.req.valid("param")
+        const userId = c.var.key!.referenceId
+        const review = await reviewRepositiory.upsertReview({
+            gameId,
+            userId,
+            ...body
+        })
+        if (!review)
+            return c.json({ error: { message: "Game Not Found" } }, 404)
+
+        return c.json(review, 200)
+    }
+)
+
+gamesRoutes.openapi(
+    createRoute({
+        tags: ["Games", "Reviews"],        
+        path: "/{id}/reviews",
+        method: "delete",
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
+        request: {
+            params: NumberIdSchema,
+            headers: ApiHeaderSchema,
+        },
+        responses: {
+            200: {
+                content: {
+                    "application/json": {
+                        schema: ReviewSelectSchema
+                    }
+                },
+                description: "Deleted Review"
+            },
+            403: {
+                content: {
+                    "application/json": {
+                        schema: ErrorSchema
+                    },
+                },
+                description: ""
+            },
+            ...commonErrors,
+        }
+    }),
+    async c => {
+        const { id: gameId } = c.req.valid("param")
+        const userId = c.var.key!.referenceId
+        const deleted = (await reviewRepositiory.deleteReview(userId, gameId)).at(0)
+        if (!deleted)
+            return c.json({ error: { message: "Nothing deleted" } }, 403)
+        return c.json(deleted, 200)
+    }
+)
+
+gamesRoutes.openapi(
+    createRoute({
+        tags: ["Games", "Reviews"],        
+        path: "/{id}/reviews",
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],        
+        method: "get",
+        request: {
+            params: NumberIdSchema,
+            headers: ApiHeaderSchema,
+            query: QuerySchema
+        },
+        responses: {
+            200: {
+                content: {
+                    "application/json": {
+                        schema: ReviewSelectSchema.array()
+                    }
+                },
+                description: "List of this game's reviews"
+            }
+        }
+    }),
+    async c => {
+        const { id: gameId } = c.req.valid("param")
+        const {limit, cursor} = c.req.valid("query")
+        const reviews = await reviewRepositiory.findAll({
+            gameId, limit, cursor
+        })
+        return c.json(reviews)
     }
 )

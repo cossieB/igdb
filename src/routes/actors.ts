@@ -29,7 +29,7 @@ actorRoutes.openapi(
                     "application/json": {
                         schema: ActorSelectSchema.array()
                     },
-                }
+                },
             }
         }
     }),
@@ -56,7 +56,8 @@ actorRoutes.openapi(
                             bio: z.string().default("")
                         })
                     }
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },
@@ -136,7 +137,8 @@ actorRoutes.openapi(
                             bio: z.string().optional()
                         }).openapi({ minProperties: 1 })
                     }
-                }
+                },
+                required: true
             }
         },
         responses: {

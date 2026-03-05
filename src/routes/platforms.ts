@@ -52,7 +52,8 @@ platformRoutes.openapi(
                     "application/json": {
                         schema: PlatformInsertSchema
                     },
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },
@@ -127,7 +128,8 @@ platformRoutes.openapi(
                     "application/json": {
                         schema: PlatformInsertSchema.omit({ platformId: true, dateAdded: true, dateModified: true }).partial()
                     }
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },

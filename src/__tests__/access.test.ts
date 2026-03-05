@@ -3,8 +3,7 @@ import app from "..";
 import assert from "node:assert";
 import { auth } from "~/utils/auth";
 import { db } from "~/drizzle/db";
-import { developers, games, users } from "~/drizzle/schema";
-import { applyD1Migrations, env } from 'cloudflare:test'
+import { developers, users } from "~/drizzle/schema";
 
 const routes = ["/api/games", "/api/actors", "/api/developers", "/api/publishers", "/api/platforms"]
 describe("Access Tests", () => {

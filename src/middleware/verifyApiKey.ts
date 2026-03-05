@@ -1,3 +1,4 @@
+import type { ApiKey } from "@better-auth/api-key";
 import { createMiddleware } from "hono/factory";
 import { auth } from "~/utils/auth";
 import { type MyEnv } from "~/utils/types";
@@ -23,6 +24,7 @@ export function verifyApiKeyMware(configId: "user" | "admin" = "user") {
         if (!res.valid) {
             return c.json(res, 403)
         }
+        c.set("key", res.key!)
         return next()
     })
 }

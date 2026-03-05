@@ -26,6 +26,10 @@ export const relations = defineRelations(schema, (r) => ({
 		media: r.many.media({
 			from: r.games.gameId,
 			to: r.media.gameId
+		}),
+		reviews: r.many.reviews({
+			from: r.games.gameId,
+			to: r.reviews.gameId
 		})
 	},
 	actors: {

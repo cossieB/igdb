@@ -51,7 +51,8 @@ developerRoutes.openapi(
                     "application/json": {
                         schema: DeveloperInsertSchema
                     },
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },
@@ -128,7 +129,8 @@ developerRoutes.openapi(
                     "application/json": {
                         schema: DeveloperInsertSchema.omit({ developerId: true, dateAdded: true, dateModified: true }).partial()
                     }
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },

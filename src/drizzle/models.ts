@@ -1,5 +1,5 @@
 import { type InferSelectModel } from "drizzle-orm";
-import { actors, developers, gameActors, games, platforms, publishers } from "./schema";
+import { actors, developers, gameActors, games, platforms, publishers, reviews } from "./schema";
 import { createSelectSchema, createInsertSchema } from "drizzle-orm/zod";
 
 export type Actor = InferSelectModel<typeof actors>
@@ -14,8 +14,10 @@ export const DeveloperSelectSchema = createSelectSchema(developers)
 export const PlatformSelectSchema = createSelectSchema(platforms)
 export const PublisherSelectSchema = createSelectSchema(publishers)
 export const GameSelectSchema = createSelectSchema(games)
+export const ReviewSelectSchema = createSelectSchema(reviews)
 
 export const ActorInsertSchema = createInsertSchema(actors)
 export const DeveloperInsertSchema = createInsertSchema(developers)
 export const PublisherInsertSchema = createInsertSchema(publishers)
 export const PlatformInsertSchema = createInsertSchema(platforms)
+export const ReviewInsertSchema = createInsertSchema(reviews)

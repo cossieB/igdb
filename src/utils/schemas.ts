@@ -1,4 +1,5 @@
 import z from "zod";
+import { GameSelectSchema } from "~/drizzle/models";
 
 export const ErrorSchema = z.object({
     error: z.object({
@@ -10,8 +11,8 @@ export const ErrorSchema = z.object({
 
 export const QuerySchema = z.object({
     cursor: z.coerce.number().int().optional(),
-    limit: z.coerce.number().int().min(1).optional().default(10).transform(num => num > 50 ? 50 : num).openapi({
-        maximum: 50
+    limit: z.coerce.number().int().min(1).optional().default(10).transform(num => Math.min(num, 20)).openapi({
+        maximum: 20
     })
 })
 
@@ -48,4 +49,11 @@ export const NumberIdSchema = z.object({
                 name: "id"
             }
         })
+})
+
+export const GameSchema = GameSelectSchema.extend({
+    genres: z.string().array().openapi({ example: ["action rpg", "sci-fi"] }),
+    platforms: z.object({
+        platformId: z.number()
+    }).array()
 })

@@ -4,7 +4,7 @@ import type { MyEnv } from "~/utils/types";
 
 export const setRateLimitHeaders = createMiddleware<MyEnv>(async (c, next) => {
     await next()
-    const key = c.req.header("x-api-key")!
+    const key = c.req.header("x-api-key")! // guaranteed to exist due to a prior middleware
     const metadata = await db.query.apikeys.findFirst({where: {key}})
     if (metadata) {
         const remaining = (metadata.rateLimitMax ?? Infinity) - (metadata.requestCount ?? 0)

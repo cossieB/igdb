@@ -1,7 +1,6 @@
-import { and, desc, eq, getColumns, gt, inArray, type InferInsertModel, type InferSelectModel, lt, notInArray, SQL, sql } from "drizzle-orm";
+import { and, eq, type InferInsertModel, type InferSelectModel, notInArray } from "drizzle-orm";
 import { db } from "~/drizzle/db";
-import { gameActors, gamePlatforms, gameGenres, actors, platforms, media, games, publishers, developers, genres } from "~/drizzle/schema/";
-import { type Actor, type Platform } from "~/drizzle/models";
+import { gamePlatforms, gameGenres, media, games, genres } from "~/drizzle/schema/";
 
 export type GameQueryFilters = {
     developerId?: number
@@ -14,7 +13,19 @@ export type GameQueryFilters = {
 }
 
 export async function findAll(obj: GameQueryFilters = {}) {
-    return db.query.games.findMany({
+    const games = await db.query.games.findMany({
+        with: {
+            genres: {
+                columns: {
+                    name: true
+                }
+            },            
+            platforms: {
+                columns: {
+                    platformId: true
+                }
+            }
+        },
         where: {
             developerId: obj.developerId,
             publisherId: obj.publisherId,
@@ -29,15 +40,37 @@ export async function findAll(obj: GameQueryFilters = {}) {
             },
             gameId: {
                 gt: obj.cursor
-            }
+            },
         },
         limit: obj.limit,
     })
+    return games.map(game => ({...game, genres: game.genres.map(genre => genre.name)}))
 }
 
 export async function findById(gameId: number) {
-    const list = await db.select().from(games).where(eq(games.gameId, gameId))
-    return list.at(0)
+    const obj = await db.query.games.findFirst({
+        with: {
+            genres: {
+                columns: {
+                    name: true
+                }
+            },            
+            platforms: {
+                columns: {
+                    platformId: true
+                }
+            }
+        },
+        where: {
+            gameId
+        },
+    })
+    if (!obj) return
+    return {
+        ...obj, 
+        genres: obj.genres.map(genre => genre.name),
+
+    }
 }
 
 type GameInsert = {

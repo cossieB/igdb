@@ -52,7 +52,8 @@ publisherRoutes.openapi(
                     "application/json": {
                         schema: PublisherInsertSchema
                     },
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },
@@ -131,7 +132,8 @@ publisherRoutes.openapi(
                     "application/json": {
                         schema: PublisherInsertSchema.omit({ publisherId: true, dateAdded: true, dateModified: true }).partial()
                     }
-                }
+                },
+                required: true
             },
             headers: ApiHeaderSchema
         },

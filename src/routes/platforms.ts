@@ -6,6 +6,7 @@ import * as platformRepository from "~/repositories/platformRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 import { commonErrors } from "~/utils/commonErrors";
+import { setRateLimitHeaders } from "~/middleware/setRateLimitHeaders";
 
 export const platformRoutes = createApp()
 
@@ -13,7 +14,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/",
         request: {
             query: QuerySchema,
@@ -42,7 +43,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Admin"],
         method: "post",
-        middleware: [verifyApiKeyMware('admin')],
+        middleware: [verifyApiKeyMware('admin'), setRateLimitHeaders],
         path: "/",
         description: "Admin-only route to add a platform",
         request: {
@@ -78,7 +79,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}",
         request: {
             params: NumberIdSchema,
@@ -116,7 +117,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Admin"],
         method: "patch",
-        middleware: [verifyApiKeyMware('admin')],
+        middleware: [verifyApiKeyMware('admin'), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to update a platform",        
         request: {
@@ -177,7 +178,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Admin"],
         method: "delete",
-        middleware: [verifyApiKeyMware('admin')],
+        middleware: [verifyApiKeyMware('admin'), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to delete a platform",        
         request: {
@@ -216,7 +217,7 @@ platformRoutes.openapi(
     createRoute({
         tags: ["Platforms", "Games"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}/games",
         request: {
             query: QuerySchema,

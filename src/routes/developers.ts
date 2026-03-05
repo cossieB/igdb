@@ -6,6 +6,7 @@ import * as developerRepository from "~/repositories/developerRepository"
 import * as gamesRepository from "~/repositories/gamesRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 import { commonErrors } from "~/utils/commonErrors";
+import { setRateLimitHeaders } from "~/middleware/setRateLimitHeaders";
 
 export const developerRoutes = createApp()
 
@@ -13,7 +14,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/",
         request: {
             query: QuerySchema,
@@ -41,7 +42,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
         method: "post",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/",
         description: "Admin-only route to add a developer",
         request: {
@@ -76,7 +77,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}",
         request: {
             params: NumberIdSchema,
@@ -117,7 +118,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
         method: "patch",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to update a developer",
         request: {
@@ -182,7 +183,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Admin"],
         method: "delete",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to delete a developer",
         request: {
@@ -225,7 +226,7 @@ developerRoutes.openapi(
     createRoute({
         tags: ["Developers", "Games"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}/games",
         request: {
             query: QuerySchema,

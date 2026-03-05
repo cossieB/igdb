@@ -7,6 +7,7 @@ import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 import { commonErrors } from "~/utils/commonErrors";
+import { setRateLimitHeaders } from "~/middleware/setRateLimitHeaders";
 
 export const gamesRoutes = createApp()
 
@@ -15,7 +16,7 @@ gamesRoutes.openapi(
         tags: ["Games"],
         path: "/",
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         request: {
             query: QuerySchema,
             headers: ApiHeaderSchema
@@ -45,7 +46,7 @@ gamesRoutes.openapi(
         description: "Admin-only route to add a game",
         path: "/",
         method: "post",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         request: {
             body: {
                 content: {
@@ -79,7 +80,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}",
         request: {
             params: NumberIdSchema,
@@ -118,7 +119,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Admin"],
         method: "patch",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "{id}",
         description: "Admin-only route to update the game with the given id",
         request: {
@@ -179,7 +180,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Admin"],
         method: "delete",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to delete the game",
         request: {
@@ -218,7 +219,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}/genres",
         request: {
             params: NumberIdSchema,
@@ -247,7 +248,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Platforms"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}/platforms",
         request: {
             params: NumberIdSchema,
@@ -285,7 +286,7 @@ gamesRoutes.openapi(
     createRoute({
         tags: ["Games", "Actors"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}/actors",
         request: {
             params: NumberIdSchema,

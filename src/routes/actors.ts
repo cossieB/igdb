@@ -7,6 +7,7 @@ import * as appearanceRepository from "~/repositories/appearanceRepository"
 import { ApiHeaderSchema, ErrorSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
 import { verifyApiKeyMware } from "~/middleware/verifyApiKey";
 import { commonErrors } from "~/utils/commonErrors";
+import { setRateLimitHeaders } from "~/middleware/setRateLimitHeaders";
 
 export const actorRoutes = createApp()
 
@@ -14,7 +15,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/",
         request: {
             query: QuerySchema,
@@ -27,7 +28,7 @@ actorRoutes.openapi(
                 content: {
                     "application/json": {
                         schema: ActorSelectSchema.array()
-                    }
+                    },
                 }
             }
         }
@@ -42,7 +43,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "post",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/",
         description: "Admin-only route to add an actor.",
         request: {
@@ -82,7 +83,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors"],
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         path: "/{id}",
         request: {
             params: NumberIdSchema,
@@ -120,7 +121,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "patch",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to update an actor.",
         request: {
@@ -186,7 +187,7 @@ actorRoutes.openapi(
     createRoute({
         tags: ["Actors", "Admin"],
         method: "delete",
-        middleware: [verifyApiKeyMware("admin")],
+        middleware: [verifyApiKeyMware("admin"), setRateLimitHeaders],
         path: "/{id}",
         description: "Admin-only route to delete an actor",
         request: {
@@ -227,7 +228,7 @@ actorRoutes.openapi(
         tags: ["Actors", "Games"],
         path: "/{id}/games",
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         request: {
             params: NumberIdSchema,
             query: QuerySchema,
@@ -258,7 +259,7 @@ actorRoutes.openapi(
     createRoute({
         path: "/{id}/roles",
         method: "get",
-        middleware: [verifyApiKeyMware()],
+        middleware: [verifyApiKeyMware(), setRateLimitHeaders],
         tags: ["Actors"],
         request: {
             params: NumberIdSchema,

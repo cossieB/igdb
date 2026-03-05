@@ -15,8 +15,11 @@ export function verifyApiKeyMware(configId: "user" | "admin" = "user") {
             request: c.req.raw,
             
         })
-        if (res.error?.code == "RATE_LIMITED")
+        if (res.error?.code == "RATE_LIMITED") {
+            c.header("Rety-After", (res.error as any).details.tryAgainIn)
             return c.json(res, 429)
+        }
+            
         if (!res.valid) {
             return c.json(res, 403)
         }

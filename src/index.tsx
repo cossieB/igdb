@@ -12,10 +12,17 @@ import { setSession } from './middleware/setSessions'
 import type { MyEnv } from './utils/types'
 import { keyRoutes } from './routes/keys'
 import { homePage } from './routes/homepage'
+import { graphqlServer } from '@hono/graphql-server'
+import { graphqlSchema } from './graphql/schema'
 
 const app = new OpenAPIHono<MyEnv>()
 
 app.use(setSession)
+
+app.use("/graphql", graphqlServer({
+    schema: graphqlSchema,    
+    graphiql: true,
+}))
 
 app
     .get('/', homePage)

@@ -42,4 +42,10 @@ export const relations = defineRelations(schema, (r) => ({
 			to: r.games.gameId.through(r.gameActors.gameId)
 		})
 	},
+	platforms: {
+		games: r.many.games({
+			from: r.platforms.platformId.through(r.gamePlatforms.platformId),
+			to: r.games.gameId.through(r.gamePlatforms.gameId)
+		})
+	}
 }))

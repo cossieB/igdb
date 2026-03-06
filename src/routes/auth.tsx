@@ -29,10 +29,10 @@ authRoutes
                 provider: "google",
             },
         })
-        const cookie = res.headers.get("set-cookie")
+        const cookies = res.headers.getAll("set-cookie")
         const location = res.headers.get("location")
-        if (!cookie || !location) return c.text("OOPS", 500)
-        c.header("Set-Cookie", cookie)
+        if (cookies.length == 0 || !location) return c.text("OOPS", 500)
+        cookies.forEach(cookie => c.header("Set-Cookie", cookie))
         return c.redirect(location)
     })
     .get("/github", async c => {
@@ -44,9 +44,9 @@ authRoutes
                 provider: "github",
             },
         })
-        const cookie = res.headers.get("set-cookie")
+        const cookies = res.headers.getAll("set-cookie")
         const location = res.headers.get("location")
-        if (!cookie || !location) return c.text("OOPS", 500)
-        c.header("Set-Cookie", cookie)
+        if (cookies.length == 0 || !location) return c.text("OOPS", 500)
+        cookies.forEach(cookie => c.header("Set-Cookie", cookie))
         return c.redirect(location)
     })

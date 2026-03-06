@@ -1,7 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { ActorSelectSchema, GameSelectSchema, PlatformSelectSchema, ReviewInsertSchema, ReviewSelectSchema } from "~/drizzle/models";
 import { createApp } from "~/utils/createApp";
-import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, GameSchema, NumberIdSchema, QuerySchema } from "~/utils/schemas";
+import { ApiHeaderSchema, ErrorSchema, GameCreateSchema, GameEditSchema, GameSchema, NumberIdSchema, QuerySchema, ReviewInsert } from "~/utils/schemas";
 import * as gamesRepository from "~/repositories/gamesRepository"
 import * as genreRepository from "~/repositories/genreRepository"
 import * as actorRepositiory from "~/repositories/actorsRepository"
@@ -326,10 +326,7 @@ gamesRoutes.openapi(
             body: {
                 content: {
                     "application/json": {
-                        schema: z.object({
-                            text: z.string().max(500),
-                            score: z.int().min(1).max(5)
-                        })
+                        schema: ReviewInsert
                     }
                 },
                 required: true

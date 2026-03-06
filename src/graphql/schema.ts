@@ -1,6 +1,11 @@
-import { graphql, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
-import { GraphQLActor, GraphQLDev, GraphQLGame, GraphQLPlatform, GraphQLPub } from "./typedefs";
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
+import { GraphQLActor, GraphQLDev, GraphQLGame, GraphQLPlatform, GraphQLPub, GraphQLReview } from "./typedefs";
 import { db } from "~/drizzle/db";
+import type { Context } from "hono";
+import type { MyEnv } from "~/utils/types";
+import { verifyApiKey } from "./verifyApiKey";
+import { ReviewInsert } from "~/utils/schemas";
+import * as reviewRepository from "~/repositories/reviewRepository"
 
 type MyArgs = {
     cursor?: number,
@@ -16,9 +21,10 @@ type IdArgs = {
 };
 
 export const graphqlSchema = new GraphQLSchema({
-    
+
     query: new GraphQLObjectType({
         name: 'RootQueryType',
+
         fields: {
             games: {
                 type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLGame))),
@@ -30,7 +36,8 @@ export const graphqlSchema = new GraphQLSchema({
                     platformId: { type: GraphQLInt },
                     actorId: { type: GraphQLInt },
                 },
-                async resolve(_, args: MyArgs) {
+                async resolve(_, args: MyArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     const games = await db.query.games.findMany({
                         limit: Math.min(args.limit, 10),
                         where: {
@@ -67,7 +74,8 @@ export const graphqlSchema = new GraphQLSchema({
                     id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
                 type: GraphQLGame,
-                async resolve(_, args: IdArgs) {
+                async resolve(_, args: IdArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     const game = await db.query.games.findFirst({
                         where: {
                             gameId: args.id
@@ -82,16 +90,17 @@ export const graphqlSchema = new GraphQLSchema({
                         }
                     })
                     if (!game) return undefined
-                    return {...game, genres: game.genres.map(genre => genre.name)}
+                    return { ...game, genres: game.genres.map(genre => genre.name) }
                 }
             },
             developers: {
                 args: {
                     cursor: { type: GraphQLInt },
-                    limit: { type: GraphQLInt, defaultValue: 10 },                    
+                    limit: { type: GraphQLInt, defaultValue: 10 },
                 },
                 type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLDev))),
-                resolve(_, args: MyArgs) {
+                async resolve(_, args: MyArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.developers.findMany({
                         limit: args.limit,
                         where: {
@@ -104,10 +113,11 @@ export const graphqlSchema = new GraphQLSchema({
             },
             developer: {
                 args: {
-                    id: {type: new GraphQLNonNull(GraphQLInt)}
+                    id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
                 type: GraphQLDev,
-                resolve(_, args: IdArgs) {
+                async resolve(_, args: IdArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.developers.findFirst({
                         where: {
                             developerId: args.id
@@ -118,10 +128,11 @@ export const graphqlSchema = new GraphQLSchema({
             publishers: {
                 args: {
                     cursor: { type: GraphQLInt },
-                    limit: { type: GraphQLInt, defaultValue: 10 },                    
+                    limit: { type: GraphQLInt, defaultValue: 10 },
                 },
                 type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLPub))),
-                resolve(_, args: MyArgs) {
+                async resolve(_, args: MyArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.publishers.findMany({
                         limit: args.limit,
                         where: {
@@ -134,10 +145,11 @@ export const graphqlSchema = new GraphQLSchema({
             },
             publisher: {
                 args: {
-                    id: {type: new GraphQLNonNull(GraphQLInt)}
+                    id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
                 type: GraphQLPub,
-                resolve(_, args: IdArgs) {
+                async resolve(_, args: IdArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.publishers.findFirst({
                         where: {
                             publisherId: args.id
@@ -148,10 +160,11 @@ export const graphqlSchema = new GraphQLSchema({
             platforms: {
                 args: {
                     cursor: { type: GraphQLInt },
-                    limit: { type: GraphQLInt, defaultValue: 10 },                    
+                    limit: { type: GraphQLInt, defaultValue: 10 },
                 },
                 type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLPlatform))),
-                resolve(_, args: MyArgs) {
+                async resolve(_, args: MyArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.platforms.findMany({
                         limit: args.limit,
                         where: {
@@ -164,10 +177,11 @@ export const graphqlSchema = new GraphQLSchema({
             },
             platform: {
                 args: {
-                    id: {type: new GraphQLNonNull(GraphQLInt)}
+                    id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
                 type: GraphQLPlatform,
-                resolve(_, args: IdArgs) {
+                async resolve(_, args: IdArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.platforms.findFirst({
                         where: {
                             platformId: args.id
@@ -178,10 +192,11 @@ export const graphqlSchema = new GraphQLSchema({
             actors: {
                 args: {
                     cursor: { type: GraphQLInt },
-                    limit: { type: GraphQLInt, defaultValue: 10 },                    
+                    limit: { type: GraphQLInt, defaultValue: 10 },
                 },
                 type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLActor))),
-                resolve(_, args: MyArgs) {
+                async resolve(_, args: MyArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.actors.findMany({
                         limit: args.limit,
                         where: {
@@ -194,10 +209,11 @@ export const graphqlSchema = new GraphQLSchema({
             },
             actor: {
                 args: {
-                    id: {type: new GraphQLNonNull(GraphQLInt)}
+                    id: { type: new GraphQLNonNull(GraphQLInt) }
                 },
                 type: GraphQLActor,
-                resolve(_, args: IdArgs) {
+                async resolve(_, args: IdArgs, ctx: Context<MyEnv>) {
+                    await verifyApiKey(ctx) 
                     return db.query.actors.findFirst({
                         where: {
                             actorId: args.id
@@ -207,4 +223,35 @@ export const graphqlSchema = new GraphQLSchema({
             },
         },
     }),
+    mutation: new GraphQLObjectType({
+        name: "RootMutation",
+        fields: {
+            reviewGame: {
+                type: GraphQLReview,
+                args: {
+                    text: { type: new GraphQLNonNull(GraphQLString) },
+                    score: { type: new GraphQLNonNull(GraphQLInt) },
+                    gameId: {type: new GraphQLNonNull(GraphQLInt)}
+                },
+                async resolve(_, args: {text: string, score: number, gameId: number}, ctx: Context<MyEnv>) {
+                    const key = await verifyApiKey(ctx)
+                    const valid = ReviewInsert.parse(args)
+                    const review = await reviewRepository.upsertReview({...valid, gameId: args.gameId, userId: key.referenceId})
+                    return review
+                }
+            },
+            deleteReview: {
+                type: GraphQLReview,
+                args: {
+                    gameId: {type: new GraphQLNonNull(GraphQLInt)}
+                },
+                async resolve(_, args: {gameId: number}, ctx: Context<MyEnv>) {
+                    const key = await verifyApiKey(ctx)    
+                    const review = (await reviewRepository.deleteReview(key.referenceId, args.gameId)).at(0) 
+                    return review
+                }
+            }
+        }
+    })
 });
+

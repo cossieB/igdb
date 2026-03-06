@@ -57,3 +57,8 @@ export const GameSchema = GameSelectSchema.extend({
         platformId: z.number()
     }).array()
 })
+
+export const ReviewInsert = z.object({
+    text: z.string().max(500),
+    score: z.int().min(1).max(5)
+});

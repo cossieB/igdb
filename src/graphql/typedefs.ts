@@ -1,4 +1,6 @@
-import { GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLString, Kind } from "graphql";
+import { GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLString, Kind } from "graphql";
+import { db } from "~/drizzle/db";
+import type { Game } from "~/drizzle/models";
 
 export const dateScalar = new GraphQLScalarType<any, any>({
     name: 'ISODate',
@@ -79,6 +81,24 @@ export const GraphQLMedia = new GraphQLObjectType({
     }
 })
 
+export const GraphQLReview = new GraphQLObjectType({
+    name: "Review",
+    fields: {
+        reviewId: { type: new GraphQLNonNull(GraphQLID) },
+        userId: { type: new GraphQLNonNull(GraphQLString) },
+        gameId: { type: new GraphQLNonNull(GraphQLID) },
+        score: { type: new GraphQLNonNull(GraphQLInt) },
+        text: { type: new GraphQLNonNull(GraphQLString) },
+        dateAdded: { type: new GraphQLNonNull(dateScalar) },
+        dateModified: { type: new GraphQLNonNull(dateScalar) }
+    }
+})
+
+type Args = {
+    limit: number,
+    cursor?: number,
+}
+
 export const GraphQLGame = new GraphQLObjectType({
     name: "Game",
     fields: {
@@ -95,7 +115,25 @@ export const GraphQLGame = new GraphQLObjectType({
         publisher: { type: new GraphQLNonNull(GraphQLDev), },
         platforms: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLPlatform))), },
         genres: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))), },
-        media: { type: new GraphQLNonNull(new GraphQLList(GraphQLMedia)), }
+        media: { type: new GraphQLNonNull(new GraphQLList(GraphQLMedia)), },
+        reviews: {
+            type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLReview))),
+            args: {
+                cursor: { type: GraphQLInt },
+                limit: { type: GraphQLInt, defaultValue: 10 },
+            },
+            resolve(parent: Game, args: Args) {
+                return db.query.reviews.findMany({
+                    limit: Math.min(args.limit, 20),
+                    where: {
+                        gameId: parent.gameId,
+                        reviewId: {
+                            gt: args.cursor
+                        }
+                    }
+                })
+            }
+        }
     }
 })
 

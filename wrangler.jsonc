@@ -18,10 +18,13 @@
 		}
 	],
 	"compatibility_flags": [
-	  "nodejs_compat"
+		"nodejs_compat"
 	],
 	"assets": {
 		"directory": "src/public"
+	},
+	"vars": {
+		"BETTER_AUTH_URL": "https://igdb.cossie.workers.dev"
 	}
 	// "vars": {
 	//   "MY_VAR": "my-variable"

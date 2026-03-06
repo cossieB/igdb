@@ -59,5 +59,16 @@ export const auth = betterAuth({
             maxAge: 60 * 15,
         },
     },
+    secondaryStorage: {
+        delete(key) {
+            return env.KV.delete(key)
+        },
+        get(key) {
+            return env.KV.get(key, "json")
+        },
+        set(key, value, ttl) {
+            return env.KV.put(key, value, {expirationTtl: ttl})
+        },
+    },
     disabledPaths: ["/api-key/*"]
 })

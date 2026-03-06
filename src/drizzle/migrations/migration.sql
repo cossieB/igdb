@@ -172,6 +172,21 @@ CREATE TABLE `publishers` (
 	`date_modified` text NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE `review` (
+	`review_id` integer PRIMARY KEY,
+	`user_id` text NOT NULL,
+	`game_id` integer NOT NULL,
+	`date_added` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`date_modified` text NOT NULL,
+	`text` text NOT NULL,
+	`score` integer NOT NULL,
+	CONSTRAINT `fk_review_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
+	CONSTRAINT `fk_review_game_id_games_game_id_fk` FOREIGN KEY (`game_id`) REFERENCES `games`(`game_id`),
+	CONSTRAINT `review_user_id_game_id_unique` UNIQUE(`user_id`,`game_id`),
+	CONSTRAINT "review_length" CHECK(LENGTH("text") > 3),
+	CONSTRAINT "valid_score" CHECK("score" > 0 AND "score" < 6)
+);
+--> statement-breakpoint
 CREATE INDEX `accounts_userId_idx` ON `accounts` (`user_id`);--> statement-breakpoint
 CREATE INDEX `apikeys_configId_idx` ON `apikeys` (`config_id`);--> statement-breakpoint
 CREATE INDEX `apikeys_referenceId_idx` ON `apikeys` (`reference_id`);--> statement-breakpoint

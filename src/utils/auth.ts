@@ -70,5 +70,10 @@ export const auth = betterAuth({
             return env.KV.put(key, value, {expirationTtl: ttl})
         },
     },
+    advanced: {
+        ipAddress: {
+            ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for"]
+        },        
+    },
     disabledPaths: ["/api-key/*"]
 })

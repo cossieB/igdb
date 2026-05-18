@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace igdb.Models;
 
-public partial class GgContext : DbContext
+public partial class AppDbContext : DbContext
 {
-    public GgContext()
+    public AppDbContext()
     {
     }
 
-    public GgContext(DbContextOptions<GgContext> options)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
     }
@@ -21,7 +21,7 @@ public partial class GgContext : DbContext
 
     public virtual DbSet<Game> Games { get; set; }
 
-    public virtual DbSet<GameActor> GameActors { get; set; }
+    public virtual DbSet<ActorRoles> GameActors { get; set; }
 
     public virtual DbSet<Genre> Genres { get; set; }
 
@@ -173,7 +173,7 @@ public partial class GgContext : DbContext
                     });
         });
 
-        modelBuilder.Entity<GameActor>(entity =>
+        modelBuilder.Entity<ActorRoles>(entity =>
         {
             entity.HasKey(e => e.AppearanceId).HasName("game_actors_pkey");
 

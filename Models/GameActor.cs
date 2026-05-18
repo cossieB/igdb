@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace igdb.Models;
 
-public partial class GameActor
+public partial class ActorRoles
 {
     public int GameId { get; set; }
 

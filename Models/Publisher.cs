@@ -21,5 +21,5 @@ public partial class Publisher
 
     public DateTime DateModified { get; set; }
 
-    public virtual ICollection<Game> Games { get; set; } = new List<Game>();
+    public virtual ICollection<Game> Games { get; set; } = [];
 }

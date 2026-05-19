@@ -21,7 +21,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Game> Games { get; set; }
 
-    public virtual DbSet<ActorRoles> GameActors { get; set; }
+    public virtual DbSet<GameActor> GameActors { get; set; }
 
     public virtual DbSet<Genre> Genres { get; set; }
 
@@ -29,17 +29,16 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Platform> Platforms { get; set; }
 
-
     public virtual DbSet<Publisher> Publishers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Name=DefaultConnection");
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=gg;Username=postgres;Password=password;Port=5432", 
+        o => o.MapEnum<RoleType>("role_type"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .HasPostgresEnum("reaction_type", new[] { "like", "dislike" })
-            .HasPostgresEnum("role_type", new[] { "player character", "major character", "minor character" });
+            .HasPostgresEnum<RoleType>("role_type");
 
         modelBuilder.Entity<Actor>(entity =>
         {
@@ -173,7 +172,7 @@ public partial class AppDbContext : DbContext
                     });
         });
 
-        modelBuilder.Entity<ActorRoles>(entity =>
+        modelBuilder.Entity<GameActor>(entity =>
         {
             entity.HasKey(e => e.AppearanceId).HasName("game_actors_pkey");
 
@@ -193,6 +192,9 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.Actor).WithMany(p => p.GameActors)
                 .HasForeignKey(d => d.ActorId)
                 .HasConstraintName("game_actors_actor_id_actors_actor_id_fkey");
+
+            entity.Property(e => e.RoleType)
+                .HasColumnName("role_type");
 
             entity.HasOne(d => d.Game).WithMany(p => p.GameActors)
                 .HasForeignKey(d => d.GameId)
@@ -243,7 +245,6 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.GameId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("media_game_id_games_game_id_fkey");
-
         });
 
         modelBuilder.Entity<Platform>(entity =>
@@ -296,7 +297,7 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("''::text")
                 .HasColumnName("summary");
         });
-      
+
         OnModelCreatingPartial(modelBuilder);
     }
 

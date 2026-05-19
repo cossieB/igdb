@@ -1,6 +1,7 @@
 using igdb.Models;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

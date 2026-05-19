@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using NpgsqlTypes;
 
 namespace igdb.Models;
@@ -29,15 +28,13 @@ public partial class Game
 
     public DateTime DateModified { get; set; }
 
-    [NotMapped]
     public NpgsqlTsVector? SearchVector { get; set; }
 
     public virtual Developer Developer { get; set; } = null!;
 
-    public virtual ICollection<ActorRoles> GameActors { get; set; } = [];
+    public virtual ICollection<GameActor> GameActors { get; set; } = [];
 
     public virtual ICollection<Medium> Media { get; set; } = [];
-
     public virtual Publisher Publisher { get; set; } = null!;
 
     public virtual ICollection<Genre> Genres { get; set; } = [];

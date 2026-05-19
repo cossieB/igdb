@@ -17,5 +17,5 @@ public partial class Actor
 
     public DateTime DateModified { get; set; }
 
-    public virtual ICollection<ActorRoles> GameActors { get; set; } = [];
+    public virtual ICollection<GameActor> GameActors { get; set; } = [];
 }

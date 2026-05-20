@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace igdb.Models;
 
-public partial class AppDbContext : DbContext
+public partial class AppDbContext : IdentityDbContext<User>
 {
     public AppDbContext()
     {
@@ -32,11 +31,12 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Publisher> Publishers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=gg;Username=postgres;Password=password;Port=5432", 
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=gg;Username=user;Password=password;Port=2345", 
         o => o.MapEnum<RoleType>("role_type"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder
             .HasPostgresEnum<RoleType>("role_type");
 

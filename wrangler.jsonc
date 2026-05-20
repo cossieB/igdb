@@ -2,7 +2,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "igdb",
 	"main": "src/index.tsx",
-	"compatibility_date": "2026-02-27",
+	"compatibility_date": "2026-05-14",
 	"d1_databases": [
 		{
 			"binding": "DB",

@@ -53,6 +53,18 @@ export const auth = betterAuth({
                 references: "user",
             },])
     ],
+    secondaryStorage: {
+        delete(key) {
+            return env.KV.delete(key)
+        },
+        get(key) {
+            return env.KV.get(key, "json")
+        },
+        set(key, value, ttl) {
+            const expirationTtl = ttl ? Math.max(60, ttl) : undefined
+            return env.KV.put(key, value, {expirationTtl})
+        },
+    },    
     session: {
         cookieCache: {
             enabled: true,

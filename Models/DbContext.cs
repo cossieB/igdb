@@ -24,15 +24,20 @@ public partial class AppDbContext : IdentityDbContext<User>
 
     public virtual DbSet<Genre> Genres { get; set; }
 
-    public virtual DbSet<Medium> Media { get; set; }
+    public virtual DbSet<Media> Media { get; set; }
 
     public virtual DbSet<Platform> Platforms { get; set; }
 
     public virtual DbSet<Publisher> Publishers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=gg;Username=user;Password=password;Port=2345", 
-        o => o.MapEnum<RoleType>("role_type"));
+    {
+        optionsBuilder.UseNpgsql(o => o.MapEnum<RoleType>("role_type"));
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql("Name=DefaultConnection");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -219,13 +224,11 @@ public partial class AppDbContext : IdentityDbContext<User>
                 .HasColumnName("description");
         });
 
-        modelBuilder.Entity<Medium>(entity =>
+        modelBuilder.Entity<Media>(entity =>
         {
             entity.HasKey(e => e.Key).HasName("media_pkey");
 
             entity.ToTable("media");
-
-            entity.HasIndex(e => new { e.PostId, e.GameId }, "media_post_id_game_id_index");
 
             entity.Property(e => e.Key).HasColumnName("key");
             entity.Property(e => e.ContentType)
@@ -239,7 +242,6 @@ public partial class AppDbContext : IdentityDbContext<User>
                 .HasDefaultValueSql("'{}'::jsonb")
                 .HasColumnType("jsonb")
                 .HasColumnName("metadata");
-            entity.Property(e => e.PostId).HasColumnName("post_id");
 
             entity.HasOne(d => d.Game).WithMany(p => p.Media)
                 .HasForeignKey(d => d.GameId)

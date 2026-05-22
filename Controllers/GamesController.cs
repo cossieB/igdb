@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using igdb.Dtos;
 using igdb.Models;
 using Mapster;
@@ -53,7 +54,7 @@ public class GamesController(AppDbContext context) : ControllerBase
             .Where(p => p.Games.Any(g => g.GameId == id))
             .ToListAsync();
 
-        return Ok(genres.Adapt<List<GenreDto>>());        
+        return Ok(genres.Adapt<List<GenreDto>>());
     }
 
     [HttpGet("{id:int:min(1)}/actors")]
@@ -61,8 +62,60 @@ public class GamesController(AppDbContext context) : ControllerBase
     {
         var actors = await _dbContext.Actors
             .Where(p => p.GameActors.Any(g => g.GameId == id))
-            .ToListAsync();        
+            .ToListAsync();
 
         return Ok(actors.Adapt<List<ActorDto>>());
     }
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    async public Task<IActionResult> AddGame(CreateGameRequest request)
+    {
+        try
+        {
+            var genres = await _dbContext.Genres.Where(g => request.Genres.Contains(g.Name)).ToListAsync();
+            var platforms = await _dbContext.Platforms.Where(p => request.Platforms.Contains(p.PlatformId)).ToListAsync();
+
+            var newGame = new Game
+            {
+                Title = request.Title,
+                DeveloperId = request.DeveloperId,
+                PublisherId = request.PublisherId,
+                Banner = request.Banner,
+                Cover = request.Cover,
+                Trailer = request.Trailer,
+                Summary = request.Summary,
+                Genres = genres,
+                Platforms = platforms,
+                ReleaseDate = request.ReleaseDate,
+            };
+            var g = _dbContext.Games.Add(newGame);
+
+            List<Media> media = [.. request.Media.Select(m => new Media
+            {
+                ContentType = m.ContentType,
+                Game = newGame,
+                Key = m.Key
+            })];
+
+            _dbContext.Media.AddRange(media);
+
+            await _dbContext.SaveChangesAsync();
+
+            return Created($"/games/{newGame.GameId}", newGame.Adapt<GameDto>());
+        }
+        catch (DbUpdateException e)
+        {
+            if (e.InnerException?.Message.Contains("foreign key constraint") == true)
+            {
+                return BadRequest(new {error = "Foreign key constraints failed"});
+            }
+            return Problem(e.InnerException?.Message ?? "Something went wrong. Please try again later");            
+        }
+        catch
+        {
+            return Problem("Something went wrong. Please try again later");
+        }
+    }
+
+
 }

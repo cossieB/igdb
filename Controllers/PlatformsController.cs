@@ -2,12 +2,14 @@ using System.ComponentModel.DataAnnotations;
 using igdb.Dtos;
 using igdb.Models;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace igdb.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class PlatformsController(AppDbContext context) : ControllerBase
 {

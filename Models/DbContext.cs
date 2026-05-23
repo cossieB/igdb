@@ -105,8 +105,6 @@ public partial class AppDbContext : IdentityDbContext<User>
 
             entity.HasIndex(e => e.PublisherId, "games_publisher_id_index");
 
-            entity.HasIndex(e => e.SearchVector, "games_search_vector_index").HasMethod("gin");
-
             entity.Property(e => e.GameId)
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("game_id");
@@ -119,9 +117,6 @@ public partial class AppDbContext : IdentityDbContext<User>
             entity.Property(e => e.DeveloperId).HasColumnName("developer_id");
             entity.Property(e => e.PublisherId).HasColumnName("publisher_id");
             entity.Property(e => e.ReleaseDate).HasColumnName("release_date");
-            entity.Property(e => e.SearchVector)
-                .HasComputedColumnSql("(setweight(to_tsvector('english'::regconfig, (COALESCE(title, ''::character varying))::text), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(summary, ''::text)), 'B'::\"char\"))", true)
-                .HasColumnName("search_vector");
             entity.Property(e => e.Summary)
                 .HasDefaultValueSql("''::text")
                 .HasColumnName("summary");

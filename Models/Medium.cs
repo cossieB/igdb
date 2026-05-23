@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-namespace igdb.Models;
+﻿namespace igdb.Models;
 
 public partial class Media
 {
@@ -20,8 +16,10 @@ public partial class Media
 
 }
 
+
 public class MediaRequest
 {
     public string ContentType { get; set; } = null!;
     public string Key { get; set; } = null!;
+    public string? Metadata {get; set;}
 }

@@ -45,16 +45,56 @@ public class GameRepository(AppDbContext context)
 
         return games.Adapt<List<GameDto>>();
     }
-    async public Task<GameDto?> FindById(int id)
+    async public Task<object?> FindById(int id)
     {
         var game = await dbContext
         .Games
         .Include(g => g.Developer)
         .Include(g => g.Publisher)
         .Include(g => g.Genres)
-        .Include(g => g.GameActors.Select(ga => ga.Actor))
+        .Include(g => g.GameActors)
+        .ThenInclude(ga => ga.Actor)
+        .Include(g => g.Media)
+        .Include(g => g.Platforms)
         .FirstOrDefaultAsync(game => game.GameId == id);
-        return game?.Adapt<GameDto>();
+
+        if (game is null) return null;
+
+        var g = new
+        {
+            game.Title,
+            game.Banner,
+            game.Cover,
+            Developer = new
+            {
+                game.DeveloperId,
+                game.Developer.Name
+            },
+            Publisher = new
+            {
+                game.PublisherId,
+                game.Publisher.Name
+            },
+            Platforms = game.Platforms.Select(p => new
+            {
+                p.PlatformId,
+                p.Name
+            }),
+            Genres = game.Genres.Select(g => g.Name),
+            game.Summary,
+            game.ReleaseDate,
+            game.Trailer,
+            Media = game.Media.Adapt<List<MediaDto>>(),
+            Cast = game.GameActors.Select(ga => new
+            {
+               ga.Character,
+               ga.ActorId,
+               ActorName = ga.Actor.Name,
+               ga.RoleType
+            }),
+        };
+
+        return g;
     }
     async public Task<GameDto> AddGame(CreateGameRequest request)
     {
@@ -156,7 +196,7 @@ public class GameRepository(AppDbContext context)
         }
         game.DateModified = DateTime.UtcNow;
         await dbContext.SaveChangesAsync();
-        await tx.CommitAsync();       
-        return game.Adapt<GameDto>(); 
+        await tx.CommitAsync();
+        return game.Adapt<GameDto>();
     }
 }

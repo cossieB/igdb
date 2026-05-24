@@ -13,7 +13,7 @@ public partial class GameActor
     public string Character { get; set; } = null!;
 
     public int AppearanceId { get; set; }
-    public RoleType RoleType {get; set;}
+    public string RoleType {get; set;} = null!;
     public virtual Actor Actor { get; set; } = null!;
 
     public virtual Game Game { get; set; } = null!;

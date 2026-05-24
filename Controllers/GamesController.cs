@@ -31,35 +31,6 @@ public class GamesController(GameRepository gameRepository) : ControllerBase
         return Ok(game);
     }
 
-    // [HttpGet("{id:int:min(1)}/platforms")]
-    // async public Task<ActionResult<List<PlatformDto>>> GetPlatforms(int id)
-    // {
-    //     var platforms = await _dbContext.Platforms
-    //         .Where(p => p.Games.Any(g => g.GameId == id))
-    //         .ToListAsync();
-
-    //     return Ok(platforms.Adapt<List<PlatformDto>>());
-    // }
-
-    // [HttpGet("{id:int:min(1)}/genres")]
-    // async public Task<ActionResult<List<GenreDto>>> GetGenres(int id)
-    // {
-    //     var genres = await _dbContext.Genres
-    //         .Where(p => p.Games.Any(g => g.GameId == id))
-    //         .ToListAsync();
-
-    //     return Ok(genres.Adapt<List<GenreDto>>());
-    // }
-
-    // [HttpGet("{id:int:min(1)}/actors")]
-    // async public Task<ActionResult<List<ActorDto>>> GetActors(int id)
-    // {
-    //     var actors = await _dbContext.Actors
-    //         .Where(p => p.GameActors.Any(g => g.GameId == id))
-    //         .ToListAsync();
-
-    //     return Ok(actors.Adapt<List<ActorDto>>());
-    // }
     [Authorize(Roles = "Admin")]
     [HttpPost]
     async public Task<IActionResult> AddGame(CreateGameRequest request)

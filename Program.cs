@@ -48,7 +48,10 @@ builder.Services.AddOpenApi(options =>
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction =>
+    {
+        npgsqlOptionsAction.ConfigureDataSource(ds => ds.EnableDynamicJson());
+    }));
 
 builder.Services.AddScoped<IMapper, Mapper>();
 builder.Services.AddTransient<IEmailSender<User>, EmailService>();

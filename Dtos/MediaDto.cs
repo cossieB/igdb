@@ -14,3 +14,10 @@ public class MediaDto
 
     public DateTime CreatedAt { get; set; }
 }
+
+public class MediaRequest
+{
+    public string ContentType { get; set; } = null!;
+    public string Key { get; set; } = null!;
+    public string? Metadata {get; set;}
+}

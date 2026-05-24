@@ -8,7 +8,7 @@ public partial class Media
 
     public int? GameId { get; set; }
 
-    public string Metadata { get; set; } = null!;
+    public Dictionary<string, string> Metadata { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 
@@ -17,9 +17,3 @@ public partial class Media
 }
 
 
-public class MediaRequest
-{
-    public string ContentType { get; set; } = null!;
-    public string Key { get; set; } = null!;
-    public string? Metadata {get; set;}
-}

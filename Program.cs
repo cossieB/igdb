@@ -1,4 +1,5 @@
 using igdb.Models;
+using igdb.Repositories;
 using igdb.Services;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 var RESEND_KEY = Environment.GetEnvironmentVariable("RESEND_KEY") ?? throw new InvalidOperationException("RESEND_KEY environment variable is missing");
 
 // Add services to the container.
+builder.Services.AddScoped<GameRepository>();
+builder.Services.AddScoped<ActorRepository>();
 builder.Services.AddSingleton((_) => ResendClient.Create(RESEND_KEY));
 builder.Services.AddControllers();
 builder.Services

@@ -1,9 +1,6 @@
-using System;
-using igdb.Models;
-
 namespace igdb.Dtos;
 
-public class RolesDto
+public class ActorRolesDto
 {
     public int GameId { get; set; }
 

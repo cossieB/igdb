@@ -3,7 +3,9 @@ using igdb.Dtos;
 using igdb.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace igdb.Controllers;
+
 [ApiController]
 // [Authorize]
 [Route("[controller]")]
@@ -22,10 +24,8 @@ public class ActorsController(ActorRepository actorRepository, GameRepository ga
         return Ok(actor);
     }
     
-    [ProducesResponseType(typeof(List<ActorDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpGet]
-    async public Task<IActionResult> GetAll([FromQuery] int cursor = 0, [FromQuery, Range(1, 20)] int limit = 10)
+    async public Task<ActionResult<List<ActorDto>>> GetAll([FromQuery] int cursor = 0, [FromQuery, Range(1, 20)] int limit = 10)
     {
         var actors = actorRepository.FindAll(cursor, limit);
         return Ok(actors);
@@ -50,4 +50,21 @@ public class ActorsController(ActorRepository actorRepository, GameRepository ga
 
     //     return Ok(roles.Adapt<List<RolesDto>>());
     // }
+
+    [HttpPost]
+    async public Task<ActionResult<ActorDto>> CreateActor(ActorCreateDto dto)
+    {
+        var actor = await actorRepository.AddActor(dto);
+        return Created($"/actors/{actor.ActorId}", actor);
+    }
+
+    [ProducesResponseType(typeof(ActorDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPatch("{id:int:min(1)}")]
+    async public Task<IActionResult> UpdateActor(int id, ActorUpdateDto dto)
+    {
+        var actor = await actorRepository.UpdateActor(id, dto);
+        if (actor is null) return NotFound();
+        return Ok(actor);
+    }
 }

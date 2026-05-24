@@ -1,51 +1,57 @@
 using System.ComponentModel.DataAnnotations;
 using igdb.Dtos;
-using igdb.Models;
+using igdb.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace igdb.Controllers;
 
 [ApiController]
-[Authorize]
+// [Authorize]
 [Route("[controller]")]
-public class PlatformsController(AppDbContext context) : ControllerBase
+public class PlatformsController(PlatformRepository _platformRepository, GameRepository _gameRepository) : ControllerBase
 {
-    private readonly AppDbContext _dbContext = context;
+    private readonly PlatformRepository platformRepository = _platformRepository;
+    private readonly GameRepository gameRepository = _gameRepository;
 
     [HttpGet]
     public async Task<ActionResult<List<PlatformDto>>> GetAll([FromQuery] int cursor = 0, [FromQuery, Range(1, 20)] int limit = 10)
     {
-        var platforms = await _dbContext.Platforms
-            .OrderBy(platform => platform.PlatformId)
-            .Take(limit)
-            .Where(platform => platform.PlatformId > cursor)
-            .ToListAsync();
-
-        return Ok(platforms.Adapt<List<PlatformDto>>());
+        var platforms = await platformRepository.FindAll(cursor, limit);
+        return Ok(platforms);
     }
     [ProducesResponseType(typeof(PlatformDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpGet("{id:int:min(1)}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var platform = await _dbContext.Platforms.FirstOrDefaultAsync(platform => platform.PlatformId == id);
+        var platform = await platformRepository.FindById(id);
         if (platform is null) return NotFound();
-        return Ok(platform.Adapt<PlatformDto>());
+        return Ok(platform);
     }
 
     [HttpGet("{id:int:min(1)}/games")]
     async public Task<ActionResult<List<GameDto>>> GetGames(int id, [FromQuery] int cursor = 0, [FromQuery, Range(1, 20)] int limit = 10)
     {
-        var games = await _dbContext.Games
-            .Where(game => game.Platforms.Any(platform => platform.PlatformId == id))
-            .Where(game => game.GameId > cursor)
-            .OrderBy(game => game.GameId)
-            .Take(limit)
-            .ToListAsync();
-
+        var games = await gameRepository.FindAll(cursor, limit, platformId: id);
         return Ok(games.Adapt<List<GameDto>>());
+    }
+
+    [HttpPost]
+    async public Task<ActionResult<PlatformDto>> AddPlatform(PlatformCreateDto dto)
+    {
+        var platform = await platformRepository.CreatePlatform(dto);
+        return Created($"/platforms/{platform.PlatformId}", platform);
+    }
+    
+    [ProducesResponseType(typeof(PlatformDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPatch("{id:int:min(1)}")]
+    async public Task<IActionResult> UpdatePlatform(int id, PlatformUpdateDto dto)
+    {
+        var platform = await platformRepository.UpdatePlatform(id, dto);
+        if (platform is null) return NotFound();
+        return Ok(platform);
     }
 }

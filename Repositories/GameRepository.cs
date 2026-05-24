@@ -8,7 +8,7 @@ namespace igdb.Repositories;
 
 public class GameRepository(AppDbContext context)
 {
-    private readonly AppDbContext _dbContext = context;
+    private readonly AppDbContext dbContext = context;
 
     public async Task<List<GameDto>> FindAll(
         int cursor,
@@ -19,7 +19,7 @@ public class GameRepository(AppDbContext context)
         int? actorId = null
     )
     {
-        var query = _dbContext.Games
+        var query = dbContext.Games
             .Where(game => game.GameId > cursor);
 
         if (developerId is not null)
@@ -47,7 +47,7 @@ public class GameRepository(AppDbContext context)
     }
     async public Task<GameDto?> FindById(int id)
     {
-        var game = await _dbContext
+        var game = await dbContext
         .Games
         .Include(g => g.Developer)
         .Include(g => g.Publisher)
@@ -59,8 +59,8 @@ public class GameRepository(AppDbContext context)
     async public Task<GameDto> AddGame(CreateGameRequest request)
     {
         request.Genres = [.. request.Genres.Select(g => g.ToLower())];
-        var genres = await _dbContext.Genres.Where(g => request.Genres.Contains(g.Name)).ToListAsync();
-        var platforms = await _dbContext.Platforms.Where(p => request.Platforms.Contains(p.PlatformId)).ToListAsync();
+        var genres = await dbContext.Genres.Where(g => request.Genres.Contains(g.Name)).ToListAsync();
+        var platforms = await dbContext.Platforms.Where(p => request.Platforms.Contains(p.PlatformId)).ToListAsync();
 
         var newGame = new Game
         {
@@ -74,8 +74,9 @@ public class GameRepository(AppDbContext context)
             Genres = genres,
             Platforms = platforms,
             ReleaseDate = request.ReleaseDate,
+            DateModified = DateTime.UtcNow
         };
-        var g = _dbContext.Games.Add(newGame);
+        var g = dbContext.Games.Add(newGame);
 
         List<Media> media = [.. request.Media.Select(m => new Media
             {
@@ -84,16 +85,16 @@ public class GameRepository(AppDbContext context)
                 Key = m.Key
             })];
 
-        _dbContext.Media.AddRange(media);
+        dbContext.Media.AddRange(media);
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
         return newGame.Adapt<GameDto>();
     }
     async public Task<GameDto?> UpdateGame(int id, UpdateGameRequest request)
     {
-        var game = await _dbContext.Games.FirstOrDefaultAsync(g => g.GameId == id);
+        var game = await dbContext.Games.FirstOrDefaultAsync(g => g.GameId == id);
         if (game is null) return null;
-        using var tx = await _dbContext.Database.BeginTransactionAsync();
+        using var tx = await dbContext.Database.BeginTransactionAsync();
 
         if (request.Title is not null) game.Title = request.Title;
         if (request.DeveloperId is not null) game.DeveloperId = (int)request.DeveloperId;
@@ -106,13 +107,13 @@ public class GameRepository(AppDbContext context)
         {
             request.Genres = [.. request.Genres.Select(g => g.ToLower().Trim())];
             if (request.Genres.Count == 0)
-                await _dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_genres WHERE game_id = {id}");
+                await dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_genres WHERE game_id = {id}");
             else
             {
-                await _dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_genres WHERE game_id = {id} AND NOT (genre = ANY({request.Genres.ToArray()}))");
+                await dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_genres WHERE game_id = {id} AND NOT (genre = ANY({request.Genres.ToArray()}))");
 
                 //Insert game genres ignoring genres that aren't in the genres table
-                await _dbContext.Database.ExecuteSqlAsync($@"
+                await dbContext.Database.ExecuteSqlAsync($@"
                     INSERT INTO game_genres (game_id, genre)
                     SELECT {id}, g.name
                     FROM genres g
@@ -124,12 +125,12 @@ public class GameRepository(AppDbContext context)
         if (request.Platforms is not null)
         {
             if (request.Platforms.Count == 0)
-                await _dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_platforms WHERE game_id = {id}");
+                await dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_platforms WHERE game_id = {id}");
             else
             {
-                await _dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_platforms WHERE game_id = {id} AND NOT (platform_id = ANY({request.Platforms.ToArray()}) )");
+                await dbContext.Database.ExecuteSqlAsync($"DELETE FROM game_platforms WHERE game_id = {id} AND NOT (platform_id = ANY({request.Platforms.ToArray()}) )");
                 // Will error and rollback when a platform isn't in the platforms table
-                await _dbContext.Database.ExecuteSqlAsync($@"
+                await dbContext.Database.ExecuteSqlAsync($@"
                     INSERT INTO game_platforms (game_id, platform_id) 
                     SELECT {id}, p_id 
                     FROM UNNEST({request.Platforms.ToArray()}) AS p_id 
@@ -140,20 +141,21 @@ public class GameRepository(AppDbContext context)
         if (request.Media is not null)
         {
             if (request.Media.Count == 0)
-                await _dbContext.Database.ExecuteSqlAsync($"UPDATE media SET game_id = null WHERE game_id = {id}");
+                await dbContext.Database.ExecuteSqlAsync($"UPDATE media SET game_id = null WHERE game_id = {id}");
             else
             {
                 var keys = request.Media.Select(m => m.Key).ToArray();
                 var types = request.Media.Select(m => m.ContentType).ToArray();
-                await _dbContext.Database.ExecuteSqlAsync($"UPDATE media SET game_id = null WHERE game_id = {id} AND NOT (key = ANY({keys.ToArray()}))");
-                await _dbContext.Database.ExecuteSqlAsync($@"
+                await dbContext.Database.ExecuteSqlAsync($"UPDATE media SET game_id = null WHERE game_id = {id} AND NOT (key = ANY({keys.ToArray()}))");
+                await dbContext.Database.ExecuteSqlAsync($@"
                     INSERT INTO media (game_id, key, content_type)
                     SELECT {id}, UNNEST({keys}), UNNEST({types})
                     ON CONFLICT (key) DO NOTHING
                 ");
             }
         }
-        await _dbContext.SaveChangesAsync();
+        game.DateModified = DateTime.UtcNow;
+        await dbContext.SaveChangesAsync();
         await tx.CommitAsync();       
         return game.Adapt<GameDto>(); 
     }

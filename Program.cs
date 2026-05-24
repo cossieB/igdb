@@ -13,6 +13,9 @@ var RESEND_KEY = Environment.GetEnvironmentVariable("RESEND_KEY") ?? throw new I
 // Add services to the container.
 builder.Services.AddScoped<GameRepository>();
 builder.Services.AddScoped<ActorRepository>();
+builder.Services.AddScoped<PlatformRepository>();
+builder.Services.AddScoped<DeveloperRepository>();
+builder.Services.AddScoped<PublisherRepository>();
 builder.Services.AddSingleton((_) => ResendClient.Create(RESEND_KEY));
 builder.Services.AddControllers();
 builder.Services

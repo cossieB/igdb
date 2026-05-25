@@ -11,7 +11,7 @@ public class PublisherRepository(AppDbContext _context)
     private readonly AppDbContext dbContext = _context;
     async public Task<List<PublisherDto>> FindAll(int cursor, int limit)
     {
-        var Publishers = dbContext.Publishers
+        var Publishers = await dbContext.Publishers
             .Where(dev => dev.PublisherId > cursor)
             .OrderBy(dev => dev.PublisherId)
             .Take(limit)

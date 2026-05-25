@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using System.Threading.RateLimiting;
 using igdb.Models;
 using igdb.Repositories;
 using igdb.Services;
@@ -16,6 +18,7 @@ builder.Services.AddScoped<ActorRepository>();
 builder.Services.AddScoped<PlatformRepository>();
 builder.Services.AddScoped<DeveloperRepository>();
 builder.Services.AddScoped<PublisherRepository>();
+builder.Services.AddScoped<ActorRolesRepository>();
 builder.Services.AddSingleton((_) => ResendClient.Create(RESEND_KEY));
 builder.Services.AddControllers();
 builder.Services
@@ -47,6 +50,37 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("UserLimitPolicy", httpContext =>
+    {
+        var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+        {
+            var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+            return RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: ip,
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 10,
+                    Window = TimeSpan.FromDays(1),
+                    QueueLimit = 0
+                }
+            );
+        }
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: userId,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 50,
+                Window = TimeSpan.FromDays(1),
+                QueueLimit = 0
+            }
+        );
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), npgsqlOptionsAction =>
     {
@@ -65,4 +99,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapIdentityApi<User>();
 app.MapControllers();
+app.UseRateLimiter();
 app.Run();

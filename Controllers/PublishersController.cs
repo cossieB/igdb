@@ -4,9 +4,11 @@ using igdb.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 namespace igdb.Controllers;
 [ApiController]
 // [Authorize]
+[EnableRateLimiting("UserLimitPolicy")]
 [Route("[controller]")]
 public class PublishersController(PublisherRepository publisherRepository, GameRepository gameRepository) : ControllerBase
 {    
@@ -34,13 +36,14 @@ public class PublishersController(PublisherRepository publisherRepository, GameR
         return Ok(games.Adapt<List<GameDto>>());
     }
 
+    [Authorize(Roles = "Admin"), DisableRateLimiting]
     [HttpPost]
     async public Task<ActionResult<PublisherDto>> AddPublisher(PublisherCreateDto dto)
     {
         var publisher = await publisherRepository.CreatePublisher(dto);
         return Created($"/publishers/{publisher.PublisherId}", publisher);
     }
-
+    [Authorize(Roles = "Admin"), DisableRateLimiting]
     [HttpPatch("{id:int:min(1)}")]
     async public Task<IActionResult> UpdatePublisher(int id, PublisherUpdateDto dto)
     {

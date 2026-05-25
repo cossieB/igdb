@@ -11,7 +11,7 @@ public class DeveloperRepository(AppDbContext _context)
     private readonly AppDbContext dbContext = _context;
     async public Task<List<DeveloperDto>> FindAll(int cursor, int limit)
     {
-        var developers = dbContext.Developers
+        var developers = await dbContext.Developers
             .Where(dev => dev.DeveloperId > cursor)
             .OrderBy(dev => dev.DeveloperId)
             .Take(limit)

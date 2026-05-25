@@ -4,11 +4,13 @@ using igdb.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace igdb.Controllers;
 
 [ApiController]
 // [Authorize]
+[EnableRateLimiting("UserLimitPolicy")]
 [Route("[controller]")]
 public class PlatformsController(PlatformRepository _platformRepository, GameRepository _gameRepository) : ControllerBase
 {
@@ -37,14 +39,14 @@ public class PlatformsController(PlatformRepository _platformRepository, GameRep
         var games = await gameRepository.FindAll(cursor, limit, platformId: id);
         return Ok(games.Adapt<List<GameDto>>());
     }
-
+    [Authorize(Roles = "Admin"), DisableRateLimiting]
     [HttpPost]
     async public Task<ActionResult<PlatformDto>> AddPlatform(PlatformCreateDto dto)
     {
         var platform = await platformRepository.CreatePlatform(dto);
         return Created($"/platforms/{platform.PlatformId}", platform);
     }
-    
+    [Authorize(Roles = "Admin"), DisableRateLimiting]    
     [ProducesResponseType(typeof(PlatformDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpPatch("{id:int:min(1)}")]

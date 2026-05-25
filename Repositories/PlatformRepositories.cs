@@ -11,13 +11,13 @@ public class PlatformRepository(AppDbContext _context)
     private readonly AppDbContext dbContext = _context;
     async public Task<List<PlatformDto>> FindAll(int cursor, int limit)
     {
-        var Platforms = dbContext.Platforms
+        var platforms = await dbContext.Platforms
             .Where(dev => dev.PlatformId > cursor)
             .OrderBy(dev => dev.PlatformId)
             .Take(limit)
             .ToListAsync();
 
-        return Platforms.Adapt<List<PlatformDto>>();
+        return platforms.Adapt<List<PlatformDto>>();
     }
 
     async public Task<PlatformDto?> FindById(int id)

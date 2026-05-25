@@ -6,12 +6,14 @@ using igdb.Repositories;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace igdb.Controllers;
 
 [ApiController]
 // [Authorize]
+[EnableRateLimiting("UserLimitPolicy")]
 [Route("[controller]")]
 public class GamesController(GameRepository gameRepository) : ControllerBase
 {
@@ -31,7 +33,7 @@ public class GamesController(GameRepository gameRepository) : ControllerBase
         return Ok(game);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin"), DisableRateLimiting]
     [HttpPost]
     async public Task<IActionResult> AddGame(CreateGameRequest request)
     {
@@ -55,7 +57,7 @@ public class GamesController(GameRepository gameRepository) : ControllerBase
     }
     [ProducesResponseType(typeof(GameDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin"), DisableRateLimiting]
     [HttpPatch("{id}")]
     async public Task<IActionResult> UpdateGame(int id, UpdateGameRequest request)
     {

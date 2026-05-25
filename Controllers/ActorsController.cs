@@ -3,16 +3,19 @@ using igdb.Dtos;
 using igdb.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace igdb.Controllers;
 
 [ApiController]
 // [Authorize]
+[EnableRateLimiting("UserLimitPolicy")]
 [Route("[controller]")]
-public class ActorsController(ActorRepository actorRepository, GameRepository gameRepository) : ControllerBase
+public class ActorsController(ActorRepository actorRepository, GameRepository gameRepository, ActorRolesRepository actorRolesRepository) : ControllerBase
 {
     private readonly ActorRepository actorRepository = actorRepository;
     private readonly GameRepository gameService = gameRepository;
+    private readonly ActorRolesRepository actorRolesRepository = actorRolesRepository;
 
     [ProducesResponseType(typeof(ActorDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -27,7 +30,7 @@ public class ActorsController(ActorRepository actorRepository, GameRepository ga
     [HttpGet]
     async public Task<ActionResult<List<ActorDto>>> GetAll([FromQuery] int cursor = 0, [FromQuery, Range(1, 20)] int limit = 10)
     {
-        var actors = actorRepository.FindAll(cursor, limit);
+        var actors = await actorRepository.FindAll(cursor, limit);
         return Ok(actors);
     }
 
@@ -38,19 +41,13 @@ public class ActorsController(ActorRepository actorRepository, GameRepository ga
         return Ok(games);
     } 
     
-    // [HttpGet("{id:int:min(1)}/roles")]    
-    // async public Task<ActionResult<List<RolesDto>>> GetRoles(int id, [FromQuery] int cursor = 0, [FromQuery, Range(1, 20)] int limit = 10)
-    // {
-    //     var roles = await _dbContext.GameActors
-    //         .OrderBy(x => x.AppearanceId)
-    //         .Where(x => x.ActorId == id)
-    //         .Where(x => x.AppearanceId > cursor)
-    //         .Take(limit)
-    //         .ToListAsync();
-
-    //     return Ok(roles.Adapt<List<RolesDto>>());
-    // }
-
+    [HttpGet("{id:int:min(1)}/roles")]    
+    async public Task<ActionResult<List<ActorRolesDto>>> GetRoles(int id, [FromQuery] int cursor = 0, [FromQuery, Range(1, 50)] int limit = 20)
+    {
+        var roles = await actorRolesRepository.FindAllByActor(id, cursor, limit);
+        return Ok(roles);
+    }
+    [Authorize(Roles = "Admin"), DisableRateLimiting]    
     [HttpPost]
     async public Task<ActionResult<ActorDto>> CreateActor(ActorCreateDto dto)
     {
@@ -60,6 +57,7 @@ public class ActorsController(ActorRepository actorRepository, GameRepository ga
 
     [ProducesResponseType(typeof(ActorDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = "Admin"), DisableRateLimiting]    
     [HttpPatch("{id:int:min(1)}")]
     async public Task<IActionResult> UpdateActor(int id, ActorUpdateDto dto)
     {

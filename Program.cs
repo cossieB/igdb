@@ -12,6 +12,14 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 var RESEND_KEY = Environment.GetEnvironmentVariable("RESEND_KEY") ?? throw new InvalidOperationException("RESEND_KEY environment variable is missing");
 
+var forwardedHeaderOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+// Clear known networks/proxies so it accepts headers from Cloudflare's IPs
+forwardedHeaderOptions.KnownIPNetworks.Clear();
+forwardedHeaderOptions.KnownProxies.Clear();
+
 // Add services to the container.
 builder.Services.AddScoped<GameRepository>();
 builder.Services.AddScoped<ActorRepository>();

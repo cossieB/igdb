@@ -1,25 +1,3 @@
-```mermaid 
-graph LR
-    User([User])
+# Internet Games Database
 
-    subgraph AWS_VPC [AWS VPC]
-        
-        subgraph Public_Subnet [Public Subnet]
-            subgraph Public_EC2 [Public EC2]
-                Nginx[Nginx]
-                DotNet[.NET Server]
-            end
-        end
-
-        subgraph Private_Subnet [Private Subnet]
-            subgraph Private_EC2 [Private EC2]
-                PostgreSQL[(PostgreSQL)]
-            end
-        end
-        
-    end
-
-    User -- "18.133.83.132 (80/443)" --> Nginx
-    Nginx -- "proxy" --> DotNet
-    DotNet -- "SQL (5432)" --> PostgreSQL
-```
+https://igdb-dotnet.cossie.dev/scalar

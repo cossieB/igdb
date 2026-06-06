@@ -1,0 +1,6 @@
+@igdb_HostAddress = http://localhost:5160
+
+GET {{igdb_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

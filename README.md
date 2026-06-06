@@ -1,12 +1,25 @@
-# The Intenet Games Database
+```mermaid 
+graph LR
+    User([User])
 
-IGDB is a public API for information about the gaming industry. Users can also review games.
+    subgraph AWS_VPC [AWS VPC]
+        
+        subgraph Public_Subnet [Public Subnet]
+            subgraph Public_EC2 [Public EC2]
+                Nginx[Nginx]
+                DotNet[.NET Server]
+            end
+        end
 
-## REST API
-View the scalar documentation at [https://igdb.cossie.workers.dev/scalar](https://igdb.cossie.workers.dev/scalar). 
+        subgraph Private_Subnet [Private Subnet]
+            subgraph Private_EC2 [Private EC2]
+                PostgreSQL[(PostgreSQL)]
+            end
+        end
+        
+    end
 
-## GraphQL
-GraphQL is at [https://igdb.cossie.workers.dev/graphql](https://igdb.cossie.workers.dev/graphql)
-
-## API Key
-The endpoints require a valid x-api-key header. Use ```uk_MXMKGQvuxElpAYhVwgNDGcAgPZqhUjOyziBIKbJUPCfOXiHBBIISNcfRAJyDHSnK```.  If that key is rate limited you can generate your own at https://igdb.cossie.workers.dev/ after signing up with your Google or Github account.
+    User -- "18.133.83.132 (80/443)" --> Nginx
+    Nginx -- "proxy" --> DotNet
+    DotNet -- "SQL (5432)" --> PostgreSQL
+```

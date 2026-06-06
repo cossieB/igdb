@@ -1,0 +1,38 @@
+﻿namespace igdb.Models;
+
+public partial class Game
+{
+    public int GameId { get; set; }
+
+    public string Title { get; set; } = null!;
+
+    public string Summary { get; set; } = null!;
+
+    public int DeveloperId { get; set; }
+
+    public int PublisherId { get; set; }
+
+    public DateOnly ReleaseDate { get; set; }
+
+    public string Cover { get; set; } = null!;
+
+    public string Banner { get; set; } = null!;
+
+    public string? Trailer { get; set; }
+
+    public DateTime DateAdded { get; set; }
+
+    public DateTime DateModified { get; set; }
+
+    public virtual Developer Developer { get; set; } = null!;
+
+    public virtual ICollection<GameActor> GameActors { get; set; } = [];
+
+    public virtual ICollection<Media> Media { get; set; } = [];
+    public virtual Publisher Publisher { get; set; } = null!;
+
+    public virtual ICollection<Genre> Genres { get; set; } = [];
+
+    public virtual ICollection<Platform> Platforms { get; set; } = [];
+}
+

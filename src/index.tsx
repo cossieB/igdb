@@ -6,7 +6,6 @@ import { gamesRoutes } from './routes/games'
 import { developerRoutes } from './routes/developers'
 import { publisherRoutes } from './routes/publishers'
 import { platformRoutes } from './routes/platforms'
-import { betterAuthRoutes } from './routes/betterAuth'
 import { authRoutes } from './routes/auth'
 import { setSession } from './middleware/setSessions'
 import type { MyEnv } from './utils/types'
@@ -14,6 +13,7 @@ import { keyRoutes } from './routes/keys'
 import { homePage } from './routes/homepage'
 import { graphqlServer } from '@hono/graphql-server'
 import { graphqlSchema } from './graphql/schema'
+import { auth } from './utils/auth'
 
 const app = new OpenAPIHono<MyEnv>()
 
@@ -27,7 +27,7 @@ app.use("/graphql", graphqlServer({
 app
     .get('/', homePage)
     .route("/auth", authRoutes)
-    .route("/api/auth/*", betterAuthRoutes)
+    .all("/api/auth/*", c => auth.handler(c.req.raw))
     .route("/api/actors", actorRoutes)
     .route("/api/games", gamesRoutes)
     .route("/api/developers", developerRoutes)

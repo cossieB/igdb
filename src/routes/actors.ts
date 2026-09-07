@@ -251,7 +251,6 @@ actorRoutes.openapi(
     async c => {
         const actorId = c.req.valid('param').id;
         const { limit, cursor } = c.req.valid('query');
-        console.log(actorId, limit, cursor)
         const games = await gamesRepository.findAll({ actorId, limit, cursor })
         return c.json(games)
     }

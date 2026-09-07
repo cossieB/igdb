@@ -36,7 +36,7 @@ export const GameCreateSchema = z.object({
 export const GameEditSchema = GameCreateSchema.partial().extend({ gameId: z.number() })
 
 export const ApiHeaderSchema = z.object({
-    "x-api-key": z.string().openapi({ example: "uk_MXMKGQvuxElpAYhVwgNDGcAgPZqhUjOyziBIKbJUPCfOXiHBBIISNcfRAJyDHSnK" })
+    "x-api-key": z.string().openapi({ example: "uk_QOFDUChUqBhrAvaxVLNZudHsoZunRxlPAaArZUeTyktQIibZlGEHbmyemOwHYCNg" })
 })
 
 export const NumberIdSchema = z.object({

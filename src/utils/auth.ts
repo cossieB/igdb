@@ -3,11 +3,13 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { env } from "cloudflare:workers";
 import { db } from "~/drizzle/db";
+import * as schema from "~/drizzle/schema/index"
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "sqlite",
         usePlural: true,
+        schema
     }),
     socialProviders: {
         google: {
@@ -52,19 +54,7 @@ export const auth = betterAuth({
                 },                
                 references: "user",
             },])
-    ],
-    secondaryStorage: {
-        delete(key) {
-            return env.KV.delete(key)
-        },
-        get(key) {
-            return env.KV.get(key, "json")
-        },
-        set(key, value, ttl) {
-            const expirationTtl = ttl ? Math.max(60, ttl) : undefined
-            return env.KV.put(key, value, {expirationTtl})
-        },
-    },    
+    ],  
     session: {
         cookieCache: {
             enabled: true,

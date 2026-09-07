@@ -23,30 +23,39 @@ authRoutes
     .get("/google", async c => {
         const session = c.var.session
         if (session) return c.redirect("/")
+
         const res = await auth.api.signInSocial({
             asResponse: true,
             body: {
-                provider: "google",
+                provider: "google",                
             },
+            headers: c.req.raw.headers
+        })        
+        const data = await res.json() as {url: string, redirect: boolean};        
+        const headers = new Headers(res.headers)        
+        headers.set("Location", data.url)        
+        return new Response(null, {
+            status: 302,
+            headers
         })
-        const cookies = res.headers.getAll("set-cookie")
-        const location = res.headers.get("location")
-        if (cookies.length == 0 || !location) return c.text("OOPS", 500)
-        cookies.forEach(cookie => c.header("Set-Cookie", cookie))
-        return c.redirect(location)
     })
     .get("/github", async c => {
         const session = c.var.session
         if (session) return c.redirect("/")
+
         const res = await auth.api.signInSocial({
             asResponse: true,
             body: {
                 provider: "github",
+                callbackURL: "/",
             },
+            headers: c.req.raw.headers
+        })        
+        const data = await res.json() as {url: string, redirect: boolean}       
+        const headers = new Headers(res.headers)        
+        headers.set("Location", data.url)        
+        return new Response(null, {
+            status: 302,
+            headers
         })
-        const cookies = res.headers.getAll("set-cookie")
-        const location = res.headers.get("location")
-        if (cookies.length == 0 || !location) return c.text("OOPS", 500)
-        cookies.forEach(cookie => c.header("Set-Cookie", cookie))
-        return c.redirect(location)
     })
